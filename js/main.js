@@ -4,11 +4,14 @@ $(function() {
 	var secret = "d8d561e9aafb45f2ff14"
 	var cluster = "us2"
 
-	var channelName = 'channel';
+	var pathName = window.location.pathname.replace(/^\//, '');
+	var pathArray = pathName.split( '/' );
+	var channelName = pathArray[0];
 
 	var pusher = new Pusher(key, {
-        cluster: cluster,
-        encrypted: true
+		cluster: cluster,
+		encrypted: true,
+		authEndpoint: 'http://chat.codes/auth.php'
 	});
 	// Pusher.log = function(message) {
 	// 	if (window.console && window.console.log) {
@@ -29,6 +32,5 @@ $(function() {
         type: 'text',
         message: 'hello world'
     });
-
 	window.channel = channel;
 });
