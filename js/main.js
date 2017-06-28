@@ -21,9 +21,9 @@ $(function() {
 
 	var channel = pusher.subscribe('private-'+channelName);
 
-	// channel.bind('message', function(data) {
-	// 	console.log(data);
-	// });
+	channel.bind('client-message', function(data) {
+		console.log(data);
+	});
 	// channel.bind('subscription_succeeded', function(data) {
 	// 	console.log(data);
 	// });
