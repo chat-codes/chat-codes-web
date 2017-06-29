@@ -9,5 +9,7 @@ $app_cluster = "us2";
 $pusher = new Pusher($app_key, $app_secret, $app_id, array('cluster' => $app_cluster) );
 header('content-type: application/json; charset=utf-8');
 header("access-control-allow-origin: *");
-echo $pusher->socket_auth($_POST['channel_name'], $_POST['socket_id']);
+$user_id = uniqid();
+$presence_data = array('name' => $_GET['name']);
+echo $pusher->presence_auth($_POST['channel_name'], $_POST['socket_id'], $user_id, $presence_data);
 ?>
