@@ -1,0 +1,20 @@
+<h1>{{getChatURL()}}</h1>
+
+<name-entry *ngIf="!hasName" (onEnter)="setName($event)"></name-entry>
+
+<div *ngIf="hasName">
+    <h2>Messages</h2>
+    <ul class='messages'>
+        <li *ngFor="let message of messages">
+            {{message.timestamp}} {{message.sender.name}} {{message.message}}
+        </li>
+    </ul>
+
+    <h2>Members</h2>
+    <ul class='members'>
+        <li *ngFor="let user of pusher.userList.users">
+            <user-display [user]='user'></user-display>
+        </li>
+    </ul>
+    <chat-input (send)='sendTextMessage($event)' (typing)='updateTypingStatus($event)'></chat-input>
+</div>
