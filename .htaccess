@@ -1,2 +1,4 @@
-RewriteEngine On
-RewriteRule ^([A-Za-z0-9]+)/?$ ?id=$1 [NC,L]
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !^/dist/?$
+RewriteCond %{REQUEST_URI} !^/?auth.php.*$
+RewriteRule ^([A-Za-z]+)/?$ dist/ [NC,L]
