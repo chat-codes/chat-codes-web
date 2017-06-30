@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { PusherService } from './pusher.service';
+import { Location } from '@angular/common';
 import { ChatUser } from './chat-user';
 import * as _ from 'underscore';
 
@@ -11,6 +12,10 @@ import * as _ from 'underscore';
 
 export class AppComponent {
   constructor() {
+    const channelName = Location.stripTrailingSlash(location.pathname);
+    if(channelName) {
+      this.channelName = channelName;
+    }
   };
   private pusher:PusherService;
 
