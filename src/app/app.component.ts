@@ -12,7 +12,7 @@ import * as _ from 'underscore';
 
 export class AppComponent {
   constructor() {
-    const channelName = Location.stripTrailingSlash(location.pathname);
+    const channelName = Location.stripTrailingSlash(location.pathname.substring(1));
     if(channelName) {
       this.channelName = channelName;
     }
