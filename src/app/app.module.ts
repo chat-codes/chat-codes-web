@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { NameEntry } from './name-entry/name-entry.component';
 import { ChatInput } from './chat-input/chat-input.component';
 import { UserDisplay } from './user/user-display.component';
+import { AceEditorDirective } from 'ng2-ace-editor';
 
 import { PusherService } from './pusher.service';
 import { MomentModule } from 'angular2-moment';

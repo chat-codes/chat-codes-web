@@ -26,6 +26,18 @@ export class PusherService {
                 sender: this.userList.getUser(data.uid)
             }, data));
     	});
+        this.channel.bind('client-message-history', (data) => {
+            if(data.forUser === this.myID) {
+                _.each(data.allUsers, (u) => {
+                    this.userList.add(false, u.id, u.name, u.active);
+                });
+                _.each(data.history, (m) => {
+                    this.message.emit(_.extend({
+                        sender: this.userList.getUser(m.uid)
+                    }, m));
+                });
+            }
+        });
     	this.channel.bind('client-typing', (data) => {
             const {uid, status} = data;
             const user = this.userList.getUser(uid);
@@ -38,10 +50,15 @@ export class PusherService {
         this.presenceChannel = this.pusher.subscribe('presence-'+this.channelName);
         this.myID = this.presenceChannel.members.myID;
 
-        this.presenceChannel.bind('pusher:subscription_succeeded', (members) => {
-            this.myID = members.myID;
-            this.userList.addAll(members);
-        });
+        if(this.presenceChannel.subscribed) {
+            this.myID = this.presenceChannel.members.myID;
+            this.userList.addAll(this.presenceChannel.members.members);
+        } else {
+            this.presenceChannel.bind('pusher:subscription_succeeded', (members) => {
+                this.myID = members.myID;
+                this.userList.addAll(members);
+            });
+        }
 
         this.presenceChannel.bind('pusher:member_added', (member) => {
             this.userList.add(false, member.id, member.info.name);

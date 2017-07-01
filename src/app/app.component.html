@@ -3,6 +3,7 @@
 <name-entry *ngIf="!hasName" (onEnter)="setName($event)"></name-entry>
 
 <div *ngIf="hasName">
+    <h2>Editor</h2>
     <h2>Messages</h2>
     <ul class='messages'>
         <li *ngFor="let message of messages">
@@ -12,7 +13,7 @@
 
     <h2>Members</h2>
     <ul class='members'>
-        <li *ngFor="let user of pusher.userList.users">
+        <li *ngFor="let user of pusher.userList.activeUsers">
             <user-display [user]='user'></user-display>
         </li>
     </ul>
