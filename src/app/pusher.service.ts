@@ -47,6 +47,28 @@ export class PusherService {
             }
     	});
 
+    	this.channel.bind('client-editor-shared', (data) => {
+            this.editorShared.emit(data);
+    	});
+        this.channel.bind('client-editor-destroyed', (data) => {
+            this.editorDestroyed.emit(data);
+    	});
+    	this.channel.bind('client-editor-title-changed', (data) => {
+            this.editorTitleChanged.emit(data);
+    	});
+    	this.channel.bind('client-editor-changed', (data) => {
+            this.editorChanged.emit(data);
+    	});
+    	this.channel.bind('client-editor-grammar-changed', (data) => {
+            this.editorGrammarChanged.emit(data);
+    	});
+    	this.channel.bind('client-cursor-destroyed', (data) => {
+            this.cursorDestroyed.emit(data);
+    	});
+    	this.channel.bind('client-cursor-changed-position', (data) => {
+            this.cursorChangedPosition.emit(data);
+    	});
+
         this.presenceChannel = this.pusher.subscribe('presence-'+this.channelName);
         this.myID = this.presenceChannel.members.myID;
 
@@ -102,6 +124,14 @@ export class PusherService {
     public membersChanged: EventEmitter<any> = new EventEmitter();
     public message: EventEmitter<any> = new EventEmitter();
     public typingStatus: EventEmitter<any> = new EventEmitter();
+    public editorShared: EventEmitter<any> = new EventEmitter();
+    public editorDestroyed: EventEmitter<any> = new EventEmitter();
+    public editorTitleChanged: EventEmitter<any> = new EventEmitter();
+    public editorChanged: EventEmitter<any> = new EventEmitter();
+    public editorGrammarChanged: EventEmitter<any> = new EventEmitter();
+    public cursorDestroyed: EventEmitter<any> = new EventEmitter();
+    public cursorChangedPosition: EventEmitter<any> = new EventEmitter();
+
     public userList:ChatUserList = new ChatUserList();
 
     private pusher:Pusher;

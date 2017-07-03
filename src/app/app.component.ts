@@ -16,6 +16,7 @@ export class AppComponent {
     if(channelName) {
       this.channelName = channelName;
     }
+    this.setName('remote');
   };
   private pusher:PusherService;
 
