@@ -120,6 +120,12 @@ export class PusherService {
             meUser.setTypingStatus(status);
         }
     }
+    public emitEditorChanged(delta) {
+        this.channel.trigger('client-editor-changed', _.extend({
+			timestamp: this.getTimestamp(),
+			remote: true
+		}, delta));
+    }
 
     public membersChanged: EventEmitter<any> = new EventEmitter();
     public message: EventEmitter<any> = new EventEmitter();
