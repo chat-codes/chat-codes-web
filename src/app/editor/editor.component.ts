@@ -1,9 +1,9 @@
 import {Component, ViewChild, EventEmitter, Output, Input} from '@angular/core';
 import {PusherService} from '../pusher.service';
-import * as _ from 'underscore';
-import * as DiffMatchPatch from 'diff-match-patch';
 
-declare var ace: any;
+import * as _ from 'underscore';
+
+declare let ace: any;
 
 @Component({
 	selector: 'code-editor',
@@ -13,7 +13,8 @@ declare var ace: any;
 export class EditorDisplay {
     constructor() { }
     ngOnInit() { }
-	deltas:Array<any> = []
+	atomIDToEditSessionMap = {}
+	deltas:{[editorID:number]: Array<any>} = {}
 	updatePositionsFromAnchor(delta) {
 		const oldRangeStart = delta.oldRangeStartAnchor.getPosition();
 		const oldRangeEnd = delta.oldRangeEndAnchor.getPosition();
@@ -38,7 +39,7 @@ export class EditorDisplay {
 	getDelta(changeEvent) {
 		const Range = ace.acequire('ace/range').Range
 		const {action, lines, start, end} = changeEvent;
-		var oldRange, newRange, oldText, newText;
+		let oldRange, newRange, oldText, newText;
 		if(action === 'insert') {
 			oldRange = {
 				start: [start.row, start.column],
@@ -71,27 +72,39 @@ export class EditorDisplay {
 	}
     ngAfterViewInit() {
         const editor = this.editor.getEditor();
-		const session = editor.getSession();
-		const doc = session.getDocument();
 		const Range = ace.acequire('ace/range').Range
 
 		editor.on('change', (event) => {
 			const curOpp = editor.curOp;
 			if(curOpp && curOpp.command && curOpp.command.name) { // change was made locally
-				console.log('local change');
+				const session = editor.getSession();
+				// console.log('local change');
 				const delta = this.getDelta(event);
-				this.handleDelta(delta, doc, false);
-				this.pusher.emitEditorChanged(delta);
-			} else {
-				console.log('remote change');
+				// this.handleDelta(delta, doc, false);
+				this.pusher.emitEditorChanged({
+					id: session.forEditorID,
+					changes: [delta]
+				});
+				// _.extend({
+				// 	id: session.forEditorID
+				// }, delta));
+			// } else {
+				// console.log('remote change');
 			}
 		});
-		session.selection.on('changeCursor', (event) => {
-			const range = editor.getSelectionRange();
-		});
+		// session.selection.on('changeCursor', (event) => {
+		// 	const range = editor.getSelectionRange();
+		// });
 
 		this.pusher.editorShared.subscribe((data) => {
-			editor.setValue(data.contents, -1);
+			const EditSession = ace.acequire('ace/edit_session').EditSession;
+			const session = new EditSession(data.contents);
+			const editorID = data.id;
+
+			this.atomIDToEditSessionMap[editorID] = session;
+			session.forEditorID = editorID;
+			editor.setSession(session)
+			// editor.setValue(data.contents, -1);
 		});
 		this.pusher.editorDestroyed.subscribe((data) => {
 			console.log(data);
@@ -101,15 +114,18 @@ export class EditorDisplay {
 		});
 
 		this.pusher.editorChanged.subscribe((data) => {
-			_.each(data.changes, (c) => {
-				this.handleDelta(c, doc);
-				// var actionArea = newRange.start;
-				//
-				// session.replace(oldRange, newText);
-				// actionArea = newRange.start;
-				//
-				// editor.scrollToRow(actionArea.row);
-			});
+			const session = this.atomIDToEditSessionMap[data.id];
+			const doc = session.getDocument();
+			this.handleChanges(data, doc);
+			// _.each(data.changes, (c) => {
+			// 	this.handleDelta(c, doc);
+			// 	// let actionArea = newRange.start;
+			// 	//
+			// 	// session.replace(oldRange, newText);
+			// 	// actionArea = newRange.start;
+			// 	//
+			// 	// editor.scrollToRow(actionArea.row);
+			// });
 
 		});
 		this.pusher.editorGrammarChanged.subscribe((data) => {
@@ -119,29 +135,39 @@ export class EditorDisplay {
 			console.log(data);
 		});
 		this.pusher.cursorChangedPosition.subscribe((data) => {
-			const {oldBufferPosition, newBufferPosition} = data;
-			const oldRange = new Range(oldBufferPosition[0], oldBufferPosition[1], oldBufferPosition[0], oldBufferPosition[1]+1);
-			const newRange = new Range(newBufferPosition[0], newBufferPosition[1], newBufferPosition[0], newBufferPosition[1]+1);
-			if(this.markers[data.id]) {
-				session.removeMarker(this.markers[data.id]);
-			}
-			// } else {
-			this.markers[data.id] = session.addMarker(newRange, 'rootCursor', 'text');
+			// const {oldBufferPosition, newBufferPosition} = data;
+			// const oldRange = new Range(oldBufferPosition[0], oldBufferPosition[1], oldBufferPosition[0], oldBufferPosition[1]+1);
+			// const newRange = new Range(newBufferPosition[0], newBufferPosition[1], newBufferPosition[0], newBufferPosition[1]+1);
+			// if(this.markers[data.id]) {
+			// 	session.removeMarker(this.markers[data.id]);
 			// }
-			// console.log(session.getMarkers());
+			// // } else {
+			// this.markers[data.id] = session.addMarker(newRange, 'rootCursor', 'text');
+			// // }
+			// // console.log(session.getMarkers());
 		});
     }
 	private getTimestamp():number {
 		return (new Date()).getTime();
 	}
 	private markers = {};
+	private getEditorDeltaHistory(editorID:number):Array<any> {
+		if(_.has(this.deltas, editorID)) {
+			return this.deltas[editorID];
+		} else {
+			const deltas = []
+			this.deltas[editorID] = deltas;
+			return deltas;
+		}
+	}
 
-	private handleDelta(delta, doc, mustPerformChange=true) {
-		var i = this.deltas.length-1;
-		var d;
+	private handleChanges(event, doc, mustPerformChange=true) {
+		const deltas = this.getEditorDeltaHistory(event.id);
+		let i = deltas.length-1;
+		let d;
 		for(; i>=0; i--) {
-			d = this.deltas[i];
-			if(d.timestamp > delta.timestamp) {
+			d = deltas[i];
+			if(d.timestamp > event.timestamp) {
 				this.undoDelta(d);
 			} else {
 				break;
@@ -149,16 +175,18 @@ export class EditorDisplay {
 		}
 		const insertAt = i+1;
 
-		const anchoredDelta = this.getAnchoredDelta(delta, doc);
+		const anchoredDeltas = _.map(event.changes, (delta) => { return this.getAnchoredDelta(delta, doc) });
+
+		deltas.splice.apply(deltas, [insertAt,0].concat(anchoredDeltas));
 
 		if(mustPerformChange) {
-			this.doDelta(anchoredDelta);
+			i = insertAt;
+		} else {
+			i = insertAt + event.changes.length;
 		}
 
-		this.deltas.splice(insertAt, 0, anchoredDelta);
-
-		for(i = insertAt+1; i<this.deltas.length; i++) {
-			d = this.deltas[i];
+		for(; i<deltas.length; i++) {
+			d = deltas[i];
 			this.updatePositionsFromAnchor(d);
 			this.doDelta(d);
 		}
