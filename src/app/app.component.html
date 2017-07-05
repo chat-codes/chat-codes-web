@@ -5,6 +5,7 @@
 <div *ngIf="hasName">
     <h2>Editor</h2>
     <code-editor [pusher]='pusher'></code-editor>
+    <terminal [pusher]='pusher'></terminal>
     <h2>Messages</h2>
     <ul class='messages'>
         <li *ngFor="let message of messages">

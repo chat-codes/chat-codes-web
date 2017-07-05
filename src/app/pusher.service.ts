@@ -21,6 +21,9 @@ export class PusherService {
     		authEndpoint: getAuthURL(this.userName)
         });
         this.channel = this.pusher.subscribe('private-'+this.channelName)
+        this.channel.bind('client-terminal-data', (event) => {
+            this.terminalData.emit(event);
+        });
     	this.channel.bind('client-message', (data) => {
             this.message.emit(_.extend({
                 sender: this.userList.getUser(data.uid)
@@ -127,6 +130,14 @@ export class PusherService {
 		}, delta));
     }
 
+    public writeToTerminal(data) {
+        this.channel.trigger('client-write-to-terminal', {
+			timestamp: this.getTimestamp(),
+			remote: true,
+            contents: data
+		});
+    }
+
     public membersChanged: EventEmitter<any> = new EventEmitter();
     public message: EventEmitter<any> = new EventEmitter();
     public typingStatus: EventEmitter<any> = new EventEmitter();
@@ -137,6 +148,7 @@ export class PusherService {
     public editorGrammarChanged: EventEmitter<any> = new EventEmitter();
     public cursorDestroyed: EventEmitter<any> = new EventEmitter();
     public cursorChangedPosition: EventEmitter<any> = new EventEmitter();
+    public terminalData: EventEmitter<any> = new EventEmitter();
 
     public userList:ChatUserList = new ChatUserList();
 

@@ -29,6 +29,7 @@
     "pusher-js": "^4.1.0",
     "rxjs": "^5.1.0",
     "underscore": "^1.8.3",
+    "xterm": "^2.8.0",
     "zone.js": "^0.8.4"
   },
   "devDependencies": {

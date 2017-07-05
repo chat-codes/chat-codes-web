@@ -8,6 +8,7 @@ import { ChatInput } from './chat-input/chat-input.component';
 import { EditorDisplay } from './editor/editor.component';
 import { UserDisplay } from './user/user-display.component';
 import { AceEditorModule } from 'ng2-ace-editor';
+import { TerminalDisplay } from './terminal/terminal.component';
 
 import { PusherService } from './pusher.service';
 import { MomentModule } from 'angular2-moment';
@@ -18,7 +19,8 @@ import { MomentModule } from 'angular2-moment';
     ChatInput,
     NameEntry,
     UserDisplay,
-    EditorDisplay
+    EditorDisplay,
+    TerminalDisplay
   ],
   imports: [
     BrowserModule,

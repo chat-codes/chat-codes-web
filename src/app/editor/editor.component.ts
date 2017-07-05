@@ -15,6 +15,7 @@ export class EditorDisplay {
     ngOnInit() { }
 	atomIDToEditSessionMap = {}
 	deltas:{[editorID:number]: Array<any>} = {}
+	files: Array<any> = []
 	updatePositionsFromAnchor(delta) {
 		const oldRangeStart = delta.oldRangeStartAnchor.getPosition();
 		const oldRangeEnd = delta.oldRangeEndAnchor.getPosition();
@@ -104,6 +105,11 @@ export class EditorDisplay {
 			this.atomIDToEditSessionMap[editorID] = session;
 			session.forEditorID = editorID;
 			editor.setSession(session)
+
+			this.files.push({
+				name: data.title,
+				session: session
+			});
 			// editor.setValue(data.contents, -1);
 		});
 		this.pusher.editorDestroyed.subscribe((data) => {
@@ -159,6 +165,10 @@ export class EditorDisplay {
 			this.deltas[editorID] = deltas;
 			return deltas;
 		}
+	}
+	private selectFile(session) {
+        const editor = this.editor.getEditor();
+		editor.setSession(session);
 	}
 
 	private handleChanges(event, doc, mustPerformChange=true) {
