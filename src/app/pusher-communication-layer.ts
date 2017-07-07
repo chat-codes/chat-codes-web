@@ -3,7 +3,7 @@ import * as Pusher from 'pusher-js';
 import * as _ from 'underscore';
 import {format} from 'url';
 const SIZE_THRESHOLD = 1000;
-const EMIT_RATE = 150;
+const EMIT_RATE = 200;
 
 function guid(): string {
 	function s4() {

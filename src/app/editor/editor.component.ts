@@ -110,7 +110,7 @@ export class EditorDisplay {
 	private onEditorOpened(state) {
 		const {id} = state;
 		const EditSession = ace.acequire('ace/edit_session').EditSession;
-        const editor = this.editor.getEditor();
+    const editor = this.editor.getEditor();
 		const session = new EditSession('');
 		session.forEditorID = id;
 		this.editorStates[id] = _.extend({
@@ -129,7 +129,7 @@ export class EditorDisplay {
 	}
 	private markers = {};
 	private selectFile(session) {
-        const editor = this.editor.getEditor();
+    const editor = this.editor.getEditor();
 		editor.setSession(session);
 	}
 
@@ -203,14 +203,16 @@ export class EditorDisplay {
 		} else if(type === 'title') {
 			editorState.title = delta.newTitle;
 		} else if(type === 'grammar') {
-			session.setGrammar(this.getAceGrammarName(delta.newGrammarName));
+			session.setMode(this.getAceGrammarName(delta.newGrammarName));
 		} else if(type === 'open') {
 			editorState.title = delta.title;
 			session.setValue(delta.contents);
 			editorState.isOpen = true;
+			const {grammarName} = delta;
+			session.setMode(this.getAceGrammarName(delta.grammarName));
 		} else if(type === 'destroy') {
 			const EditSession = ace.acequire('ace/edit_session').EditSession;
-	        const editor = this.editor.getEditor();
+      const editor = this.editor.getEditor();
 			if(editor.getSession() === session) {
 				editor.setSession(new EditSession(''));
 			}
@@ -218,7 +220,27 @@ export class EditorDisplay {
 		}
 	}
 	private getAceGrammarName(grammarName) {
-		return '';
+		if(grammarName === 'TypeScript') {
+			return 'ace/mode/typescript';
+		} else if (grammarName === 'Null Grammar') {
+			return '';
+		} else if(grammarName === 'JavaScript') {
+			return 'ace/mode/javascript';
+		} else if(grammarName === 'HTML') {
+			return 'ace/mode/html';
+		} else if(grammarName === 'CSS') {
+			return 'ace/mode/css';
+		} else if(grammarName === 'JSON') {
+			return 'ace/mode/json';
+		} else if(grammarName === 'PHP') {
+			return 'ace/mode/php';
+		} else if(grammarName === 'Python') {
+			return 'ace/mode/python';
+		} else if(grammarName === 'Markdown') {
+			return 'ace/mode/markdown';
+		} else {
+			return '';
+		}
 	}
 	private undoDelta(delta) {
 		const {type, id} = delta;
@@ -233,7 +255,7 @@ export class EditorDisplay {
 				const Range = ace.acequire('ace/range').Range
 				const newRange = new Range(delta.newRange.start[0], delta.newRange.start[1], delta.newRange.end[0], delta.newRange.end[1]);
 				const {oldText} = delta;
-		        const editor = this.editor.getEditor();
+        const editor = this.editor.getEditor();
 				const session = editor.getSession();
 
 				session.replace(newRange, oldText);
@@ -241,10 +263,10 @@ export class EditorDisplay {
 		} else if(type === 'title') {
 			editorState.title = delta.oldTitle;
 		} else if(type === 'grammar') {
-			session.setGrammar(this.getAceGrammarName(delta.oldGrammarName));
+			session.setMode(this.getAceGrammarName(delta.oldGrammarName));
 		} else if(type === 'open') {
 			const EditSession = ace.acequire('ace/edit_session').EditSession;
-	        const editor = this.editor.getEditor();
+      const editor = this.editor.getEditor();
 			if(editor.getSession() === session) {
 				editor.setSession(new EditSession(''));
 			}
