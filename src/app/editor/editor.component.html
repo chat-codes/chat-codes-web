@@ -1,6 +1,6 @@
 <h2>Files</h2>
 <ul class='files'>
-    <li *ngFor="let editorState of values(editorStates)">
+    <li *ngFor="let editorState of getActiveEditors()">
         <a (click)="selectFile(editorState.session)">{{editorState.title}} {{editorState.modified}}</a>
     </li>
 </ul>

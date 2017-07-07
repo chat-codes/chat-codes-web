@@ -33,12 +33,13 @@ export class EditorDisplay {
 	}
 	getAnchoredChange(delta, doc) {
 		const Anchor = ace.acequire('ace/anchor').Anchor;
-		return  _.extend({
+		const anchoredChange = _.extend({
 			oldRangeStartAnchor: new Anchor(doc, delta.oldRange.start[0], delta.oldRange.start[1]),
 			oldRangeEndAnchor: new Anchor(doc, delta.oldRange.end[0], delta.oldRange.end[1]),
 			newRangeStartAnchor: new Anchor(doc, delta.newRange.start[0], delta.newRange.start[1]),
 			newRangeEndAnchor: new Anchor(doc, delta.newRange.end[0], delta.newRange.end[1])
 		}, delta);
+		return anchoredChange;
 	}
 	getChange(changeEvent) {
 		const Range = ace.acequire('ace/range').Range
@@ -101,7 +102,9 @@ export class EditorDisplay {
 			this.onEditorOpened(event);
 		});
 		this.pusher.editorState.subscribe((event) => {
-			this.onEditorOpened(event.state);
+			_.each(event.state, (state) => {
+				this.onEditorOpened(state);
+			});
 		});
     }
 	private onEditorOpened(state) {
@@ -204,6 +207,14 @@ export class EditorDisplay {
 		} else if(type === 'open') {
 			editorState.title = delta.title;
 			session.setValue(delta.contents);
+			editorState.isOpen = true;
+		} else if(type === 'destroy') {
+			const EditSession = ace.acequire('ace/edit_session').EditSession;
+	        const editor = this.editor.getEditor();
+			if(editor.getSession() === session) {
+				editor.setSession(new EditSession(''));
+			}
+			editorState.isOpen = false;
 		}
 	}
 	private getAceGrammarName(grammarName) {
@@ -232,9 +243,21 @@ export class EditorDisplay {
 		} else if(type === 'grammar') {
 			session.setGrammar(this.getAceGrammarName(delta.oldGrammarName));
 		} else if(type === 'open') {
-			editorState.title = delta.title;
-			session.setValue(delta.contents);
+			const EditSession = ace.acequire('ace/edit_session').EditSession;
+	        const editor = this.editor.getEditor();
+			if(editor.getSession() === session) {
+				editor.setSession(new EditSession(''));
+			}
+			editorState.isOpen = false;
+		} else if(type === 'destroy') {
+			editorState.isOpen = true;
 		}
+	}
+	private getActiveEditors() {
+		return _.chain(this.editorStates)
+				.values()
+				.filter((s) => { return s.isOpen; })
+				.value();
 	}
     @ViewChild('editor') editor;
     @Input() pusher: PusherService;
