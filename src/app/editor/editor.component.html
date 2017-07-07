@@ -1,7 +1,7 @@
 <h2>Files</h2>
 <ul class='files'>
-    <li *ngFor="let file of files">
-        <a (click)="selectFile(file.session)">{{file.name}}</a>
+    <li *ngFor="let editorState of values(editorStates)">
+        <a (click)="selectFile(editorState.session)">{{editorState.title}} {{editorState.modified}}</a>
     </li>
 </ul>
 <ace-editor style="height:150px;" #editor></ace-editor>

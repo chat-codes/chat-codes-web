@@ -1,9 +1,8 @@
 import {Injectable,EventEmitter} from '@angular/core';
-import {CREDENTIALS} from './pusher-credentials';
-import * as Pusher from 'pusher-js';
 import * as _ from 'underscore';
 import { URLSearchParams } from '@angular/http';
 import { ChatUserList, ChatUser } from './chat-user'
+import { PusherCommunicationLayer } from './pusher-communication-layer';
 
 
 function getAuthURL(userName) {
@@ -15,21 +14,19 @@ function getAuthURL(userName) {
 @Injectable()
 export class PusherService {
     constructor(private userName:string, private channelName:string) {
-        this.pusher = new Pusher(CREDENTIALS.key, {
-    		cluster: CREDENTIALS.cluster,
-    		encrypted: true,
-    		authEndpoint: getAuthURL(this.userName)
+        this.commLayer = new PusherCommunicationLayer({
+            username: userName
         });
-        this.channel = this.pusher.subscribe('private-'+this.channelName)
-        this.channel.bind('client-terminal-data', (event) => {
+        this.channelName = channelName;
+        this.commLayer.bind(this.channelName, 'terminal-data', (event) => {
             this.terminalData.emit(event);
         });
-    	this.channel.bind('client-message', (data) => {
+        this.commLayer.bind(this.channelName, 'message', (data) => {
             this.message.emit(_.extend({
                 sender: this.userList.getUser(data.uid)
             }, data));
-    	});
-        this.channel.bind('client-message-history', (data) => {
+        });
+        this.commLayer.bind(this.channelName, 'message-history', (data) => {
             if(data.forUser === this.myID) {
                 _.each(data.allUsers, (u) => {
                     this.userList.add(false, u.id, u.name, u.active);
@@ -41,7 +38,7 @@ export class PusherService {
                 });
             }
         });
-    	this.channel.bind('client-typing', (data) => {
+    	this.commLayer.bind(this.channelName, 'typing', (data) => {
             const {uid, status} = data;
             const user = this.userList.getUser(uid);
 
@@ -49,46 +46,49 @@ export class PusherService {
                 user.setTypingStatus(status);
             }
     	});
-
-    	this.channel.bind('client-editor-shared', (data) => {
-            this.editorShared.emit(data);
+        this.commLayer.bind(this.channelName, 'editor-event', (data) => {
+            this.editorEvent.emit(data);
+        });
+        this.commLayer.bind(this.channelName, 'cursor-event', (data) => {
+            this.cursorEvent.emit(data);
+        });
+    	this.commLayer.bind(this.channelName, 'editor-state', (data) => {
+            this.editorState.emit(data);
     	});
-        this.channel.bind('client-editor-destroyed', (data) => {
-            this.editorDestroyed.emit(data);
-    	});
-    	this.channel.bind('client-editor-title-changed', (data) => {
-            this.editorTitleChanged.emit(data);
-    	});
-    	this.channel.bind('client-editor-changed', (data) => {
-            this.editorChanged.emit(data);
-    	});
-    	this.channel.bind('client-editor-grammar-changed', (data) => {
-            this.editorGrammarChanged.emit(data);
-    	});
-    	this.channel.bind('client-cursor-destroyed', (data) => {
-            this.cursorDestroyed.emit(data);
-    	});
-    	this.channel.bind('client-cursor-changed-position', (data) => {
-            this.cursorChangedPosition.emit(data);
+    	this.commLayer.bind(this.channelName, 'editor-opened', (data) => {
+            this.editorOpened.emit(data);
     	});
 
-        this.presenceChannel = this.pusher.subscribe('presence-'+this.channelName);
-        this.myID = this.presenceChannel.members.myID;
+    	// this.channel.bind('client-editor-shared', (data) => {
+        //     this.editorShared.emit(data);
+    	// });
+        // this.channel.bind('client-editor-destroyed', (data) => {
+        //     this.editorDestroyed.emit(data);
+    	// });
+    	// this.channel.bind('client-editor-title-changed', (data) => {
+        //     this.editorTitleChanged.emit(data);
+    	// });
+    	// this.channel.bind('client-editor-changed', (data) => {
+        //     this.editorChanged.emit(data);
+    	// });
+    	// this.channel.bind('client-editor-grammar-changed', (data) => {
+        //     this.editorGrammarChanged.emit(data);
+    	// });
+    	// this.channel.bind('client-cursor-destroyed', (data) => {
+        //     this.cursorDestroyed.emit(data);
+    	// });
+    	// this.channel.bind('client-cursor-changed-position', (data) => {
+        //     this.cursorChangedPosition.emit(data);
+    	// });
+        this.commLayer.getMembers(this.channelName).then((memberInfo) => {
+            this.myID = memberInfo.myID;
+            this.userList.addAll(memberInfo);
+        });
 
-        if(this.presenceChannel.subscribed) {
-            this.myID = this.presenceChannel.members.myID;
-            this.userList.addAll(this.presenceChannel.members.members);
-        } else {
-            this.presenceChannel.bind('pusher:subscription_succeeded', (members) => {
-                this.myID = members.myID;
-                this.userList.addAll(members);
-            });
-        }
-
-        this.presenceChannel.bind('pusher:member_added', (member) => {
+        this.commLayer.onMemberAdded(this.channelName, (member) => {
             this.userList.add(false, member.id, member.info.name);
         });
-        this.presenceChannel.bind('pusher:member_removed', (member) => {
+        this.commLayer.onMemberRemoved(this.channelName, (member) => {
             this.userList.remove(member.id);
         });
     }
@@ -100,7 +100,7 @@ export class PusherService {
             timestamp: this.getTimestamp()
         };
 
-        this.channel.trigger('client-message', data);
+        this.commLayer.trigger(this.channelName, 'message', data);
         this.message.emit(_.extend({
             sender: this.userList.getMe()
         }, data));
@@ -114,7 +114,7 @@ export class PusherService {
         };
         const meUser = this.userList.getMe();
 
-        this.channel.trigger('client-typing', data);
+        this.commLayer.trigger(this.channelName, 'typing', data);
         this.typingStatus.emit(_.extend({
             sender: this.userList.getMe()
         }, data));
@@ -124,14 +124,14 @@ export class PusherService {
         }
     }
     public emitEditorChanged(delta) {
-        this.channel.trigger('client-editor-changed', _.extend({
+        this.commLayer.trigger(this.channelName, 'editor-event', _.extend({
 			timestamp: this.getTimestamp(),
 			remote: true
 		}, delta));
     }
 
     public writeToTerminal(data) {
-        this.channel.trigger('client-write-to-terminal', {
+        this.commLayer.trigger(this.channelName, 'write-to-terminal', {
 			timestamp: this.getTimestamp(),
 			remote: true,
             contents: data
@@ -141,21 +141,23 @@ export class PusherService {
     public membersChanged: EventEmitter<any> = new EventEmitter();
     public message: EventEmitter<any> = new EventEmitter();
     public typingStatus: EventEmitter<any> = new EventEmitter();
-    public editorShared: EventEmitter<any> = new EventEmitter();
-    public editorDestroyed: EventEmitter<any> = new EventEmitter();
-    public editorTitleChanged: EventEmitter<any> = new EventEmitter();
-    public editorChanged: EventEmitter<any> = new EventEmitter();
-    public editorGrammarChanged: EventEmitter<any> = new EventEmitter();
-    public cursorDestroyed: EventEmitter<any> = new EventEmitter();
-    public cursorChangedPosition: EventEmitter<any> = new EventEmitter();
+    public editorEvent: EventEmitter<any> = new EventEmitter();
+    public cursorEvent: EventEmitter<any> = new EventEmitter();
+    public editorState: EventEmitter<any> = new EventEmitter();
+    public editorOpened: EventEmitter<any> = new EventEmitter();
+    // public editorShared: EventEmitter<any> = new EventEmitter();
+    // public editorDestroyed: EventEmitter<any> = new EventEmitter();
+    // public editorTitleChanged: EventEmitter<any> = new EventEmitter();
+    // public editorChanged: EventEmitter<any> = new EventEmitter();
+    // public editorGrammarChanged: EventEmitter<any> = new EventEmitter();
+    // public cursorDestroyed: EventEmitter<any> = new EventEmitter();
+    // public cursorChangedPosition: EventEmitter<any> = new EventEmitter();
     public terminalData: EventEmitter<any> = new EventEmitter();
 
     public userList:ChatUserList = new ChatUserList();
 
-    private pusher:Pusher;
+    private commLayer:PusherCommunicationLayer;
     private myID:string;
-    private channel;
-    private presenceChannel;
     private getTimestamp():number {
         return new Date().getTime();
     }
