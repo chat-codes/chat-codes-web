@@ -16,6 +16,7 @@ export class EditorDisplay {
 	atomIDToEditSessionMap = {}
 	editorStates: {[editorID:number]: any} = {}
 	files: Array<any> = []
+	markers: {[editorID:number]: {[cursorID:number]: any}} = {}
 	private getEditorState(editorID:number):any {
 		return this.editorStates[editorID];
 	}
@@ -96,7 +97,11 @@ export class EditorDisplay {
 			this.handleDelta(event);
 		});
 		this.pusher.cursorEvent.subscribe((event) => {
-			console.log(event);
+			const {id, type} = event;
+			if(type === 'change-position') {
+				const {newBufferPosition, oldBufferPosition, newRange} = event;
+				console.log(event);
+			}
 		});
 		this.pusher.editorOpened.subscribe((event) => {
 			this.onEditorOpened(event);
@@ -127,7 +132,6 @@ export class EditorDisplay {
 	private getTimestamp():number {
 		return (new Date()).getTime();
 	}
-	private markers = {};
 	private selectFile(session) {
     const editor = this.editor.getEditor();
 		editor.setSession(session);
