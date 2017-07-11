@@ -1,5 +1,6 @@
 import {Component, ViewChild, EventEmitter, Output, Input} from '@angular/core';
 import {PusherService} from '../pusher.service';
+import {RemoteCursorMarker} from './remote_cursor_marker';
 
 import * as _ from 'underscore';
 
@@ -8,7 +9,7 @@ declare let ace: any;
 @Component({
 	selector: 'code-editor',
 	templateUrl: './editor.component.html',
-	styleUrls: [],
+	styleUrls: ['./editor.component.css'],
 })
 export class EditorDisplay {
     constructor() { }
@@ -16,7 +17,7 @@ export class EditorDisplay {
 	atomIDToEditSessionMap = {}
 	editorStates: {[editorID:number]: any} = {}
 	files: Array<any> = []
-	markers: {[editorID:number]: {[cursorID:number]: any}} = {}
+	markers: {[editorID:number]: RemoteCursorMarker} = {}
 	private getEditorState(editorID:number):any {
 		return this.editorStates[editorID];
 	}
@@ -33,17 +34,15 @@ export class EditorDisplay {
 		return delta;
 	}
 	getAnchoredChange(delta, doc) {
-		const Anchor = ace.acequire('ace/anchor').Anchor;
 		const anchoredChange = _.extend({
-			oldRangeStartAnchor: new Anchor(doc, delta.oldRange.start[0], delta.oldRange.start[1]),
-			oldRangeEndAnchor: new Anchor(doc, delta.oldRange.end[0], delta.oldRange.end[1]),
-			newRangeStartAnchor: new Anchor(doc, delta.newRange.start[0], delta.newRange.start[1]),
-			newRangeEndAnchor: new Anchor(doc, delta.newRange.end[0], delta.newRange.end[1])
+			oldRangeStartAnchor: this.getAnchorFromLocation(doc, delta.oldRange.start),
+			oldRangeEndAnchor: this.getAnchorFromLocation(doc, delta.oldRange.end),
+			newRangeStartAnchor: this.getAnchorFromLocation(doc, delta.newRange.start),
+			newRangeEndAnchor: this.getAnchorFromLocation(doc, delta.newRange.end)
 		}, delta);
 		return anchoredChange;
 	}
 	getChange(changeEvent) {
-		const Range = ace.acequire('ace/range').Range
 		const {action, lines, start, end} = changeEvent;
 		let oldRange, newRange, oldText, newText;
 		if(action === 'insert') {
@@ -78,7 +77,6 @@ export class EditorDisplay {
 	}
     ngAfterViewInit() {
         const editor = this.editor.getEditor();
-		const Range = ace.acequire('ace/range').Range
 
 		editor.on('change', (event) => {
 			const curOpp = editor.curOp;
@@ -99,7 +97,20 @@ export class EditorDisplay {
 		this.pusher.cursorEvent.subscribe((event) => {
 			const {id, type} = event;
 			if(type === 'change-position') {
-				const {newBufferPosition, oldBufferPosition, newRange} = event;
+				const {newBufferPosition, oldBufferPosition, newRange, id, editorID} = event;
+				const editorState = this.getEditorState(editorID);
+				if(editorState) {
+					const {remoteCursors, session} = editorState;
+					remoteCursors.updateCursor(id, {row: newBufferPosition[0], column: newBufferPosition[1]});
+				}
+			} else if(type === 'change-selection') {
+				const {newRange, id, editorID} = event;
+				const editorState = this.getEditorState(editorID);
+				if(editorState) {
+					const {remoteCursors, session} = editorState;
+					remoteCursors.updateSelection(id, this.getRangeFromSerializedRange(newRange));
+				}
+			} else if(type === 'destroy') {
 				console.log(event);
 			}
 		});
@@ -115,19 +126,48 @@ export class EditorDisplay {
 	private onEditorOpened(state) {
 		const {id} = state;
 		const EditSession = ace.acequire('ace/edit_session').EditSession;
-    const editor = this.editor.getEditor();
+	    const editor = this.editor.getEditor();
 		const session = new EditSession('');
 		session.forEditorID = id;
-		this.editorStates[id] = _.extend({
+		const editorState =  _.extend({
 			session: session
 		}, state, {
-			deltas: []
+			deltas: [],
+			cursors: {},
+			selections: {},
+			remoteCursors: new RemoteCursorMarker(session)
 		});
+		this.editorStates[id] = editorState;
+		session.addDynamicMarker(editorState.remoteCursors);
 
 		_.each(state.deltas, (delta) => {
 			this.handleDelta(delta);
 		});
 		editor.setSession(session);
+
+		const selection = session.getSelection();
+		selection.on('changeCursor', (event) => {
+			const cursor = selection.getCursor();
+
+			this.pusher.emitCursorPositionChanged({
+				editorID: id,
+				type: 'change-position',
+				newBufferPosition: [cursor.row, cursor.column]
+			});
+		});
+		selection.on('changeSelection', (event) => {
+			const serializedRanges = _.map(selection.getAllRanges(), (range) => {
+				return {
+					start: [range.start.row, range.start.column],
+					end: [range.end.row, range.end.column]
+				};
+			});
+			this.pusher.emitCursorSelectionChanged({
+				editorID: id,
+				newRange: serializedRanges[0],
+				type: 'change-selection'
+			});
+		});
 	}
 	private getTimestamp():number {
 		return (new Date()).getTime();
@@ -186,6 +226,14 @@ export class EditorDisplay {
 			this.doDelta(d);
 		}
 	}
+	private getRangeFromSerializedRange(serializedRange) {
+		const Range = ace.acequire('ace/range').Range
+		return new Range(serializedRange.start[0], serializedRange.start[1], serializedRange.end[0], serializedRange.end[1]);
+	}
+	private getAnchorFromLocation(doc, loc) {
+		const Anchor = ace.acequire('ace/anchor').Anchor;
+		return new Anchor(doc, loc[0],loc[1]);
+	}
 
 	private doDelta(delta) {
 		const {type, id} = delta;
@@ -199,7 +247,7 @@ export class EditorDisplay {
 			_.each(delta.changes, (change) =>{
 				this.updatePositionsFromAnchor(change);
 				const Range = ace.acequire('ace/range').Range
-				const oldRange = new Range(change.oldRange.start[0], change.oldRange.start[1], change.oldRange.end[0], change.oldRange.end[1]);
+				const oldRange = this.getRangeFromSerializedRange(change.oldRange);
 				const {newText} = change;
 
 				session.replace(oldRange, newText);
@@ -257,9 +305,9 @@ export class EditorDisplay {
 			const doc = session.getDocument();
 			_.each(delta.changes, (change) =>{
 				const Range = ace.acequire('ace/range').Range
-				const newRange = new Range(delta.newRange.start[0], delta.newRange.start[1], delta.newRange.end[0], delta.newRange.end[1]);
+				const newRange = this.getRangeFromSerializedRange(change.newRange);
 				const {oldText} = delta;
-        const editor = this.editor.getEditor();
+			    const editor = this.editor.getEditor();
 				const session = editor.getSession();
 
 				session.replace(newRange, oldText);
@@ -288,6 +336,8 @@ export class EditorDisplay {
     @ViewChild('editor') editor;
     @Input() pusher: PusherService;
 	@Output() public editorChanged:EventEmitter<any> = new EventEmitter();
+	@Output() public cursorPositionChanged:EventEmitter<any> = new EventEmitter();
+	@Output() public cursorSelectionChanged:EventEmitter<any> = new EventEmitter();
 	keys(object: {}) { return _.keys(object); };
 	values(object: {}) { return _.values(object); };
 }

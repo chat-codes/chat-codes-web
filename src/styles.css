@@ -1,5 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
-.rootCursor {
+.remoteCursor {
+    position: absolute;
     background-color: red;
-	border: 1px solid blue;
+    z-index: 5;
+}
+
+.remoteCursor.carret {
+    position: absolute;
+    border-left: 2px solid orange;
+    z-index: 6;
 }

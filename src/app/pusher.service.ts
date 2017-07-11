@@ -126,6 +126,22 @@ export class PusherService {
     public emitEditorChanged(delta) {
         this.commLayer.trigger(this.channelName, 'editor-event', _.extend({
 			timestamp: this.getTimestamp(),
+            uid: this.myID,
+			remote: true
+		}, delta));
+    }
+
+    public emitCursorPositionChanged(delta) {
+        this.commLayer.trigger(this.channelName, 'cursor-event', _.extend({
+			timestamp: this.getTimestamp(),
+            uid: this.myID,
+			remote: true
+		}, delta));
+    }
+    public emitCursorSelectionChanged(delta) {
+        this.commLayer.trigger(this.channelName, 'cursor-event', _.extend({
+			timestamp: this.getTimestamp(),
+            uid: this.myID,
 			remote: true
 		}, delta));
     }
@@ -133,6 +149,7 @@ export class PusherService {
     public writeToTerminal(data) {
         this.commLayer.trigger(this.channelName, 'write-to-terminal', {
 			timestamp: this.getTimestamp(),
+            uid: this.myID,
 			remote: true,
             contents: data
 		});
@@ -145,13 +162,6 @@ export class PusherService {
     public cursorEvent: EventEmitter<any> = new EventEmitter();
     public editorState: EventEmitter<any> = new EventEmitter();
     public editorOpened: EventEmitter<any> = new EventEmitter();
-    // public editorShared: EventEmitter<any> = new EventEmitter();
-    // public editorDestroyed: EventEmitter<any> = new EventEmitter();
-    // public editorTitleChanged: EventEmitter<any> = new EventEmitter();
-    // public editorChanged: EventEmitter<any> = new EventEmitter();
-    // public editorGrammarChanged: EventEmitter<any> = new EventEmitter();
-    // public cursorDestroyed: EventEmitter<any> = new EventEmitter();
-    // public cursorChangedPosition: EventEmitter<any> = new EventEmitter();
     public terminalData: EventEmitter<any> = new EventEmitter();
 
     public userList:ChatUserList = new ChatUserList();
