@@ -18,6 +18,7 @@ export class EditorDisplay {
 	editorStates: {[editorID:number]: any} = {}
 	files: Array<any> = []
 	markers: {[editorID:number]: RemoteCursorMarker} = {}
+	selectedEditor:any=false;
 	private getEditorState(editorID:number):any {
 		return this.editorStates[editorID];
 	}
@@ -132,6 +133,7 @@ export class EditorDisplay {
 		const editorState =  _.extend({
 			session: session
 		}, state, {
+			selected: false,
 			deltas: [],
 			cursors: {},
 			selections: {},
@@ -143,7 +145,6 @@ export class EditorDisplay {
 		_.each(state.deltas, (delta) => {
 			this.handleDelta(delta);
 		});
-		editor.setSession(session);
 
 		const selection = session.getSelection();
 		selection.on('changeCursor', (event) => {
@@ -168,13 +169,22 @@ export class EditorDisplay {
 				type: 'change-selection'
 			});
 		});
+		this.selectFile(editorState);
 	}
 	private getTimestamp():number {
 		return (new Date()).getTime();
 	}
-	private selectFile(session) {
-    const editor = this.editor.getEditor();
+	private selectFile(editorState) {
+		if(this.selectedEditor) {
+			this.selectedEditor.selected = false;
+		}
+		const {session} = editorState;
+		editorState.selected = true;
+
+	    const editor = this.editor.getEditor();
 		editor.setSession(session);
+		
+		this.selectedEditor = editorState;
 	}
 
 	private getDeltaHistory(editorID, type) {

@@ -10,3 +10,8 @@
     border-left: 2px solid orange;
     z-index: 6;
 }
+
+html,body {
+    height: 100%;
+    margin: 0px;
+}

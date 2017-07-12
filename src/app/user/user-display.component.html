@@ -1,3 +1,3 @@
-<span>
-    {{user.id}} {{user.name}} {{user.typingStatus}}
+<span class='user badge badge-default' [ngClass]="{'typing': user.typingStatus=='ACTIVE_TYPING', 'typed': user.typingStatus=='IDLE_TYPED'}">
+    {{user.name}}
 </span>

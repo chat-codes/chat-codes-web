@@ -1,0 +1,6 @@
+.user.typing::after {
+    content: '...'
+}
+.user.typed::before {
+    content: '...'
+}

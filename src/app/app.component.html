@@ -1,23 +1,57 @@
-<h1>{{getChatURL()}}</h1>
-
 <name-entry *ngIf="!hasName" (onEnter)="setName($event)"></name-entry>
 
-<div *ngIf="hasName">
-    <h2>Editor</h2>
-    <code-editor [pusher]='pusher'></code-editor>
-    <h2>Messages</h2>
-    <ul class='messages'>
-        <li *ngFor="let message of messages">
-            {{message.timestamp}} {{message.sender.name}} {{message.message}}
-        </li>
-    </ul>
-
-    <h2>Members</h2>
-    <ul class='members'>
-        <li *ngFor="let user of pusher.userList.activeUsers">
-            <user-display [user]='user'></user-display>
-        </li>
-    </ul>
-    <chat-input (send)='sendTextMessage($event)' (typing)='updateTypingStatus($event)'></chat-input>
-    <terminal [pusher]='pusher'></terminal>
+<div class="container" *ngIf="hasName">
+    <nav class="navbar">
+        <span class="navbar-brand">
+            <img src="assets/images/cc_icon.svg" class="logo" />
+            <input type="text" [value]="getChatURL()" readonly />
+        </span>
+    </nav>
+    <div class="row" id="list_row">
+        <div class="col">
+            <ul class='files nav nav-tabs'>
+                <li class='nav-item' *ngFor="let editorState of codeEditor.getActiveEditors()">
+                    <a [ngClass]="{'active': editorState.selected}" class='nav-link' href='#' (click)="codeEditor.selectFile(editorState)">
+                        {{editorState.title}}
+                        <span class='modifiedFlag' [ngClass]="{'modified':editorState.modified}"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="col">
+            Here now:
+            <ul class='members'>
+                <li class='member' *ngFor="let user of pusher.userList.activeUsers">
+                    <user-display [user]='user'></user-display>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row" id="content_row">
+        <div class="col">
+            <code-editor [pusher]='pusher' #codeEditor></code-editor>
+        </div>
+        <div class="col">
+            <ul class='messageGroups'>
+                <li class='messageGroup' *ngFor="let messageGroup of messageGroups">
+                    <ul class='messages list-group'>
+                        <li class='header list-group-item'>
+                            <span class="sender">{{messageGroup.sender.name}}</span>&nbsp;<span class="time">({{messageGroup.timestamp | amTimeAgo}})</span>:
+                        </li>
+                        <li class='message list-group-item' *ngFor="let message of messageGroup.messages">
+                            {{message.message}}
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row" id="input_row">
+        <div class="col">
+            <!-- <terminal [pusher]='pusher'></terminal> -->
+        </div>
+        <div class="col">
+            <chat-input (send)='sendTextMessage($event)' (typing)='updateTypingStatus($event)'></chat-input>
+        </div>
+    </div>
 </div>

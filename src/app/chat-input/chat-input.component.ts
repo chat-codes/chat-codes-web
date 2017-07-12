@@ -10,7 +10,7 @@ const STATUS = {
 @Component({
   selector: 'chat-input',
   templateUrl: './chat-input.component.html',
-  styleUrls: [],
+  styleUrls: ['./chat-input.component.css'],
 })
 
 export class ChatInput {

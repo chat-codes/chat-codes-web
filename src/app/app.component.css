@@ -1,5 +1,83 @@
-h1 {
-    color: #369;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 250%;
+img.logo {
+    height: 40px;
 }
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#content_row {
+    flex-grow: 2;
+}
+
+code-editor {
+    height: 100%;
+}
+
+ul.messageGroups {
+    height: 100%;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0px;
+}
+ul.messageGroups > li.messageGroup {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+li.messageGroup  .header {
+    background-color: #EEE;
+}
+
+.modifiedFlag.modified {
+    border-radius: 5px;
+    height: 10px;
+    width: 10px;
+    display: inline-block;
+    background-color: #AAA;
+}
+
+ul.members {
+    list-style: none;
+    padding: 0px;
+    display: inline-block;
+}
+li.member {
+    display: inline-block;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+/*
+li.messageGroup > .header {
+    border-bottom: 1px solid #AAA;
+    background-color: #EEE;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 5px;
+}
+
+ul.messageGroups ul.messages {
+    list-style: none;
+    padding: 0px;
+}
+
+ul.messageGroups ul.messages > li {
+    border-top: 1px solid #EEE;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+ul.messageGroups ul.messages > li:first-child {
+    border-top: none;
+}
+*/
+.header .time {
+    color: #888;
+}
+.header .sender {
+    color: #333;
+    font-weight: bold;
+}
+
