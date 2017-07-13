@@ -1,6 +1,11 @@
 <name-entry *ngIf="!hasName" (onEnter)="setName($event)"></name-entry>
 
-<div class="container" *ngIf="hasName">
+<div class="container" *ngIf="hasName && !connected">
+    <div class="row">
+        <div class="col">Connecting...</div>
+    </div>
+</div>
+<div class="container" *ngIf="hasName && connected">
     <nav class="navbar">
         <span class="navbar-brand">
             <img src="assets/images/cc_icon.svg" class="logo" />
@@ -32,6 +37,9 @@
             <code-editor [pusher]='pusher' #codeEditor></code-editor>
         </div>
         <div class="col">
+            <div class="no-messages" *ngIf='messageGroups.length===0'>
+                (no messages)
+            </div>
             <ul class='messageGroups'>
                 <li class='messageGroup' *ngFor="let messageGroup of messageGroups">
                     <ul class='messages list-group'>
@@ -48,7 +56,7 @@
     </div>
     <div class="row" id="input_row">
         <div class="col">
-            <!-- <terminal [pusher]='pusher'></terminal> -->
+            <terminal [pusher]='pusher'></terminal>
         </div>
         <div class="col">
             <chat-input (send)='sendTextMessage($event)' (typing)='updateTypingStatus($event)'></chat-input>

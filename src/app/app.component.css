@@ -12,8 +12,16 @@ img.logo {
     flex-grow: 2;
 }
 
-code-editor {
+code-editor,terminal {
     height: 100%;
+}
+
+.no-messages {
+    text-align: center;
+    vertical-align: middle;
+    font-size: 2em;
+    color: #AAA;
+    font-weight: lighter;
 }
 
 ul.messageGroups {

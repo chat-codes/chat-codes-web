@@ -5,15 +5,20 @@ import * as Terminal from 'xterm';
 @Component({
   selector: 'terminal',
   templateUrl: './terminal.component.html',
-  styleUrls: ['./xterm.css'],
+  styleUrls: ['./terminal.component.css'],
 })
 
 export class TerminalDisplay {
     constructor() { }
     ngOnInit() {
+        Terminal.loadAddon('fit');  // Load the `fit` addon
         const term = new Terminal();
+
         term.open(this.terminalElement.nativeElement);
-        term.write('$');
+
+        term.fit();  // Make the terminal's size and geometry fit the size of #terminal-container
+
+        term.write('$ ');
         term.on('data', (key) => {
           this.pusher.writeToTerminal(key);
         });

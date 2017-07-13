@@ -183,7 +183,7 @@ export class EditorDisplay {
 
 	    const editor = this.editor.getEditor();
 		editor.setSession(session);
-		
+
 		this.selectedEditor = editorState;
 	}
 

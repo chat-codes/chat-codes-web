@@ -7,7 +7,7 @@ import * as _ from 'underscore';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css', '../../node_modules/bootstrap/dist/css/bootstrap.css'],
+  styleUrls: ['./app.component.css', '../../node_modules/bootstrap/dist/css/bootstrap.css', '../../node_modules/xterm/dist/xterm.css'],
   encapsulation: ViewEncapsulation.None,
 })
 
@@ -26,6 +26,9 @@ export class AppComponent {
     this.name = name;
 
     this.pusher = new PusherService(this.name, this.channelName);
+    this.pusher.ready().then(() => {
+      this.connected = true;
+    });
 
     this.pusher.message.subscribe((data) => {
       this.messages.push(data);
@@ -57,6 +60,7 @@ export class AppComponent {
   private messageGroupingTimeThreshold:number = 5 * 60 * 1000; // 5 minutes
   private name:string;
   private hasName:boolean = false;
+  private connected:boolean = false;
   members:any = false;
   messages:Array<any>=[];
   messageGroups:Array<any>=[];

@@ -92,6 +92,9 @@ export class PusherService {
             this.userList.remove(member.id);
         });
     }
+    public ready() {
+        return this.commLayer.channelReady(this.channelName);
+    }
     public sendTextMessage(message:string):void {
         const data = {
             uid: this.myID,
