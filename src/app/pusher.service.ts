@@ -95,6 +95,13 @@ export class PusherService {
     public ready() {
         return this.commLayer.channelReady(this.channelName);
     }
+    public emitSave(data) {
+        this.message.emit(_.extend({
+            sender: this.userList.getMe(),
+            timestamp: this.getTimestamp()
+        }, data));
+    }
+    
     public sendTextMessage(message:string):void {
         const data = {
             uid: this.myID,
@@ -157,6 +164,7 @@ export class PusherService {
             contents: data
 		});
     }
+
 
     public membersChanged: EventEmitter<any> = new EventEmitter();
     public message: EventEmitter<any> = new EventEmitter();

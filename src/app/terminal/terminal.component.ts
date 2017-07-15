@@ -14,7 +14,7 @@ export class TerminalDisplay {
         Terminal.loadAddon('fit');  // Load the `fit` addon
         const term = new Terminal();
 
-        term.open(this.terminalElement.nativeElement);
+        term.open(this.terminalElement.nativeElement, false);
 
         term.fit();  // Make the terminal's size and geometry fit the size of #terminal-container
 

@@ -79,6 +79,23 @@ export class EditorDisplay {
     ngAfterViewInit() {
         const editor = this.editor.getEditor();
 
+		editor.commands.addCommand({
+			name: 'saveContents',
+			bindKey: {
+				win: 'Ctrl-s',
+				mac: 'Command-s'
+			},
+			exec: function(editor) {
+				const session = editor.getSession();
+				const editorID = session.forEditorID;
+
+				this.pusher.emitSave({
+					id: session.forEditorID,
+					type: 'save',
+				});
+			}
+		});
+
 		editor.on('change', (event) => {
 			const curOpp = editor.curOp;
 			if(curOpp && curOpp.command && curOpp.command.name) { // change was made locally
