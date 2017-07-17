@@ -101,7 +101,7 @@ export class PusherService {
             timestamp: this.getTimestamp()
         }, data));
     }
-    
+
     public sendTextMessage(message:string):void {
         const data = {
             uid: this.myID,
@@ -163,6 +163,10 @@ export class PusherService {
 			remote: true,
             contents: data
 		});
+    }
+
+    public ngOnDestroy() {
+        this.commLayer.destroy();
     }
 
 
