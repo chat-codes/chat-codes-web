@@ -9,7 +9,10 @@ img.logo {
 }
 
 #content_row {
-    flex-grow: 2;
+    flex-grow: 1;
+}
+#input_row,#list_row,.navbar {
+    flex-grow: 0;
 }
 
 code-editor,terminal {
@@ -24,9 +27,15 @@ code-editor,terminal {
     font-weight: lighter;
 }
 
-ul.messageGroups {
-    height: 100%;
+.message-display {
     overflow-y: auto;
+}
+
+.typing {
+    color: #AAA;
+}
+
+ul.messageGroups {
     list-style: none;
     padding: 0px;
 }
@@ -55,6 +64,9 @@ li.member {
     display: inline-block;
     margin-left: 5px;
     margin-right: 5px;
+}
+.message {
+    color: #333;
 }
 /*
 li.messageGroup > .header {
@@ -85,7 +97,13 @@ ul.messageGroups ul.messages > li:first-child {
     color: #888;
 }
 .header .sender {
-    color: #333;
-    font-weight: bold;
+    /*color: #333;*/
+    /*font-weight: bold;*/
 }
 
+
+.user-1 { color: red; }
+.user-2 { color: orange; }
+.user-3 { color: yellow; }
+.user-4 { color: green; }
+.user-5 { color: blue; }

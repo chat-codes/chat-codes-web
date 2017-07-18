@@ -1,8 +1,8 @@
-import { Component,ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, ViewChild } from '@angular/core';
 import { PusherService } from './pusher.service';
 import { Location } from '@angular/common';
-import { ChatUser } from './chat-user';
 import * as _ from 'underscore';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-root',
@@ -55,8 +55,28 @@ export class AppComponent {
       };
       this.messageGroups.push(groupToAddTo);
     }
+    this.at_bottom = this.atBottom();
     groupToAddTo.messages.push(data);
   }
+  at_bottom:boolean=false;
+  ngAfterViewChecked() {
+    if(this.at_bottom) {
+      this.scrollToBottom();
+    }
+    if(this.messageDisplay) {
+      this.at_bottom = this.atBottom();
+    }
+  }
+
+  scrollToBottom(): void {
+      try {
+          this.messageDisplay.nativeElement.scrollTop = this.messageDisplay.nativeElement.scrollHeight;
+      } catch(err) { }
+  }
+	atBottom():boolean {
+    const element = this.messageDisplay.nativeElement;
+    return Math.abs(element.scrollTop + element.clientHeight - element.scrollHeight) < 100;
+	}
   private messageGroupingTimeThreshold:number = 5 * 60 * 1000; // 5 minutes
   private name:string;
   private hasName:boolean = false;
@@ -65,4 +85,5 @@ export class AppComponent {
   messages:Array<any>=[];
   messageGroups:Array<any>=[];
   channelName = 'channel';
+  @ViewChild('messageDisplay') messageDisplay;
 }

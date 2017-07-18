@@ -1,5 +1,7 @@
 import * as _ from 'underscore';
 
+const NUM_COLORS = 4;
+
 export class ChatUserList {
     public activeUsers:Array<ChatUser>=[];
     public allUsers:Array<ChatUser>=[];
@@ -60,10 +62,13 @@ export class ChatUserList {
     }
 }
 
+let current_user_color:number = 2;
 export class ChatUser {
     constructor(public isMe:boolean, public id:string, public name:string, public active:boolean) {
-
+        this.colorIndex = isMe ? 1 : current_user_color;
+        current_user_color = 2+((current_user_color+1)%NUM_COLORS);
     }
+    public colorIndex:number;
     public typingStatus:string='IDLE';
     public setTypingStatus(status:string) {
         this.typingStatus = status;

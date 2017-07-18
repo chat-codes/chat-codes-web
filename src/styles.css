@@ -5,13 +5,28 @@
     z-index: 5;
 }
 
+.remoteCursor.user-1 { background-color: red; }
+.remoteCursor.user-2 { background-color: orange; }
+.remoteCursor.user-3 { background-color: yellow; }
+.remoteCursor.user-4 { background-color: green; }
+.remoteCursor.user-5 { background-color: blue; }
+
+.remoteCursor.carret.user-1 { border-left-color: red; }
+.remoteCursor.carret.user-2 { border-left-color: orange; }
+.remoteCursor.carret.user-3 { border-left-color: yellow; }
+.remoteCursor.carret.user-4 { border-left-color: green; }
+.remoteCursor.carret.user-5 { border-left-color: blue; }
+
 .remoteCursor.carret {
     position: absolute;
-    border-left: 2px solid orange;
+    border-left-width: 2px;
+    border-left-style: solid;
+    /*border-left: 2px solid orange;*/
     z-index: 6;
 }
 
 html,body {
     height: 100%;
     margin: 0px;
+    overflow: hidden;
 }

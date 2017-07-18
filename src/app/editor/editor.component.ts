@@ -1,6 +1,7 @@
 import {Component, ViewChild, EventEmitter, Output, Input} from '@angular/core';
 import {PusherService} from '../pusher.service';
 import {RemoteCursorMarker} from './remote_cursor_marker';
+import { ChatUserList, ChatUser } from '../chat-user';
 
 import * as _ from 'underscore';
 
@@ -17,7 +18,6 @@ export class EditorDisplay {
 	atomIDToEditSessionMap = {}
 	editorStates: {[editorID:number]: any} = {}
 	files: Array<any> = []
-	markers: {[editorID:number]: RemoteCursorMarker} = {}
 	selectedEditor:any=false;
 	private getEditorState(editorID:number):any {
 		return this.editorStates[editorID];
@@ -113,20 +113,23 @@ export class EditorDisplay {
 			this.handleDelta(event);
 		});
 		this.pusher.cursorEvent.subscribe((event) => {
-			const {id, type} = event;
+			const {id, type, uid} = event;
+			let userList:ChatUserList = this.pusher.userList;
+			let user = userList.getUser(uid);
+
 			if(type === 'change-position') {
 				const {newBufferPosition, oldBufferPosition, newRange, id, editorID} = event;
 				const editorState = this.getEditorState(editorID);
 				if(editorState) {
 					const {remoteCursors, session} = editorState;
-					remoteCursors.updateCursor(id, {row: newBufferPosition[0], column: newBufferPosition[1]});
+					remoteCursors.updateCursor(id, user, {row: newBufferPosition[0], column: newBufferPosition[1]});
 				}
 			} else if(type === 'change-selection') {
 				const {newRange, id, editorID} = event;
 				const editorState = this.getEditorState(editorID);
 				if(editorState) {
 					const {remoteCursors, session} = editorState;
-					remoteCursors.updateSelection(id, this.getRangeFromSerializedRange(newRange));
+					remoteCursors.updateSelection(id, user, this.getRangeFromSerializedRange(newRange));
 				}
 			} else if(type === 'destroy') {
 				console.log(event);

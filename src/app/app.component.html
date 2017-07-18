@@ -36,12 +36,12 @@
         <div class="col">
             <code-editor [pusher]='pusher' #codeEditor></code-editor>
         </div>
-        <div class="col">
+        <div #messageDisplay class="col message-display">
             <div class="no-messages" *ngIf='messageGroups.length===0'>
                 (no messages)
             </div>
             <ul class='messageGroups'>
-                <li class='messageGroup' *ngFor="let messageGroup of messageGroups">
+                <li class='messageGroup' *ngFor="let messageGroup of messageGroups" [ngClass]='"user-"+messageGroup.sender.colorIndex'>
                     <ul class='messages list-group'>
                         <li class='header list-group-item'>
                             <span class="sender">{{messageGroup.sender.name}}</span>&nbsp;<span class="time">({{messageGroup.timestamp | amTimeAgo}})</span>:
@@ -52,6 +52,13 @@
                     </ul>
                 </li>
             </ul>
+            <div class='typing'>
+                <div *ngFor='let user of pusher.userList.activeUsers'>
+                    <div *ngIf='user.typingStatus=="ACTIVE_TYPING" && !user.isMe'>
+                        {{user.name}} is typing...
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row" id="input_row">
