@@ -29,6 +29,7 @@
     "ng2-ace-editor": "^0.2.3",
     "pusher-js": "^4.1.0",
     "rxjs": "^5.1.0",
+    "showdown": "^1.7.1",
     "underscore": "^1.8.3",
     "xterm": "^2.8.0",
     "zone.js": "^0.8.4"

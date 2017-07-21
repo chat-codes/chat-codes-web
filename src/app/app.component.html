@@ -47,7 +47,7 @@
                             <span class="sender">{{messageGroup.sender.name}}</span>&nbsp;<span class="time">({{messageGroup.timestamp | amTimeAgo}})</span>:
                         </li>
                         <li class='message list-group-item' *ngFor="let message of messageGroup.messages">
-                            {{message.message}}
+                            {{converter.makeHtml(message.message)}}
                         </li>
                     </ul>
                 </li>

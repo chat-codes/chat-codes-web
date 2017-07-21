@@ -3,6 +3,7 @@ import { PusherService } from './pusher.service';
 import { Location } from '@angular/common';
 import * as _ from 'underscore';
 import * as $ from 'jquery';
+import * as showdown from 'showdown';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +21,7 @@ export class AppComponent {
     this.setName('remote');
   };
   private pusher:PusherService;
-
+  private converter:showdown.Converter = new showdown.converter();
   setName(name:string):void {
     this.hasName = true;
     this.name = name;
