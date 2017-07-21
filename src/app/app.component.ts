@@ -21,7 +21,7 @@ export class AppComponent {
     this.setName('remote');
   };
   private pusher:PusherService;
-  private converter:showdown.Converter = new showdown.converter();
+  // private converter:showdown.Converter = new showdown.converter();
   setName(name:string):void {
     this.hasName = true;
     this.name = name;
@@ -71,7 +71,7 @@ export class AppComponent {
 
   scrollToBottom(): void {
       try {
-          this.messageDisplay.nativeElement.scrollTop = this.messageDisplay.nativeElement.scrollHeight;
+          // this.messageDisplay.nativeElement.scrollTop = this.messageDisplay.nativeElement.scrollHeight;
       } catch(err) { }
   }
 	atBottom():boolean {
@@ -85,6 +85,6 @@ export class AppComponent {
   members:any = false;
   messages:Array<any>=[];
   messageGroups:Array<any>=[];
-  channelName = 'channel';
+  channelName = 'c2';
   @ViewChild('messageDisplay') messageDisplay;
 }

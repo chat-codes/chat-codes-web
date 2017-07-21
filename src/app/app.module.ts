@@ -9,6 +9,7 @@ import { EditorDisplay } from './editor/editor.component';
 import { UserDisplay } from './user/user-display.component';
 import { AceEditorModule } from 'ng2-ace-editor';
 import { TerminalDisplay } from './terminal/terminal.component';
+import { TimelineDisplay } from './timeline/timeline.component';
 
 import { PusherService } from './pusher.service';
 import { MomentModule } from 'angular2-moment';
@@ -20,7 +21,8 @@ import { MomentModule } from 'angular2-moment';
     NameEntry,
     UserDisplay,
     EditorDisplay,
-    TerminalDisplay
+    TerminalDisplay,
+    TimelineDisplay
   ],
   imports: [
     BrowserModule,

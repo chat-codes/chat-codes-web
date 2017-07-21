@@ -13,7 +13,7 @@
         </span>
     </nav>
     <div class="row" id="list_row">
-        <div class="col">
+        <div class="col-7">
             <ul class='files nav nav-tabs'>
                 <li class='nav-item' *ngFor="let editorState of codeEditor.getActiveEditors()">
                     <a [ngClass]="{'active': editorState.selected}" class='nav-link' href='#' (click)="codeEditor.selectFile(editorState)">
@@ -23,7 +23,8 @@
                 </li>
             </ul>
         </div>
-        <div class="col">
+        <div class="col-1"></div>
+        <div class="col-4">
             Here now:
             <ul class='members'>
                 <li class='member' *ngFor="let user of pusher.userList.activeUsers">
@@ -33,10 +34,13 @@
         </div>
     </div>
     <div class="row" id="content_row">
-        <div class="col">
+        <div class="col-7">
             <code-editor [pusher]='pusher' #codeEditor></code-editor>
         </div>
-        <div #messageDisplay class="col message-display">
+        <div class="col-1">
+            <timeline-display></timeline-display>
+        </div>
+        <div #messageDisplay class="col-4 message-display">
             <div class="no-messages" *ngIf='messageGroups.length===0'>
                 (no messages)
             </div>
@@ -47,7 +51,7 @@
                             <span class="sender">{{messageGroup.sender.name}}</span>&nbsp;<span class="time">({{messageGroup.timestamp | amTimeAgo}})</span>:
                         </li>
                         <li class='message list-group-item' *ngFor="let message of messageGroup.messages">
-                            {{converter.makeHtml(message.message)}}
+                            {{message.message}}
                         </li>
                     </ul>
                 </li>
@@ -62,10 +66,11 @@
         </div>
     </div>
     <div class="row" id="input_row">
-        <div class="col">
+        <div class="col-7">
             <terminal [pusher]='pusher'></terminal>
         </div>
-        <div class="col">
+        <div class="col-1"></div>
+        <div class="col-4">
             <chat-input (send)='sendTextMessage($event)' (typing)='updateTypingStatus($event)'></chat-input>
         </div>
     </div>
