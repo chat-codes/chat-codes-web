@@ -16,6 +16,8 @@ export class TimelineDisplay {
       // this.userElement.classList.add('user-'+this.user.colorIndex);
       this.createSvg();
     }
+    private topTimestamp:number;
+    private bottomTimestamp:number;
     private createSvg():void {
       this.svgCanvas = new Snap(this.svgElement.nativeElement);
       this.chatLine = this.svgCanvas.line(0,0,0,0);

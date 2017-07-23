@@ -2,6 +2,7 @@ import {Component, ViewChild, EventEmitter, Output, Input} from '@angular/core';
 import {PusherService} from '../pusher.service';
 import {RemoteCursorMarker} from './remote_cursor_marker';
 import { ChatUserList, ChatUser } from '../chat-user';
+import { EditorStateTracker, EditorStateHistory } from './editor-state-tracker';
 
 import * as _ from 'underscore';
 
@@ -16,12 +17,9 @@ export class EditorDisplay {
     constructor() { }
     ngOnInit() { }
 	atomIDToEditSessionMap = {}
-	editorStates: {[editorID:number]: any} = {}
+	private editorStateTracker:EditorStateTracker;
 	files: Array<any> = []
 	selectedEditor:any=false;
-	private getEditorState(editorID:number):any {
-		return this.editorStates[editorID];
-	}
 	updatePositionsFromAnchor(delta) {
 		const oldRangeStart = delta.oldRangeStartAnchor.getPosition();
 		const oldRangeEnd = delta.oldRangeEndAnchor.getPosition();
@@ -119,14 +117,14 @@ export class EditorDisplay {
 
 			if(type === 'change-position') {
 				const {newBufferPosition, oldBufferPosition, newRange, id, editorID} = event;
-				const editorState = this.getEditorState(editorID);
+				const editorState = this.editorStateTracker.getEditorState(editorID);
 				if(editorState) {
 					const {remoteCursors, session} = editorState;
 					remoteCursors.updateCursor(id, user, {row: newBufferPosition[0], column: newBufferPosition[1]});
 				}
 			} else if(type === 'change-selection') {
 				const {newRange, id, editorID} = event;
-				const editorState = this.getEditorState(editorID);
+				const editorState = this.editorStateTracker.getEditorState(editorID);
 				if(editorState) {
 					const {remoteCursors, session} = editorState;
 					remoteCursors.updateSelection(id, user, this.getRangeFromSerializedRange(newRange));
@@ -301,29 +299,6 @@ export class EditorDisplay {
 			editorState.isOpen = false;
 		}
 	}
-	private getAceGrammarName(grammarName) {
-		if(grammarName === 'TypeScript') {
-			return 'ace/mode/typescript';
-		} else if (grammarName === 'Null Grammar') {
-			return '';
-		} else if(grammarName === 'JavaScript') {
-			return 'ace/mode/javascript';
-		} else if(grammarName === 'HTML') {
-			return 'ace/mode/html';
-		} else if(grammarName === 'CSS') {
-			return 'ace/mode/css';
-		} else if(grammarName === 'JSON') {
-			return 'ace/mode/json';
-		} else if(grammarName === 'PHP') {
-			return 'ace/mode/php';
-		} else if(grammarName === 'Python') {
-			return 'ace/mode/python';
-		} else if(grammarName === 'Markdown') {
-			return 'ace/mode/markdown';
-		} else {
-			return '';
-		}
-	}
 	private undoDelta(delta) {
 		const {type, id} = delta;
 		const editorState = this.getEditorState(id);
@@ -368,6 +343,4 @@ export class EditorDisplay {
 	@Output() public editorChanged:EventEmitter<any> = new EventEmitter();
 	@Output() public cursorPositionChanged:EventEmitter<any> = new EventEmitter();
 	@Output() public cursorSelectionChanged:EventEmitter<any> = new EventEmitter();
-	keys(object: {}) { return _.keys(object); };
-	values(object: {}) { return _.values(object); };
 }
