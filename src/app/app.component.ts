@@ -1,5 +1,5 @@
 import { Component, ViewEncapsulation, ViewChild } from '@angular/core';
-import { PusherService } from './pusher.service';
+import { WebCommunicationService } from './web-communication.service';
 import { Location } from '@angular/common';
 import * as _ from 'underscore';
 import * as $ from 'jquery';
@@ -20,45 +20,26 @@ export class AppComponent {
     }
     this.setName('remote');
   };
-  private pusher:PusherService;
+  private commLayer:WebCommunicationService;
   // private converter:showdown.Converter = new showdown.converter();
   setName(name:string):void {
     this.hasName = true;
     this.name = name;
 
-    this.pusher = new PusherService(this.name, this.channelName);
-    this.pusher.ready().then(() => {
+    this.commLayer = new WebCommunicationService(this.name, this.channelName);
+    this.commLayer.ready().then(() => {
       this.connected = true;
-    });
-
-    this.pusher.message.subscribe((data) => {
-      this.messages.push(data);
-      this.addToMessageGroups(data);
     });
   };
   getChatURL():string {
     return 'chat.codes/'+this.channelName;
   };
   sendTextMessage(message:string):void {
-    this.pusher.sendTextMessage(message);
+    this.commLayer.sendTextMessage(message);
   };
   updateTypingStatus(status:string):void {
-    this.pusher.sendTypingStatus(status);
+    this.commLayer.sendTypingStatus(status);
   };
-  private addToMessageGroups(data) {
-    let lastMessageGroup = _.last(this.messageGroups);
-    let groupToAddTo = lastMessageGroup;
-    if(!lastMessageGroup || (lastMessageGroup.timestamp < data.timestamp - this.messageGroupingTimeThreshold) || (lastMessageGroup.sender.id !== data.sender.id )) {
-      groupToAddTo = {
-        sender: data.sender,
-        timestamp: data.timestamp,
-        messages: []
-      };
-      this.messageGroups.push(groupToAddTo);
-    }
-    this.at_bottom = this.atBottom();
-    groupToAddTo.messages.push(data);
-  }
   at_bottom:boolean=false;
   ngAfterViewChecked() {
     if(this.at_bottom) {
@@ -78,13 +59,10 @@ export class AppComponent {
     const element = this.messageDisplay.nativeElement;
     return Math.abs(element.scrollTop + element.clientHeight - element.scrollHeight) < 100;
 	}
-  private messageGroupingTimeThreshold:number = 5 * 60 * 1000; // 5 minutes
   private name:string;
   private hasName:boolean = false;
   private connected:boolean = false;
   members:any = false;
-  messages:Array<any>=[];
-  messageGroups:Array<any>=[];
   channelName = 'c2';
   @ViewChild('messageDisplay') messageDisplay;
 }

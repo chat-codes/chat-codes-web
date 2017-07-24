@@ -11,7 +11,6 @@ import { AceEditorModule } from 'ng2-ace-editor';
 import { TerminalDisplay } from './terminal/terminal.component';
 import { TimelineDisplay } from './timeline/timeline.component';
 
-import { PusherService } from './pusher.service';
 import { MomentModule } from 'angular2-moment';
 
 @NgModule({
@@ -30,7 +29,7 @@ import { MomentModule } from 'angular2-moment';
     MomentModule,
     AceEditorModule
   ],
-  providers: [ PusherService ],
+  providers: [ ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

@@ -1,7 +1,7 @@
 import {Component, ViewChild, EventEmitter, Output, Input} from '@angular/core';
-import {PusherService} from '../pusher.service';
-import { ChatUserList, ChatUser } from '../chat-user';
-import { EditorStateTracker, EditorState } from './editor-state-tracker';
+import { WebCommunicationService } from '../web-communication.service';
+import { ChatUserList, ChatUser } from 'chat-codes-services/src/chat-user';
+import { AceEditorStateTracker } from './ace-state-tracker';
 
 import * as _ from 'underscore';
 
@@ -16,7 +16,7 @@ export class EditorDisplay {
     constructor() { }
     ngOnInit() { }
 	atomIDToEditSessionMap = {}
-	private editorStateTracker:EditorStateTracker;
+	private editorStateTracker:AceEditorStateTracker = new AceEditorStateTracker();
 	files: Array<any> = []
 	selectedEditor:any=false;
 	updatePositionsFromAnchor(delta) {
@@ -89,7 +89,7 @@ export class EditorDisplay {
 			if(curOpp && curOpp.command && curOpp.command.name) { // change was made locally
 				const session = editor.getSession();
 				const change = this.getChange(event);
-				this.pusher.emitEditorChanged({
+				this.commLayer.emitEditorChanged({
 					id: session.forEditorID,
 					type: 'edit',
 					changes: [change]
@@ -97,12 +97,12 @@ export class EditorDisplay {
 			}
 		});
 
-		this.pusher.editorEvent.subscribe((event) => {
+		this.commLayer.editorEvent.subscribe((event) => {
 			this.editorStateTracker.handleEvent(event);
 		});
-		this.pusher.cursorEvent.subscribe((event) => {
+		this.commLayer.cursorEvent.subscribe((event) => {
 			const {id, type, uid} = event;
-			let userList:ChatUserList = this.pusher.userList;
+			let userList:ChatUserList = this.commLayer.userList;
 			let user = userList.getUser(uid);
 
 			if(type === 'change-position') {
@@ -110,7 +110,8 @@ export class EditorDisplay {
 				const editorState = this.editorStateTracker.getEditorState(editorID);
 				if(editorState) {
 					const remoteCursors = editorState.getRemoteCursors();
-					const session = editorState.getSession();
+					const aceWrapper = editorState.getEditorWrapper();
+					const session = aceWrapper.getSession();
 					// const {remoteCursors, session} = editorState;
 					remoteCursors.updateCursor(id, user, {row: newBufferPosition[0], column: newBufferPosition[1]});
 				}
@@ -119,7 +120,8 @@ export class EditorDisplay {
 				const editorState = this.editorStateTracker.getEditorState(editorID);
 				if(editorState) {
 					const remoteCursors = editorState.getRemoteCursors();
-					const session = editorState.getSession();
+					const aceWrapper = editorState.getEditorWrapper();
+					const session = aceWrapper.getSession();
 					// const {remoteCursors, session} = editorState;
 					remoteCursors.updateSelection(id, user, this.getRangeFromSerializedRange(newRange));
 				}
@@ -127,10 +129,10 @@ export class EditorDisplay {
 				console.log(event);
 			}
 		});
-		this.pusher.editorOpened.subscribe((event) => {
+		this.commLayer.editorOpened.subscribe((event) => {
 			this.onEditorOpened(event);
 		});
-		this.pusher.editorState.subscribe((event) => {
+		this.commLayer.editorState.subscribe((event) => {
 			_.each(event.state, (state) => {
 				this.onEditorOpened(state);
 			});
@@ -138,13 +140,14 @@ export class EditorDisplay {
     }
 	private onEditorOpened(state) {
 		const editorState = this.editorStateTracker.onEditorOpened(state);
-		const session = editorState.getSession();
+		const aceWrapper = editorState.getEditorWrapper();
+		const session = aceWrapper.getSession();
 		const id = editorState.getEditorID();
 		const selection = session.getSelection();
 		selection.on('changeCursor', (event) => {
 			const cursor = selection.getCursor();
 
-			this.pusher.emitCursorPositionChanged({
+			this.commLayer.emitCursorPositionChanged({
 				editorID: id,
 				type: 'change-position',
 				newBufferPosition: [cursor.row, cursor.column]
@@ -157,7 +160,7 @@ export class EditorDisplay {
 					end: [range.end.row, range.end.column]
 				};
 			});
-			this.pusher.emitCursorSelectionChanged({
+			this.commLayer.emitCursorSelectionChanged({
 				editorID: id,
 				newRange: serializedRanges[0],
 				type: 'change-selection'
@@ -172,7 +175,8 @@ export class EditorDisplay {
 		if(this.selectedEditor) {
 			this.selectedEditor.selected = false;
 		}
-		const {session} = editorState;
+		const aceWrapper = editorState.getEditorWrapper();
+		const session = aceWrapper.getSession();
 		editorState.selected = true;
 
 	    const editor = this.editor.getEditor();
@@ -191,7 +195,7 @@ export class EditorDisplay {
 		return this.editorStateTracker.getActiveEditors();
 	}
     @ViewChild('editor') editor;
-    @Input() pusher: PusherService;
+    @Input() commLayer: WebCommunicationService;
 	@Output() public editorChanged:EventEmitter<any> = new EventEmitter();
 	@Output() public cursorPositionChanged:EventEmitter<any> = new EventEmitter();
 	@Output() public cursorSelectionChanged:EventEmitter<any> = new EventEmitter();

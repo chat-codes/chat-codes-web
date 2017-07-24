@@ -27,7 +27,7 @@
         <div class="col-4">
             Here now:
             <ul class='members'>
-                <li class='member' *ngFor="let user of pusher.userList.activeUsers">
+                <li class='member' *ngFor="let user of commLayer.userList.activeUsers">
                     <user-display [user]='user'></user-display>
                 </li>
             </ul>
@@ -35,29 +35,29 @@
     </div>
     <div class="row" id="content_row">
         <div class="col-7">
-            <code-editor [pusher]='pusher' #codeEditor></code-editor>
+            <code-editor [commLayer]='commLayer' #codeEditor></code-editor>
         </div>
         <div class="col-1">
             <timeline-display></timeline-display>
         </div>
         <div #messageDisplay class="col-4 message-display">
-            <div class="no-messages" *ngIf='messageGroups.length===0'>
+            <div class="no-messages" *ngIf='commLayer.messageGroups.isEmpty()'>
                 (no messages)
             </div>
             <ul class='messageGroups'>
-                <li class='messageGroup' *ngFor="let messageGroup of messageGroups" [ngClass]='"user-"+messageGroup.sender.colorIndex'>
+                <li class='messageGroup' *ngFor="let messageGroup of commLayer.messageGroups.getMessageGroups()" [ngClass]='"user-"+messageGroup.getSender().colorIndex'>
                     <ul class='messages list-group'>
                         <li class='header list-group-item'>
-                            <span class="sender">{{messageGroup.sender.name}}</span>&nbsp;<span class="time">({{messageGroup.timestamp | amTimeAgo}})</span>:
+                            <span class="sender">{{messageGroup.getSender().name}}</span>&nbsp;<span class="time">({{messageGroup.getTimestamp(0) | amTimeAgo}})</span>:
                         </li>
-                        <li class='message list-group-item' *ngFor="let message of messageGroup.messages">
+                        <li class='message list-group-item' *ngFor="let message of messageGroup.getMessages()">
                             {{message.message}}
                         </li>
                     </ul>
                 </li>
             </ul>
             <div class='typing'>
-                <div *ngFor='let user of pusher.userList.activeUsers'>
+                <div *ngFor='let user of commLayer.userList.activeUsers'>
                     <div *ngIf='user.typingStatus=="ACTIVE_TYPING" && !user.isMe'>
                         {{user.name}} is typing...
                     </div>
@@ -67,7 +67,7 @@
     </div>
     <div class="row" id="input_row">
         <div class="col-7">
-            <terminal [pusher]='pusher'></terminal>
+            <terminal [commLayer]='commLayer'></terminal>
         </div>
         <div class="col-1"></div>
         <div class="col-4">

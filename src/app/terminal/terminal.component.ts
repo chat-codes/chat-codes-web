@@ -1,5 +1,5 @@
 import {ViewChild, Component, EventEmitter, Output, Input} from '@angular/core';
-import {PusherService} from '../pusher.service';
+import {WebCommunicationService} from '../web-communication.service';
 import * as Terminal from 'xterm';
 
 @Component({
@@ -20,12 +20,12 @@ export class TerminalDisplay {
 
         term.write('$ ');
         term.on('data', (key) => {
-          this.pusher.writeToTerminal(key);
+          this.commLayer.writeToTerminal(key);
         });
-        this.pusher.terminalData.subscribe((event) => {
+        this.commLayer.terminalData.subscribe((event) => {
             term.write(event.data);
         });
     }
-    @Input() pusher: PusherService;
+    @Input() commLayer: WebCommunicationService;
     @ViewChild('terminal') terminalElement;
 }

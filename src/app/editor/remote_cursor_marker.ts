@@ -1,6 +1,4 @@
-import * as _ from 'underscore';
 declare let ace: any;
-import { ChatUserList, ChatUser } from '../chat-user';
 
 export class RemoteCursorMarker {
     constructor(session) {
@@ -10,7 +8,7 @@ export class RemoteCursorMarker {
 	private session;
 	private cursors:{[cursorID:number]:any} = {};
 	public updateCursor(id, user, pos) {
-		if(_.has(this.cursors, id)) {
+		if(this.cursors[id]) {
 			this.cursors[id].pos = pos;
 		} else {
 			this.cursors[id] = {pos: pos, user: user};
@@ -19,20 +17,19 @@ export class RemoteCursorMarker {
 	};
 	public updateSelection(id, user, range) {
 		const markerID = this.session.addMarker(range, this.clazz + (user? ' user-'+user.colorIndex : ''), false);
-		if(_.has(this.cursors, id)) {
+		if(this.cursors[id]) {
 			if(this.cursors[id].markerID) {
 				this.session.removeMarker(this.cursors[id].markerID);
 			}
 		} else {
 			this.cursors[id] = { user: user };
 		}
-		_.extend(this.cursors[id], {
-			markerID: markerID
-		});
+		this.cursors[id].markerID = markerID;
 	};
     public update(html, markerLayer, session, config)  {
 	    var start = config.firstRow, end = config.lastRow;
-		_.each(this.cursors, (cursorInfo) => {
+		Object.keys(this.cursors).forEach((cursorID) => {
+			const cursorInfo = this.cursors[cursorID];
 			const {pos} = cursorInfo;
 	        if (pos.row < start || pos.row > end) {
 	            return;

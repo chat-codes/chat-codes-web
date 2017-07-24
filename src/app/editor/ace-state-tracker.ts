@@ -1,0 +1,101 @@
+import * as est from 'chat-codes-services/src/editor-state-tracker';
+const {EditorStateTracker,EditorState} = est;
+
+declare let ace: any;
+
+class AceEditorWrapper {
+	constructor(state) {
+		this.session.forEditorID = state.id;
+	}
+	private session = new (ace.acequire('ace/edit_session').EditSession)('');
+	public setGrammar(grammarName:string) {
+    	this.session.setMode(this.getAceGrammarName(grammarName));
+	}
+	public replaceText(serializedRange, value:string) {
+		const range = this.getRangeFromSerializedRange(serializedRange);
+		this.session.replace(range, value);
+	}
+	public setText(value:string) {
+		this.session.setValue(value);
+	}
+	public getAnchor(range) {
+		const doc = this.session.getDocument();
+		return {
+			start: this.getAnchorFromLocation(doc, range.start),
+			end: this.getAnchorFromLocation(doc, range.end)
+		};
+	}
+	public getCurrentAnchorPosition(anchor) {
+		return {
+			start: [anchor.start.row, anchor.start.column],
+			end: [anchor.end.row, anchor.end.column]
+		};
+	}
+	private getRangeFromSerializedRange(serializedRange) {
+		const Range = ace.acequire('ace/range').Range
+		return new Range(serializedRange.start[0], serializedRange.start[1], serializedRange.end[0], serializedRange.end[1]);
+	}
+	private getAnchorFromLocation(doc, loc) {
+		const Anchor = ace.acequire('ace/anchor').Anchor;
+		return new Anchor(doc, loc[0],loc[1]);
+	}
+	private getAceGrammarName(grammarName) {
+		if(grammarName === 'TypeScript') {
+			return 'ace/mode/typescript';
+		} else if (grammarName === 'Null Grammar') {
+			return '';
+		} else if(grammarName === 'JavaScript') {
+			return 'ace/mode/javascript';
+		} else if(grammarName === 'HTML') {
+			return 'ace/mode/html';
+		} else if(grammarName === 'CSS') {
+			return 'ace/mode/css';
+		} else if(grammarName === 'JSON') {
+			return 'ace/mode/json';
+		} else if(grammarName === 'PHP') {
+			return 'ace/mode/php';
+		} else if(grammarName === 'Python') {
+			return 'ace/mode/python';
+		} else if(grammarName === 'Markdown') {
+			return 'ace/mode/markdown';
+		} else {
+			return '';
+		}
+	}
+	public getSession() { return this.session; }
+
+    public update(html, markerLayer, session, config)  {
+	    var start = config.firstRow, end = config.lastRow;
+		Object.keys(this.cursors).forEach((cursorID) => {
+			const cursorInfo = this.cursors[cursorID];
+			const {pos} = cursorInfo;
+	        if (pos.row < start || pos.row > end) {
+	            return;
+	        } else {
+	            // compute cursor position on screen
+	            // this code is based on ace/layer/marker.js
+	            var screenPos = session.documentToScreenPosition(pos)
+
+	            var height = config.lineHeight;
+	            var width = config.characterWidth;
+	            var top = markerLayer.$getTop(screenPos.row, config);
+	            var left = markerLayer.$padding + screenPos.column * width;
+	            // can add any html here
+	            html.push(
+	                "<div class='carret "+this.clazz+(cursorInfo.user ? ' user-'+cursorInfo.user.colorIndex:'')+"' style='",
+	                "height:", height, "px;",
+	                "top:", top, "px;",
+	                "left:", left, "px;", width, "px'></div>"
+	            );
+	        }
+		});
+    }
+}
+
+export class AceEditorStateTracker extends EditorStateTracker {
+	constructor() {
+		super((state) => {
+			return new AceEditorWrapper(state);
+		});
+	}
+}
