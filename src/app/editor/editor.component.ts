@@ -1,8 +1,7 @@
 import {Component, ViewChild, EventEmitter, Output, Input} from '@angular/core';
 import {PusherService} from '../pusher.service';
-import {RemoteCursorMarker} from './remote_cursor_marker';
 import { ChatUserList, ChatUser } from '../chat-user';
-import { EditorStateTracker, EditorStateHistory } from './editor-state-tracker';
+import { EditorStateTracker, EditorState } from './editor-state-tracker';
 
 import * as _ from 'underscore';
 
@@ -31,15 +30,6 @@ export class EditorDisplay {
 		delta.newRange.start = [newRangeStart.row, newRangeStart.column];
 		delta.newRange.end = [newRangeEnd.row, newRangeEnd.column];
 		return delta;
-	}
-	getAnchoredChange(delta, doc) {
-		const anchoredChange = _.extend({
-			oldRangeStartAnchor: this.getAnchorFromLocation(doc, delta.oldRange.start),
-			oldRangeEndAnchor: this.getAnchorFromLocation(doc, delta.oldRange.end),
-			newRangeStartAnchor: this.getAnchorFromLocation(doc, delta.newRange.start),
-			newRangeEndAnchor: this.getAnchorFromLocation(doc, delta.newRange.end)
-		}, delta);
-		return anchoredChange;
 	}
 	getChange(changeEvent) {
 		const {action, lines, start, end} = changeEvent;
@@ -108,7 +98,7 @@ export class EditorDisplay {
 		});
 
 		this.pusher.editorEvent.subscribe((event) => {
-			this.handleDelta(event);
+			this.editorStateTracker.handleEvent(event);
 		});
 		this.pusher.cursorEvent.subscribe((event) => {
 			const {id, type, uid} = event;
@@ -119,14 +109,18 @@ export class EditorDisplay {
 				const {newBufferPosition, oldBufferPosition, newRange, id, editorID} = event;
 				const editorState = this.editorStateTracker.getEditorState(editorID);
 				if(editorState) {
-					const {remoteCursors, session} = editorState;
+					const remoteCursors = editorState.getRemoteCursors();
+					const session = editorState.getSession();
+					// const {remoteCursors, session} = editorState;
 					remoteCursors.updateCursor(id, user, {row: newBufferPosition[0], column: newBufferPosition[1]});
 				}
 			} else if(type === 'change-selection') {
 				const {newRange, id, editorID} = event;
 				const editorState = this.editorStateTracker.getEditorState(editorID);
 				if(editorState) {
-					const {remoteCursors, session} = editorState;
+					const remoteCursors = editorState.getRemoteCursors();
+					const session = editorState.getSession();
+					// const {remoteCursors, session} = editorState;
 					remoteCursors.updateSelection(id, user, this.getRangeFromSerializedRange(newRange));
 				}
 			} else if(type === 'destroy') {
@@ -143,27 +137,9 @@ export class EditorDisplay {
 		});
     }
 	private onEditorOpened(state) {
-		const {id} = state;
-		const EditSession = ace.acequire('ace/edit_session').EditSession;
-	    const editor = this.editor.getEditor();
-		const session = new EditSession('');
-		session.forEditorID = id;
-		const editorState =  _.extend({
-			session: session
-		}, state, {
-			selected: false,
-			deltas: [],
-			cursors: {},
-			selections: {},
-			remoteCursors: new RemoteCursorMarker(session)
-		});
-		this.editorStates[id] = editorState;
-		session.addDynamicMarker(editorState.remoteCursors);
-
-		_.each(state.deltas, (delta) => {
-			this.handleDelta(delta);
-		});
-
+		const editorState = this.editorStateTracker.onEditorOpened(state);
+		const session = editorState.getSession();
+		const id = editorState.getEditorID();
 		const selection = session.getSelection();
 		selection.on('changeCursor', (event) => {
 			const cursor = selection.getCursor();
@@ -205,138 +181,14 @@ export class EditorDisplay {
 		this.selectedEditor = editorState;
 	}
 
-	private getDeltaHistory(editorID, type) {
-		let editorState = this.getEditorState(editorID);
-		return _.filter(editorState.deltas, (d) => {
-			if(type) { if(_.isArray(type)) { return _.find(type, d.type);
-				} else {
-					return d.type === type;
-				}
-			} else {
-				return true;
-			}
-		});
-	}
 
-	private handleDelta(event, mustPerformChange=true) {
-		const {type, id} = event;
-		if(type === 'edit') {
-			const editorState = this.getEditorState(id);
-			const {session} = editorState;
-			const doc = session.getDocument();
-			const anchoredChanges = _.map(event.changes, (change) => { return this.getAnchoredChange(change, doc) });
-			event.changes = anchoredChanges;
-		}
-		const editorState = this.getEditorState(event.id);
-		const deltas = editorState.deltas;
-		let i = deltas.length-1;
-		let d;
-		for(; i>=0; i--) {
-			d = deltas[i];
-			if(d.timestamp > event.timestamp) {
-				this.undoDelta(d);
-			} else {
-				break;
-			}
-		}
-		const insertAt = i+1;
-
-		deltas.splice.apply(deltas, [insertAt,0].concat(event));
-
-		if(mustPerformChange) {
-			i = insertAt;
-		} else {
-			i = insertAt + 1;
-		}
-
-		for(; i<deltas.length; i++) {
-			d = deltas[i];
-			this.doDelta(d);
-		}
-	}
 	private getRangeFromSerializedRange(serializedRange) {
 		const Range = ace.acequire('ace/range').Range
 		return new Range(serializedRange.start[0], serializedRange.start[1], serializedRange.end[0], serializedRange.end[1]);
 	}
-	private getAnchorFromLocation(doc, loc) {
-		const Anchor = ace.acequire('ace/anchor').Anchor;
-		return new Anchor(doc, loc[0],loc[1]);
-	}
 
-	private doDelta(delta) {
-		const {type, id} = delta;
-		const editorState = this.getEditorState(id);
-		const {session} = editorState;
-
-		if(type === 'modified') {
-			editorState.modified = delta.modified;
-		} else if(type === 'edit') {
-			const doc = session.getDocument();
-			_.each(delta.changes, (change) =>{
-				this.updatePositionsFromAnchor(change);
-				const Range = ace.acequire('ace/range').Range
-				const oldRange = this.getRangeFromSerializedRange(change.oldRange);
-				const {newText} = change;
-
-				session.replace(oldRange, newText);
-			});
-		} else if(type === 'title') {
-			editorState.title = delta.newTitle;
-		} else if(type === 'grammar') {
-			session.setMode(this.getAceGrammarName(delta.newGrammarName));
-		} else if(type === 'open') {
-			editorState.title = delta.title;
-			session.setValue(delta.contents);
-			editorState.isOpen = true;
-			const {grammarName} = delta;
-			session.setMode(this.getAceGrammarName(delta.grammarName));
-		} else if(type === 'destroy') {
-			const EditSession = ace.acequire('ace/edit_session').EditSession;
-      const editor = this.editor.getEditor();
-			if(editor.getSession() === session) {
-				editor.setSession(new EditSession(''));
-			}
-			editorState.isOpen = false;
-		}
-	}
-	private undoDelta(delta) {
-		const {type, id} = delta;
-		const editorState = this.getEditorState(id);
-		const {session} = editorState;
-
-		if(type === 'modified') {
-			editorState.modified = delta.oldModified;
-		} else if(type === 'edit') {
-			const doc = session.getDocument();
-			_.each(delta.changes, (change) =>{
-				const Range = ace.acequire('ace/range').Range
-				const newRange = this.getRangeFromSerializedRange(change.newRange);
-				const {oldText} = delta;
-			    const editor = this.editor.getEditor();
-				const session = editor.getSession();
-
-				session.replace(newRange, oldText);
-			});
-		} else if(type === 'title') {
-			editorState.title = delta.oldTitle;
-		} else if(type === 'grammar') {
-			session.setMode(this.getAceGrammarName(delta.oldGrammarName));
-		} else if(type === 'open') {
-			const EditSession = ace.acequire('ace/edit_session').EditSession;
-      const editor = this.editor.getEditor();
-			if(editor.getSession() === session) {
-				editor.setSession(new EditSession(''));
-			}
-			editorState.isOpen = false;
-		} else if(type === 'destroy') {
-			editorState.isOpen = true;
-		}
-	}
 	private getActiveEditors() {
-		return _.chain(this.editorStates)
-				.values()
-				.filter((s) => { return s.isOpen; })
-				.value();
+		return this.editorStateTracker.getActiveEditors();
 	}
     @ViewChild('editor') editor;
     @Input() pusher: PusherService;

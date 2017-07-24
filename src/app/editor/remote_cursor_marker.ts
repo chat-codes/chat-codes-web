@@ -9,7 +9,7 @@ export class RemoteCursorMarker {
 	private clazz:string='remoteCursor';
 	private session;
 	private cursors:{[cursorID:number]:any} = {};
-	public updateCursor(id, user, pos, range) {
+	public updateCursor(id, user, pos) {
 		if(_.has(this.cursors, id)) {
 			this.cursors[id].pos = pos;
 		} else {

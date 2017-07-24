@@ -1,4 +1,5 @@
 import {Injectable,EventEmitter} from '@angular/core';
+import {RemoteCursorMarker} from './remote_cursor_marker';
 import * as _ from 'underscore';
 import { URLSearchParams } from '@angular/http';
 
@@ -14,10 +15,10 @@ interface UndoableDelta extends Delta {
 class TitleDelta implements UndoableDelta {
     constructor(private newTitle:string, private oldTitle:string) { }
     public doAction(editorState:EditorState) {
-        editorState.title = this.newTitle;
+        editorState.setTitle(this.newTitle);
     }
 	public undoAction(editorState:EditorState) {
-        editorState.title = this.oldTitle;
+        editorState.setTitle(this.oldTitle);
     }
 }
 class GrammarDelta implements UndoableDelta {
@@ -55,7 +56,11 @@ class GrammarDelta implements UndoableDelta {
 	}
 }
 
-class EditDelta implements UndoableDelta {
+class EditChange implements UndoableDelta {
+	private oldRangeStartAnchor;
+	private oldRangeEndAnchor;
+	private newRangeStartAnchor;
+	private newRangeEndAnchor;
     constructor(private oldRange, private newRange, private oldText, private newText) {}
     public doAction(editorState:EditorState) {
 		const session = editorState.getSession();
@@ -74,6 +79,35 @@ class EditDelta implements UndoableDelta {
 	private getRangeFromSerializedRange(serializedRange) {
 		const Range = ace.acequire('ace/range').Range
 		return new Range(serializedRange.start[0], serializedRange.start[1], serializedRange.end[0], serializedRange.end[1]);
+	}
+	private getAnchorFromLocation(doc, loc) {
+		const Anchor = ace.acequire('ace/anchor').Anchor;
+		return new Anchor(doc, loc[0],loc[1]);
+	}
+	public addAnchor(doc) {
+		this.oldRangeStartAnchor = this.getAnchorFromLocation(doc, this.oldRange.start);
+		this.oldRangeEndAnchor = this.getAnchorFromLocation(doc, this.oldRange.end);
+		this.newRangeStartAnchor = this.getAnchorFromLocation(doc, this.newRange.start);
+		this.newRangeEndAnchor = this.getAnchorFromLocation(doc, this.newRange.end);
+	}
+}
+
+class EditDelta implements UndoableDelta {
+    constructor(private changes:Array<EditChange>) {}
+    public doAction(editorState:EditorState) {
+		_.each(this.changes, (c) => {
+			c.doAction(editorState);
+		});
+    }
+    public undoAction(editorState:EditorState) {
+		_.each(this.changes.reverse(), (c) => {
+			c.undoAction(editorState);
+		});
+    }
+	public addAnchors(doc) {
+		_.each(this.changes, (c) => {
+			c.addAnchor(doc);
+		});
 	}
 }
 
@@ -125,14 +159,63 @@ class DestroyDelta implements UndoableDelta {
 
 const EditSession = ace.acequire('ace/edit_session').EditSession;
 export class EditorState {
-	deltas: Array<UndoableDelta> = [];
-    cursors:{[cursorID:number]:any} = {};
-    selections:{[selectionID:number]:any} = {};
+	private isOpen:boolean;
+	private deltas: Array<UndoableDelta> = [];
+    private cursors:{[cursorID:number]:any} = {};
+    private selections:{[selectionID:number]:any} = {};
 	private session = new EditSession('');
-    constructor() { }
+	private editorID:number;
+	private remoteCursors:RemoteCursorMarker;
+	//  = new RemoteCursorMarker(session)
+    constructor(private title:string) {
+		this.remoteCursors = new RemoteCursorMarker(this.session)
+	}
     public ngOnDestroy() {
     }
 	public getSession() { return this.session; };
+	public setTitle(newTitle:string) { this.title = newTitle; };
+	public setIsOpen(val:boolean) { this.isOpen = val; };
+	public getIsOpen(val:boolean) { return this.isOpen; };
+	public getRemoteCursors():RemoteCursorMarker { return this.remoteCursors; };
+	public getEditorID():number { return this.editorID; };
+	private handleDelta(delta, mustPerformChange=true) {
+		if(delta instanceof EditDelta) {
+			const session = this.getSession();
+			const doc = session.getDocument();
+			delta.addAnchors(doc);
+		}
+		const deltas = this.deltas;
+		let i = deltas.length-1;
+		let d;
+		for(; i>=0; i--) {
+			d = deltas[i];
+			// if(d.timestamp > event.timestamp) {
+			// 	this.undoDelta(d);
+			// } else {
+			// 	break;
+			// }
+		}
+		const insertAt = i+1;
+
+		deltas.splice.apply(deltas, [insertAt,0].concat(delta));
+
+		if(mustPerformChange) {
+			i = insertAt;
+		} else {
+			i = insertAt + 1;
+		}
+
+		for(; i<deltas.length; i++) {
+			d = deltas[i];
+			this.doDelta(d);
+		}
+	}
+	private doDelta(d) {
+
+	}
+	private undoDelta(d) {
+
+	}
 }
 		// const editorState =  _.extend({
 		// 	session: session
@@ -150,11 +233,48 @@ export class EditorStateTracker {
     }
     public ngOnDestroy() {
     }
+	public handleEvent(event) {
+		console.log(event);
+		// this.handleDelta(event);
+	}
+	public handleDelta(delta) {
+
+	};
 	public getEditorState(editorID:number):EditorState {
         if(_.has(this.editorStates, editorID)) {
     		return this.editorStates[editorID];
         } else {
             return null;
         }
+	}
+	public getActiveEditors():Array<EditorState> {
+		return _.chain(this.editorStates)
+				.values()
+				.filter((s) => { return s.getIsOpen(); })
+				.value();
+	}
+	public onEditorOpened(state) {
+		console.log(state);
+		const editorState =  new EditorState(state.title);
+		this.editorStates[state.id] = editorState;
+		return editorState;
+
+		// session.addDynamicMarker(editorState.remoteCursors);
+
+		// _.each(state.deltas, (delta) => {
+		// 	this.handleDelta(delta);
+		// });
+	}
+	private getDeltaHistory(editorID, type) {
+		// let editorState = this.getEditorState(editorID);
+		// return _.filter(editorState.deltas, (d) => {
+		// 	if(type) { if(_.isArray(type)) { return _.find(type, d.type);
+		// 		} else {
+		// 			return d.type === type;
+		// 		}
+		// 	} else {
+		// 		return true;
+		// 	}
+		// });
 	}
 }
