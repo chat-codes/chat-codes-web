@@ -1,12 +1,16 @@
-import * as est from 'chat-codes-services/src/editor-state-tracker';
-const {EditorStateTracker,EditorState} = est;
+import {EditorStateTracker,EditorState} from 'chat-codes-services/src/editor-state-tracker';
 
 declare let ace: any;
 
 class AceEditorWrapper {
 	constructor(state) {
 		this.session.forEditorID = state.id;
+		this.session.addDynamicMarker(this);
 	}
+	public setEditorState(editorState) {
+		this.editorState = editorState;
+	}
+	private editorState;
 	private session = new (ace.acequire('ace/edit_session').EditSession)('');
 	public setGrammar(grammarName:string) {
     	this.session.setMode(this.getAceGrammarName(grammarName));
@@ -62,12 +66,34 @@ class AceEditorWrapper {
 			return '';
 		}
 	}
+	private cursorMarkers:{[cursorID:number]:number} = {};
 	public getSession() { return this.session; }
+	public addRemoteCursor(cursor, remoteCursorMarker) {
+		if(cursor.pos) { // position
+			this.session._signal("changeBackMarker");
+		}
+	}
+	public updateRemoteCursorPosition(cursor, remoteCursorMarker) {
+		this.session._signal("changeBackMarker");
+	}
+	private clazz:string = 'remoteCursor';
+	public updateRemoteCursorSelection(cursor, remoteCursorMarker) {
+		const {id,range,user} = cursor;
+		const oldMarkerID = this.cursorMarkers[id];
+		if(oldMarkerID) {
+			this.session.removeMarker(oldMarkerID);
+			delete this.cursorMarkers[id];
+		}
+		const markerID = this.session.addMarker(range, this.clazz + (user ? ' user-'+user.colorIndex : ''), false);
+		this.cursorMarkers[id] = markerID;
+	}
 
     public update(html, markerLayer, session, config)  {
 	    var start = config.firstRow, end = config.lastRow;
-		Object.keys(this.cursors).forEach((cursorID) => {
-			const cursorInfo = this.cursors[cursorID];
+		const remoteCursors = this.editorState.getRemoteCursors();
+		const cursors = remoteCursors.getCursors();
+		Object.keys(cursors).forEach((cursorID) => {
+			const cursorInfo = cursors[cursorID];
 			const {pos} = cursorInfo;
 	        if (pos.row < start || pos.row > end) {
 	            return;
