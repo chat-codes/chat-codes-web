@@ -100,43 +100,37 @@ export class EditorDisplay {
 			const editorState = editorStateTracker.getEditorState(event.id);
 			this.selectFile(editorState);
 		});
-		// this.commLayer.editorState.subscribe((event) => {
-		// 	_.each(event.state, (state) => {
-		// 		this.onEditorOpened(state);
-		// 	});
-		// });
     }
-	// private onEditorOpened(state) {
-	// 	console.log(state);
-	// 	let editorState = null;
-	// 	const aceWrapper = editorState.getEditorWrapper();
-	// 	const session = aceWrapper.getSession();
-	// 	const id = editorState.getEditorID();
-	// 	const selection = session.getSelection();
-	// 	selection.on('changeCursor', (event) => {
-	// 		const cursor = selection.getCursor();
-	//
-	// 		this.commLayer.emitCursorPositionChanged({
-	// 			editorID: id,
-	// 			type: 'change-position',
-	// 			newBufferPosition: [cursor.row, cursor.column]
-	// 		});
-	// 	});
-	// 	selection.on('changeSelection', (event) => {
-	// 		const serializedRanges = _.map(selection.getAllRanges(), (range) => {
-	// 			return {
-	// 				start: [range.start.row, range.start.column],
-	// 				end: [range.end.row, range.end.column]
-	// 			};
-	// 		});
-	// 		this.commLayer.emitCursorSelectionChanged({
-	// 			editorID: id,
-	// 			newRange: serializedRanges[0],
-	// 			type: 'change-selection'
-	// 		});
-	// 	});
-	// 	this.selectFile(editorState);
-	// }
+	private onEditorOpened(state) {
+		let editorState = null;
+		const aceWrapper = editorState.getEditorWrapper();
+		const session = aceWrapper.getSession();
+		const id = editorState.getEditorID();
+		const selection = session.getSelection();
+		selection.on('changeCursor', (event) => {
+			const cursor = selection.getCursor();
+
+			this.commLayer.emitCursorPositionChanged({
+				editorID: id,
+				type: 'change-position',
+				newBufferPosition: [cursor.row, cursor.column]
+			});
+		});
+		selection.on('changeSelection', (event) => {
+			const serializedRanges = _.map(selection.getAllRanges(), (range) => {
+				return {
+					start: [range.start.row, range.start.column],
+					end: [range.end.row, range.end.column]
+				};
+			});
+			this.commLayer.emitCursorSelectionChanged({
+				editorID: id,
+				newRange: serializedRanges[0],
+				type: 'change-selection'
+			});
+		});
+		this.selectFile(editorState);
+	}
 	private getTimestamp():number {
 		return (new Date()).getTime();
 	}

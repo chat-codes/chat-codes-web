@@ -110,7 +110,8 @@ export class AceEditorWrapper {
 			this.session.removeMarker(oldMarkerID);
 			delete this.cursorMarkers[id];
 		}
-		const markerID = this.session.addMarker(range, this.clazz + (user ? ' user-'+user.colorIndex : ''), false);
+		const aceRange = this.getRangeFromSerializedRange(range);
+		const markerID = this.session.addMarker(aceRange, this.clazz + (user ? ' user-'+user.colorIndex : ''), false);
 		this.cursorMarkers[id] = markerID;
 	}
 	public saveFile() {};
@@ -122,7 +123,7 @@ export class AceEditorWrapper {
 		Object.keys(cursors).forEach((cursorID) => {
 			const cursorInfo = cursors[cursorID];
 			const {pos} = cursorInfo;
-	        if (pos.row < start || pos.row > end) {
+	        if (!pos || pos.row < start || pos.row > end) {
 	            return;
 	        } else {
 	            // compute cursor position on screen

@@ -38,7 +38,7 @@ export class WebCommunicationService {
     public emitCursorPositionChanged(data) { this.channelService.emitCursorPositionChanged(data); };
     public emitCursorSelectionChanged(data) { this.channelService.emitCursorSelectionChanged(data); };
     public writeToTerminal(data) { this.channelService.writeToTerminal(data); };
-    public getActiveEditors() { this.channelService.getActiveEditors(); };
+    public getActiveEditors() { return this.channelService.getActiveEditors(); };
 
 
     public membersChanged: EventEmitter<any> = new EventEmitter();
