@@ -1,9 +1,10 @@
 import {EditorStateTracker,EditorState} from 'chat-codes-services/src/editor-state-tracker';
+import {ChannelCommunicationService} from 'chat-codes-services/src/communication-service';
 
 declare let ace: any;
 
-class AceEditorWrapper {
-	constructor(state) {
+export class AceEditorWrapper {
+	constructor(state, private channelCommunicationService:ChannelCommunicationService) {
 		this.session.forEditorID = state.id;
 		this.session.addDynamicMarker(this);
 	}
@@ -87,6 +88,7 @@ class AceEditorWrapper {
 		const markerID = this.session.addMarker(range, this.clazz + (user ? ' user-'+user.colorIndex : ''), false);
 		this.cursorMarkers[id] = markerID;
 	}
+	public saveFile() {};
 
     public update(html, markerLayer, session, config)  {
 	    var start = config.firstRow, end = config.lastRow;
@@ -116,12 +118,4 @@ class AceEditorWrapper {
 	        }
 		});
     }
-}
-
-export class AceEditorStateTracker extends EditorStateTracker {
-	constructor() {
-		super((state) => {
-			return new AceEditorWrapper(state);
-		});
-	}
 }

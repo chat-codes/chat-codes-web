@@ -15,7 +15,7 @@
     <div class="row" id="list_row">
         <div class="col-7">
             <ul class='files nav nav-tabs'>
-                <li class='nav-item' *ngFor="let editorState of codeEditor.getActiveEditors()">
+                <li class='nav-item' *ngFor="let editorState of getActiveEditors()">
                     <a [ngClass]="{'active': editorState.selected}" class='nav-link' href='#' (click)="codeEditor.selectFile(editorState)">
                         {{editorState.title}}
                         <span class='modifiedFlag' [ngClass]="{'modified':editorState.modified}"></span>

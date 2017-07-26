@@ -27,7 +27,7 @@ export class AppComponent {
     this.name = name;
 
     this.commLayer = new WebCommunicationService(this.name, this.channelName);
-    this.commLayer.ready().then(() => {
+    this.commLayer.ready().then((channel) => {
       this.connected = true;
     });
   };
@@ -40,6 +40,9 @@ export class AppComponent {
   updateTypingStatus(status:string):void {
     this.commLayer.sendTypingStatus(status);
   };
+  getActiveEditors() {
+    return this.commLayer.getActiveEditors();
+  }
   at_bottom:boolean=false;
   ngAfterViewChecked() {
     if(this.at_bottom) {

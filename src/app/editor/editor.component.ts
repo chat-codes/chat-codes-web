@@ -1,7 +1,6 @@
 import {Component, ViewChild, EventEmitter, Output, Input} from '@angular/core';
 import { WebCommunicationService } from '../web-communication.service';
 import { ChatUserList, ChatUser } from 'chat-codes-services/src/chat-user';
-import { AceEditorStateTracker } from './ace-state-tracker';
 
 import * as _ from 'underscore';
 
@@ -16,7 +15,6 @@ export class EditorDisplay {
     constructor() { }
     ngOnInit() { }
 	atomIDToEditSessionMap = {}
-	private editorStateTracker:AceEditorStateTracker = new AceEditorStateTracker();
 	files: Array<any> = []
 	selectedEditor:any=false;
 	updatePositionsFromAnchor(delta) {
@@ -97,38 +95,6 @@ export class EditorDisplay {
 			}
 		});
 
-		this.commLayer.editorEvent.subscribe((event) => {
-			this.editorStateTracker.handleEvent(event);
-		});
-		this.commLayer.cursorEvent.subscribe((event) => {
-			const {id, type, uid} = event;
-			let userList:ChatUserList = this.commLayer.userList;
-			let user = userList.getUser(uid);
-
-			if(type === 'change-position') {
-				const {newBufferPosition, oldBufferPosition, newRange, id, editorID} = event;
-				const editorState = this.editorStateTracker.getEditorState(editorID);
-				if(editorState) {
-					const remoteCursors = editorState.getRemoteCursors();
-					const aceWrapper = editorState.getEditorWrapper();
-					const session = aceWrapper.getSession();
-					// const {remoteCursors, session} = editorState;
-					remoteCursors.updateCursor(id, user, {row: newBufferPosition[0], column: newBufferPosition[1]});
-				}
-			} else if(type === 'change-selection') {
-				const {newRange, id, editorID} = event;
-				const editorState = this.editorStateTracker.getEditorState(editorID);
-				if(editorState) {
-					const remoteCursors = editorState.getRemoteCursors();
-					const aceWrapper = editorState.getEditorWrapper();
-					const session = aceWrapper.getSession();
-					// const {remoteCursors, session} = editorState;
-					remoteCursors.updateSelection(id, user, this.getRangeFromSerializedRange(newRange));
-				}
-			} else if(type === 'destroy') {
-				console.log(event);
-			}
-		});
 		this.commLayer.editorOpened.subscribe((event) => {
 			this.onEditorOpened(event);
 		});
@@ -139,7 +105,8 @@ export class EditorDisplay {
 		});
     }
 	private onEditorOpened(state) {
-		const editorState = this.editorStateTracker.onEditorOpened(state);
+		console.log(state);
+		let editorState = null;
 		const aceWrapper = editorState.getEditorWrapper();
 		const session = aceWrapper.getSession();
 		const id = editorState.getEditorID();
@@ -191,9 +158,6 @@ export class EditorDisplay {
 		return new Range(serializedRange.start[0], serializedRange.start[1], serializedRange.end[0], serializedRange.end[1]);
 	}
 
-	private getActiveEditors() {
-		return this.editorStateTracker.getActiveEditors();
-	}
     @ViewChild('editor') editor;
     @Input() commLayer: WebCommunicationService;
 	@Output() public editorChanged:EventEmitter<any> = new EventEmitter();
