@@ -2,11 +2,36 @@ import {EditorStateTracker,EditorState} from 'chat-codes-services/src/editor-sta
 import {ChannelCommunicationService} from 'chat-codes-services/src/communication-service';
 
 declare let ace: any;
+import * as _ from 'underscore';
 
 export class AceEditorWrapper {
 	constructor(state, private channelCommunicationService:ChannelCommunicationService) {
 		this.session.forEditorID = state.id;
 		this.session.addDynamicMarker(this);
+
+		const selection = this.session.getSelection();
+		selection.on('changeCursor', (event) => {
+			const cursor = selection.getCursor();
+
+			channelCommunicationService.emitCursorPositionChanged({
+				editorID: state.id,
+				type: 'change-position',
+				newBufferPosition: [cursor.row, cursor.column]
+			});
+		});
+		selection.on('changeSelection', (event) => {
+			const serializedRanges = _.map(selection.getAllRanges(), (range) => {
+				return {
+					start: [range.start.row, range.start.column],
+					end: [range.end.row, range.end.column]
+				};
+			});
+			channelCommunicationService.emitCursorSelectionChanged({
+				editorID: state.id,
+				newRange: serializedRanges[0],
+				type: 'change-selection'
+			});
+		});
 	}
 	public setEditorState(editorState) {
 		this.editorState = editorState;

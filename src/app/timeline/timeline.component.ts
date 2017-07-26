@@ -14,7 +14,7 @@ declare var Snap: any;
 export class TimelineDisplay {
     ngOnInit() {
       // this.userElement.classList.add('user-'+this.user.colorIndex);
-      this.createSvg();
+    //   this.createSvg();
     }
     private topTimestamp:number;
     private bottomTimestamp:number;

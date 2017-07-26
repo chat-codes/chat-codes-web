@@ -27,7 +27,7 @@ export class WebCommunicationService {
         this.messageGroups = this.channelService.messageGroups;
     }
     private commService:CommunicationService;
-    private channelService:ChannelCommunicationService;
+    public channelService:ChannelCommunicationService;
     public ngOnDestroy() {
         this.commService.destroy();
     }
