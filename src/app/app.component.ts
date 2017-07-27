@@ -66,6 +66,6 @@ export class AppComponent {
   private hasName:boolean = false;
   private connected:boolean = false;
   members:any = false;
-  channelName = 'c2';
+  channelName = 'example_channel';
   @ViewChild('messageDisplay') messageDisplay;
 }
