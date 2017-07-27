@@ -102,6 +102,14 @@ export class AceEditorWrapper {
 	public updateRemoteCursorPosition(cursor, remoteCursorMarker) {
 		this.session._signal("changeBackMarker");
 	}
+	public removeRemoteCursor(cursor, remoteCursorMarker) {
+		const {id,range,user} = cursor;
+		const oldMarkerID = this.cursorMarkers[id];
+		if(oldMarkerID) {
+			this.session.removeMarker(oldMarkerID);
+			delete this.cursorMarkers[id];
+		}
+	}
 	private clazz:string = 'remoteCursor';
 	public updateRemoteCursorSelection(cursor, remoteCursorMarker) {
 		const {id,range,user} = cursor;
