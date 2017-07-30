@@ -94,10 +94,10 @@ export class AceEditorWrapper {
 	}
 	private cursorMarkers:{[cursorID:number]:number} = {};
 	public getSession() { return this.session; }
-	public addRemoteCursor(cursor, remoteCursorMarker) {
-		if(cursor.pos) { // position
-			this.session._signal("changeBackMarker");
-		}
+	public addRemoteCursor(cursor, remoteCursorMarker) {}
+	public addRemoteCursorSelection(cursor, remoteCursorMarker) { }
+	public addRemoteCursorPosition(cursor, remoteCursorMarker) {
+		this.session._signal("changeBackMarker");
 	}
 	public updateRemoteCursorPosition(cursor, remoteCursorMarker) {
 		this.session._signal("changeBackMarker");

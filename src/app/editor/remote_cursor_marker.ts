@@ -7,6 +7,8 @@ export class RemoteCursorMarker {
 	private clazz:string='remoteCursor';
 	private session;
 	private cursors:{[cursorID:number]:any} = {};
+    // Cursor positions will be drawn on screen using the update() method, so just
+    // add it to my list of cursors and invalidate the back marker layer
 	public updateCursor(id, user, pos) {
 		if(this.cursors[id]) {
 			this.cursors[id].pos = pos;
@@ -15,6 +17,7 @@ export class RemoteCursorMarker {
 		}
 		this.session._signal("changeBackMarker");
 	};
+    // Selections are represented by markers
 	public updateSelection(id, user, range) {
 		const markerID = this.session.addMarker(range, this.clazz + (user? ' user-'+user.colorIndex : ''), false);
 		if(this.cursors[id]) {

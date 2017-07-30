@@ -15,14 +15,15 @@ import * as showdown from 'showdown';
 export class AppComponent {
   constructor() {
     const channelName = Location.stripTrailingSlash(location.pathname.substring(1));
-    if(channelName) {
+    if (channelName) {
       this.channelName = channelName;
     }
-    this.setName('remote');
+    // this.setName('remote');
   };
-  private commLayer:WebCommunicationService;
+  private commLayer: WebCommunicationService;
+  private at_bottom: boolean = false;
   // private converter:showdown.Converter = new showdown.converter();
-  setName(name:string):void {
+  setName(name: string): void {
     this.hasName = true;
     this.name = name;
 
@@ -31,41 +32,40 @@ export class AppComponent {
       this.connected = true;
     });
   };
-  getChatURL():string {
-    return 'chat.codes/'+this.channelName;
+  getChatURL(): string {
+    return 'chat.codes/' + this.channelName;
   };
-  sendTextMessage(message:string):void {
+  sendTextMessage(message: string): void {
     this.commLayer.sendTextMessage(message);
   };
-  updateTypingStatus(status:string):void {
+  updateTypingStatus(status: string): void {
     this.commLayer.sendTypingStatus(status);
   };
   getActiveEditors() {
     return this.commLayer.getActiveEditors();
   }
-  at_bottom:boolean=false;
   ngAfterViewChecked() {
-    if(this.at_bottom) {
+    if (this.at_bottom) {
       this.scrollToBottom();
     }
-    if(this.messageDisplay) {
+    if (this.messageDisplay) {
       this.at_bottom = this.atBottom();
     }
   }
 
   scrollToBottom(): void {
-      try {
-          // this.messageDisplay.nativeElement.scrollTop = this.messageDisplay.nativeElement.scrollHeight;
-      } catch(err) { }
+    try {
+      // this.messageDisplay.nativeElement.scrollTop = this.messageDisplay.nativeElement.scrollHeight;
+    } catch (err) { }
   }
-	atBottom():boolean {
+  atBottom(): boolean {
     const element = this.messageDisplay.nativeElement;
     return Math.abs(element.scrollTop + element.clientHeight - element.scrollHeight) < 100;
-	}
-  private name:string;
-  private hasName:boolean = false;
-  private connected:boolean = false;
-  members:any = false;
+  }
+  private name: string;
+  private hasName: boolean = false;
+  private connected: boolean = false;
+  members: any = false;
   channelName = 'example_channel';
   @ViewChild('messageDisplay') messageDisplay;
 }

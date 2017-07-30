@@ -6,13 +6,17 @@ import { PusherCommunicationLayer } from 'chat-codes-services/src/pusher-communi
 import { MessageGroups, MessageGroup } from 'chat-codes-services/src/chat-messages';
 import { CREDENTIALS } from './pusher-credentials';
 import { EditorStateTracker } from 'chat-codes-services/src/editor-state-tracker';
-import { AceEditorWrapper } from './editor/ace-state-tracker';
+import { AceEditorWrapper } from './editor/ace-editor-wrapper';
 
 
 @Injectable()
 export class WebCommunicationService {
-    constructor(private userName:string, private channelName:string) {
-        this.commService = new CommunicationService(false, userName, CREDENTIALS.key, CREDENTIALS.cluster, AceEditorWrapper);
+    constructor(username:string, private channelName:string) {
+        this.commService = new CommunicationService(false, {
+            username: username,
+            key: CREDENTIALS.key,
+            cluster: CREDENTIALS.cluster
+        }, AceEditorWrapper);
         this.channelService = this.commService.createChannelWithName(channelName);
         (this.channelService as any).on('members-changed', (e) => { this.membersChanged.emit(e); });
         (this.channelService as any).on('message', (e) => { this.message.emit(e); });
