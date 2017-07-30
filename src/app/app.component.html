@@ -16,7 +16,7 @@
         <div class="col-7">
             <ul class='files nav nav-tabs'>
                 <li class='nav-item' *ngFor="let editorState of getActiveEditors()">
-                    <a [ngClass]="{'active': editorState.selected}" class='nav-link' href='#' (click)="codeEditor.selectFile(editorState)">
+                    <a [ngClass]="{'active': editorState.selected}" class='nav-link' href='javascript:void(0);' (click)="codeEditor.selectFile(editorState)">
                         {{editorState.getTitle()}}
                         <span class='modifiedFlag' [ngClass]="{'modified':editorState.getIsModified()}"></span>
                     </a>
