@@ -18,11 +18,10 @@ export class AppComponent {
     if (channelName) {
       this.channelName = channelName;
     }
-    // this.setName('remote');
+    this.setName('remote');
   };
   private commLayer: WebCommunicationService;
   private at_bottom: boolean = false;
-  // private converter:showdown.Converter = new showdown.converter();
   setName(name: string): void {
     this.hasName = true;
     this.name = name;
