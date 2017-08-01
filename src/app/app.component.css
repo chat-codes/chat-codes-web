@@ -68,6 +68,10 @@ li.member {
 .message {
     color: #333;
 }
+.message p {
+    margin: 0px;
+    line-height: normal;
+}
 /*
 li.messageGroup > .header {
     border-bottom: 1px solid #AAA;
