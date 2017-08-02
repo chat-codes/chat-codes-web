@@ -43,6 +43,7 @@ export class WebCommunicationService {
     public emitCursorSelectionChanged(data) { this.channelService.emitCursorSelectionChanged(data); };
     public writeToTerminal(data) { this.channelService.writeToTerminal(data); };
     public getActiveEditors() { return this.channelService.getActiveEditors(); };
+    public getEditorStateTracker() { return this.channelService.editorStateTracker; };
 
 
     public membersChanged: EventEmitter<any> = new EventEmitter();

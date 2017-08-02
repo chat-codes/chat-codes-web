@@ -123,6 +123,21 @@ export class AceEditorWrapper {
 		this.cursorMarkers[id] = markerID;
 	}
 	public saveFile() {};
+	public addHighlight(range) {
+		const aceRange = this.getRangeFromSerializedRange(range);
+		const markerID = this.session.addMarker(aceRange, this.clazz + ' user-1', false);
+		return markerID;
+	}
+	public removeHighlight(id) {
+		this.session.removeMarker(id);
+	}
+	public focus(range) {
+		const aceRange = this.getRangeFromSerializedRange(range);
+		const markerID = this.session.addMarker(aceRange, this.clazz + ' user-1', false);
+		setTimeout(() => {
+			this.session.removeMarker(markerID);
+		}, 2000);
+	}
 
     public update(html, markerLayer, session, config)  {
 	    var start = config.firstRow, end = config.lastRow;

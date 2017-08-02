@@ -10,6 +10,8 @@ import { UserDisplay } from './user/user-display.component';
 import { AceEditorModule } from 'ng2-ace-editor';
 import { TerminalDisplay } from './terminal/terminal.component';
 import { TimelineDisplay } from './timeline/timeline.component';
+import { ChatMessagesDisplay } from './chat-messages/chat-messages.component';
+import { ChatMessageDisplay } from './chat-messages/single-message.component';
 
 import { MomentModule } from 'angular2-moment';
 
@@ -21,7 +23,9 @@ import { MomentModule } from 'angular2-moment';
     UserDisplay,
     EditorDisplay,
     TerminalDisplay,
-    TimelineDisplay
+    TimelineDisplay,
+    ChatMessagesDisplay,
+    ChatMessageDisplay
   ],
   imports: [
     BrowserModule,

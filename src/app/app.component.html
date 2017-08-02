@@ -45,17 +45,7 @@
                 (no messages)
             </div>
 
-            <ul class='messageGroups'>
-                <li class='messageGroup' *ngFor="let messageGroup of commLayer.messageGroups.getMessageGroups()" [ngClass]='"user-"+messageGroup.getSender().colorIndex'>
-                    <ul class='messages list-group'>
-                        <li class='header list-group-item'>
-                            <span class="sender">{{messageGroup.getSender().name}}</span>&nbsp;<span class="time">({{messageGroup.getTimestamp(0) | amTimeAgo}})</span>:
-                        </li>
-                        <li class='message list-group-item' *ngFor="let message of messageGroup.getMessages()" [innerHTML]=message.html>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+            <chat-messages [commLayer]='commLayer'></chat-messages>
 
             <div class='typing'>
                 <div *ngFor='let user of commLayer.userList.activeUsers'>
