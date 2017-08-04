@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, ViewChild } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ViewChild, OnInit } from '@angular/core';
 import { WebCommunicationService } from './web-communication.service';
 import { Location } from '@angular/common';
 import * as _ from 'underscore';
@@ -12,7 +12,55 @@ import * as showdown from 'showdown';
   encapsulation: ViewEncapsulation.None,
 })
 
-export class AppComponent {
+export class AppComponent implements OnInit{
+  ngOnInit() { }
+
+  message: String;
+
+  chatinputMessageChanged(message):void{
+    this.message = message;
+  }
+  editorCursorSelectionChanged(data){
+    var startRow = data.newRange.start[0]; var startCol = data.newRange.start[1];
+    var endRow = data.newRange.end[0]; var endCol = data.newRange.end[1];
+    if( startRow==endRow && startCol==endCol ){
+      var message = this.getTypeMessage(this.message);
+      if(message == "This is a link!"){
+        this.message = undefined
+      }else{
+        this.message = message;
+      }
+    }else{
+      this.message = this.getTypeMessage(this.message);
+      console.log(this.getActiveEditors());
+      var messageTemp = "["+this.message+"]("+this.getOpenFileTitle()+":L"+startRow+","+startCol+"-L"+endRow+","+endCol+")";
+      this.message = messageTemp;
+    }
+  }
+  getTypeMessage(message):String{
+    if(message != undefined){
+      var start = message.indexOf("[");
+      var end = message.indexOf("]");
+      if(start!=-1 && end!=-1 && start<end){
+        return message.substring(start+1, end);
+      }else{
+        return message;
+      }
+    }else{
+      return("This is a link!")
+    }
+  }
+  getOpenFileTitle():String{
+    var editorStates = this.getActiveEditors();
+    var title;
+    _.each(editorStates, (editorstate)=>{
+      if(editorstate.selected == true){
+        title = editorstate.title;
+      }
+    })
+    return title;
+  }
+
   constructor() {
     const channelName = Location.stripTrailingSlash(location.pathname.substring(1));
     if (channelName) {

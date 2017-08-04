@@ -1,3 +1,6 @@
 textarea {
     width: 100%;
 }
+ace-editor {
+    height: 100%;
+}

@@ -52,12 +52,12 @@ export class ChatMessageDisplay {
   		};
   	}
   	private addHighlight(editorID, range) {
-  		return this.editorStateTracker.addHighlight(editorID, range);
+  	//	return this.editorStateTracker.addHighlight(editorID, range);
   	}
   	private removeHighlight(editorID, highlightID) {
-  		return this.editorStateTracker.removeHighlight(editorID, highlightID);
+  	//	return this.editorStateTracker.removeHighlight(editorID, highlightID);
   	}
   	private focusRange(editorID, range) {
-  		return this.editorStateTracker.focus(editorID, range);
+  	//	return this.editorStateTracker.focus(editorID, range);
   	}
 }

@@ -1,6 +1,7 @@
 import {Component, ViewChild, EventEmitter, Output, Input} from '@angular/core';
 import { WebCommunicationService } from '../web-communication.service';
 import { ChatUserList, ChatUser } from 'chat-codes-services/src/chat-user';
+import {ChatInput} from '../chat-input/chat-input.component'
 
 import * as _ from 'underscore';
 
@@ -134,6 +135,7 @@ export class EditorDisplay {
 	private getTimestamp():number {
 		return (new Date()).getTime();
 	}
+
 	private selectFile(editorState) {
 		if(this.selectedEditor) {
 			this.selectedEditor.selected = false;
@@ -141,11 +143,27 @@ export class EditorDisplay {
 		const aceWrapper = editorState.getEditorWrapper();
 		const session = aceWrapper.getSession();
 		editorState.selected = true;
-
 	    const editor = this.editor.getEditor();
 		editor.setSession(session);
-
 		this.selectedEditor = editorState;
+
+		const selection = session.getSelection();
+		selection.on('changeSelection', (event) => {
+			const serializedRanges = _.map(selection.getAllRanges(), (range) => {
+				return {
+					start: [range.start.row, range.start.column],
+					end: [range.end.row, range.end.column]
+				};
+			});
+			//console.log(this.chatInput);
+			console.log('selected once - "editor.components.ts"');
+			//console.log(editorState);
+			this.cursorSelectionChanged.emit({
+				fileName: editorState.title,
+				newRange: serializedRanges[0],
+				type: 'change-selection'
+			});
+		});
 	}
 
 
@@ -156,6 +174,7 @@ export class EditorDisplay {
 
     @ViewChild('editor') editor;
     @Input() commLayer: WebCommunicationService;
+		//@Input() chatInput: ChatInput;
 	@Output() public editorChanged:EventEmitter<any> = new EventEmitter();
 	@Output() public cursorPositionChanged:EventEmitter<any> = new EventEmitter();
 	@Output() public cursorSelectionChanged:EventEmitter<any> = new EventEmitter();

@@ -35,7 +35,7 @@
     </div>
     <div class="row" id="content_row">
         <div class="col-8">
-            <code-editor [commLayer]='commLayer' #codeEditor></code-editor>
+            <code-editor [commLayer]='commLayer' (cursorSelectionChanged)='editorCursorSelectionChanged($event)' #codeEditor></code-editor>
         </div>
         <!-- <div class="col-1">
             <timeline-display></timeline-display>
@@ -62,7 +62,8 @@
         </div>
         <!-- <div class="col-1"></div> -->
         <div class="col-4">
-            <chat-input (send)='sendTextMessage($event)' (typing)='updateTypingStatus($event)'></chat-input>
+            <chat-input  [message]="message" (send)='sendTextMessage($event)'
+            (typing)='updateTypingStatus($event)' (messageChanged)='chatinputMessageChanged($event)'></chat-input>
         </div>
     </div>
 </div>

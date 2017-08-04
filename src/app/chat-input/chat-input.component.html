@@ -1,2 +1,6 @@
-<textarea class="form-control" placeholder="Say something" (ngModelChange)="onTextareaChange($event)" (keydown)="onTextareaKeydown($event)" [(ngModel)]="message">
+<textarea class="form-control" placeholder="Say something"
+        (ngModelChange)="onTextareaChange($event)"
+        (keydown)="onTextareaKeydown($event)"
+        [(ngModel)]="message" >
 ></textarea>
+<!-- <ace-editor [theme]="'chrome'" #editor></ace-editor> -->

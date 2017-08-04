@@ -1,4 +1,4 @@
-import {Component,Injectable,EventEmitter,Output} from '@angular/core';
+import {Component,Injectable,EventEmitter,Output, OnInit, Input} from '@angular/core';
 import * as _ from 'underscore';
 
 const STATUS = {
@@ -13,7 +13,23 @@ const STATUS = {
   styleUrls: ['./chat-input.component.css'],
 })
 
-export class ChatInput {
+export class ChatInput implements OnInit{
+  ngOnInit(){ }
+
+  @Input() public message : string;
+  @Output() messageChanged = new EventEmitter<any>();
+
+  onTextareaChange(val):void {
+    if(val === '') {
+      this.setTypingStatus(STATUS.IDLE);
+      this.clearActiveTypingTimeout();
+    } else {
+      this.setTypingStatus(STATUS.ACTIVE_TYPING);
+      this.resetActiveTypingTimeout();
+    }
+    this.messageChanged.emit(val);
+  };
+
   onTextareaKeydown(event):void {
     if(event.keyCode === 13) { // Enter
       const toSend = this.message;
@@ -27,15 +43,9 @@ export class ChatInput {
       this.send.emit(toSend);
     }
   };
-  onTextareaChange(val):void {
-    if(val === '') {
-      this.setTypingStatus(STATUS.IDLE);
-      this.clearActiveTypingTimeout();
-    } else {
-      this.setTypingStatus(STATUS.ACTIVE_TYPING);
-      this.resetActiveTypingTimeout();
-    }
-  };
+
+
+
   private setTypingStatus(newStatus:string):string {
     if(this.typingStatus != newStatus) {
       this.typingStatus = newStatus;
@@ -49,7 +59,7 @@ export class ChatInput {
   @Output()
   public typing:EventEmitter<any> = new EventEmitter();
 
-  private message:string;
+
   private typingTimeout:number = 3000;
   private typingStatus:string = STATUS.IDLE;
   private resetActiveTypingTimeout() {
