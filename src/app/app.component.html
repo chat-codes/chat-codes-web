@@ -13,7 +13,7 @@
         </span>
     </nav>
     <div class="row" id="list_row">
-        <div class="col-7">
+        <div class="col-8">
             <ul class='files nav nav-tabs'>
                 <li class='nav-item' *ngFor="let editorState of getActiveEditors()">
                     <a [ngClass]="{'active': editorState.selected}" class='nav-link' href='javascript:void(0);' (click)="codeEditor.selectFile(editorState)">
@@ -23,7 +23,7 @@
                 </li>
             </ul>
         </div>
-        <div class="col-1"></div>
+        <!-- <div class="col-1"></div> -->
         <div class="col-4">
             Here now:
             <ul class='members'>
@@ -40,20 +40,8 @@
         <!-- <div class="col-1">
             <timeline-display></timeline-display>
         </div> -->
-        <div #messageDisplay class="col-4 message-display">
-            <div class="no-messages" *ngIf='commLayer.messageGroups.isEmpty()'>
-                (no messages)
-            </div>
-
+        <div class="col-4">
             <chat-messages [commLayer]='commLayer'></chat-messages>
-
-            <div class='typing'>
-                <div *ngFor='let user of commLayer.userList.activeUsers'>
-                    <div *ngIf='user.typingStatus=="ACTIVE_TYPING" && !user.isMe'>
-                        {{user.name}} is typing...
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
     <div class="row" id="input_row">

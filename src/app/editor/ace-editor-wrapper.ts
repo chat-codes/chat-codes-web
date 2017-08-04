@@ -43,7 +43,17 @@ export class AceEditorWrapper {
 	}
 	public replaceText(serializedRange, value:string) {
 		const range = this.getRangeFromSerializedRange(serializedRange);
-		this.session.replace(range, value);
+		const oldText = this.session.getTextRange(range);
+		const newRange = { start: serializedRange.start, end: serializedRange.end };
+		const newEnd = this.session.replace(range, value);
+		newRange.end = [newEnd.row, newEnd.column];
+		return {
+			oldText: oldText,
+			newRange: newRange
+		}
+		// const this.session.replace(range, value));
+		// console.log(this.session.replace(range, value));
+
 	}
 	public setText(value:string) {
 		this.session.setValue(value);
