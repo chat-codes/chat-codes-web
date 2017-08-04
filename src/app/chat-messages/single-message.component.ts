@@ -17,6 +17,7 @@ export class ChatMessageDisplay {
     @ViewChild('elem') elem;
     ngAfterViewInit() {
       const $elem = $(this.elem.nativeElement);
+      $elem.html(this.message.html);
   		// if(this.message.editorID) {
   		// 	$elem.append($('<a />').attr({
   		// 		'data-file': this.message.editorID,
@@ -52,12 +53,12 @@ export class ChatMessageDisplay {
   		};
   	}
   	private addHighlight(editorID, range) {
-  	//	return this.editorStateTracker.addHighlight(editorID, range);
+  		return this.editorStateTracker.addHighlight(editorID, range);
   	}
   	private removeHighlight(editorID, highlightID) {
-  	//	return this.editorStateTracker.removeHighlight(editorID, highlightID);
+  		return this.editorStateTracker.removeHighlight(editorID, highlightID);
   	}
   	private focusRange(editorID, range) {
-  	//	return this.editorStateTracker.focus(editorID, range);
+  		return this.editorStateTracker.focus(editorID, range);
   	}
 }

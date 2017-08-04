@@ -32,7 +32,7 @@ export class AppComponent implements OnInit{
       }
     }else{
       this.message = this.getTypeMessage(this.message);
-      console.log(this.getActiveEditors());
+    //   console.log(this.getActiveEditors());
       var messageTemp = "["+this.message+"]("+this.getOpenFileTitle()+":L"+startRow+","+startCol+"-L"+endRow+","+endCol+")";
       this.message = messageTemp;
     }

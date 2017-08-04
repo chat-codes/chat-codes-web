@@ -156,7 +156,7 @@ export class EditorDisplay {
 				};
 			});
 			//console.log(this.chatInput);
-			console.log('selected once - "editor.components.ts"');
+			// console.log('selected once - "editor.components.ts"');
 			//console.log(editorState);
 			this.cursorSelectionChanged.emit({
 				fileName: editorState.title,
