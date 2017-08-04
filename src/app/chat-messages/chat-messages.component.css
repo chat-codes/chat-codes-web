@@ -1,0 +1,28 @@
+.no-messages {
+    text-align: center;
+    vertical-align: middle;
+    font-size: 2em;
+    color: #AAA;
+    font-weight: lighter;
+}
+
+.message-display {
+    overflow-y: auto;
+    height: 100%;
+}
+
+.typing {
+    color: #AAA;
+}
+
+ul.messageGroups {
+    list-style: none;
+    padding: 0px;
+}
+ul.messageGroups > li.messageGroup {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+li.messageGroup  .header {
+    background-color: #EEE;
+}

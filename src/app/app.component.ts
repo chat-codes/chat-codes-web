@@ -18,7 +18,7 @@ export class AppComponent {
     if (channelName) {
       this.channelName = channelName;
     }
-    this.setName('remote');
+    // this.setName('remote');
   };
   private commLayer: WebCommunicationService;
   private at_bottom: boolean = false;
@@ -43,28 +43,9 @@ export class AppComponent {
   getActiveEditors() {
     return this.commLayer.getActiveEditors();
   }
-  ngAfterViewChecked() {
-    if (this.at_bottom) {
-      this.scrollToBottom();
-    }
-    if (this.messageDisplay) {
-      this.at_bottom = this.atBottom();
-    }
-  }
-
-  scrollToBottom(): void {
-    try {
-      // this.messageDisplay.nativeElement.scrollTop = this.messageDisplay.nativeElement.scrollHeight;
-    } catch (err) { }
-  }
-  atBottom(): boolean {
-    const element = this.messageDisplay.nativeElement;
-    return Math.abs(element.scrollTop + element.clientHeight - element.scrollHeight) < 100;
-  }
   private name: string;
   private hasName: boolean = false;
   private connected: boolean = false;
   members: any = false;
   channelName = 'example_channel';
-  @ViewChild('messageDisplay') messageDisplay;
 }
