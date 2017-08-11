@@ -43,7 +43,6 @@ export class ChatMessageDisplay {
   		const $elem = $(elem);
   		const start = $elem.attr('data-start');
   		const end = $elem.attr('data-end');
-
   		return {
   			file: $elem.attr('data-file'),
   			range: {
@@ -58,7 +57,12 @@ export class ChatMessageDisplay {
   	private removeHighlight(editorID, highlightID) {
   		return this.editorStateTracker.removeHighlight(editorID, highlightID);
   	}
+
+    @Output() selectFileEmitter = new EventEmitter<any>();
   	private focusRange(editorID, range) {
-  		return this.editorStateTracker.focus(editorID, range);
+  		var editorState = this.editorStateTracker.focus(editorID, range);
+      console.log(editorState);
+      this.selectFileEmitter.emit(editorState);    
   	}
+
 }

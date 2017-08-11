@@ -9,7 +9,8 @@
                     <span class="sender">{{messageGroup.getSender().name}}</span>&nbsp;<span class="time">({{messageGroup.getTimestamp(0) | amTimeAgo}})</span>:
                 </li>
                 <li *ngFor="let message of messageGroup.getMessages()" class='message list-group-item'>
-                    <chat-message [message]='message' [editorStateTracker]='commLayer.getEditorStateTracker()'></chat-message>
+                    <chat-message (selectFileEmitter)='selectFileEmitterEvent($event)'
+                    [message]='message' [editorStateTracker]='commLayer.getEditorStateTracker()'></chat-message>
                 </li>
             </ul>
         </li>

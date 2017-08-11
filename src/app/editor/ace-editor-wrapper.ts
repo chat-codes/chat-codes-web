@@ -1,5 +1,9 @@
 import {EditorStateTracker,EditorState} from 'chat-codes-services/src/editor-state-tracker';
 import {ChannelCommunicationService} from 'chat-codes-services/src/communication-service';
+import {ChatInput} from '../chat-input/chat-input.component'
+import {EditorDisplay} from '../editor/editor.component';
+import {Input} from '@angular/core';
+
 
 declare let ace: any;
 import * as _ from 'underscore';
@@ -141,6 +145,9 @@ export class AceEditorWrapper {
 	public removeHighlight(id) {
 		this.session.removeMarker(id);
 	}
+
+	@Input() editorDisplay: EditorDisplay;
+	//Change focused file
 	public focus(range) {
 		const aceRange = this.getRangeFromSerializedRange(range);
 		const markerID = this.session.addMarker(aceRange, this.clazz + ' user-1', false);

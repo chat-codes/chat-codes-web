@@ -41,7 +41,8 @@
             <timeline-display></timeline-display>
         </div> -->
         <div class="col-4">
-            <chat-messages [commLayer]='commLayer'></chat-messages>
+            <chat-messages (selectFileEmitter) = 'selectFileEmitterEvent($event)'
+            [commLayer]='commLayer'></chat-messages>
         </div>
     </div>
     <div class="row" id="input_row">
@@ -50,8 +51,13 @@
         </div>
         <!-- <div class="col-1"></div> -->
         <div class="col-4">
-            <chat-input  [message]="message" (send)='sendTextMessage($event)'
-            (typing)='updateTypingStatus($event)' (messageChanged)='chatinputMessageChanged($event)'></chat-input>
+            <chat-input  [message]="message"
+            [updateCISelectionFlag]="updateCISelectionFlag"
+            (send)='sendTextMessage($event)'
+            (typing)='updateTypingStatus($event)'
+            (messageChanged)='chatinputMessageChanged($event)'
+            (updateCISelectionFlagEmitter) = 'updateCISelectionFlagChanged($event)'
+            (selectionRange)='updataChatInputSelection($event)'></chat-input>
         </div>
     </div>
 </div>

@@ -102,6 +102,8 @@ export class EditorDisplay {
 			this.selectFile(editorState);
 		});
     }
+
+
 	private onEditorOpened(state) {
 		let editorState = null;
 		const aceWrapper = editorState.getEditorWrapper();
@@ -136,7 +138,8 @@ export class EditorDisplay {
 		return (new Date()).getTime();
 	}
 
-	private selectFile(editorState) {
+	public selectFile(editorState) {
+		console.log("select file works");
 		if(this.selectedEditor) {
 			this.selectedEditor.selected = false;
 		}
@@ -155,7 +158,7 @@ export class EditorDisplay {
 					end: [range.end.row, range.end.column]
 				};
 			});
-			//console.log(this.chatInput);
+			//console.log("it changes!");
 			// console.log('selected once - "editor.components.ts"');
 			//console.log(editorState);
 			this.cursorSelectionChanged.emit({
