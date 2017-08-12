@@ -31,7 +31,7 @@ export class ChatInput implements OnInit{
   onClickChange(event){
     this.updateCISelectionFlag = true;
     this.updateCISelectionFlagEmitter.emit(this.updateCISelectionFlag);
-    console.log("Click once");
+    //console.log("Click once");
   }
 
   ngAfterViewInit() {
@@ -60,7 +60,7 @@ export class ChatInput implements OnInit{
   				};
   			});
         if(this.updateCISelectionFlag==true){
-          console.log("this.updateCISelectionFlag is true");
+          //console.log("this.updateCISelectionFlag is true");
           this.selectionRange.emit({
     				newRange: serializedRanges[0],
     				type: 'change-selection'

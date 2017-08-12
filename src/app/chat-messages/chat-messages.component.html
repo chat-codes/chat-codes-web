@@ -6,11 +6,13 @@
         <li class='messageGroup' *ngFor="let messageGroup of commLayer.messageGroups.getMessageGroups()" [ngClass]='"user-"+messageGroup.getSender().colorIndex'>
             <ul class='messages list-group'>
                 <li class='header list-group-item'>
-                    <span class="sender">{{messageGroup.getSender().name}}</span>&nbsp;<span class="time">({{messageGroup.getTimestamp(0) | amTimeAgo}})</span>:
+                    <span class="sender">{{messageGroup.getSender().name}}</span>&nbsp;<span class="time">({{messageGroup.getTimestamp(0) | amTimeAgo }})</span>:
                 </li>
                 <li *ngFor="let message of messageGroup.getMessages()" class='message list-group-item'>
                     <chat-message (selectFileEmitter)='selectFileEmitterEvent($event)'
-                    [message]='message' [editorStateTracker]='commLayer.getEditorStateTracker()'></chat-message>
+                    [message]='message'
+                    [timestamp]='message.timestamp'
+                    [editorStateTracker]='commLayer.getEditorStateTracker()'></chat-message>
                 </li>
             </ul>
         </li>

@@ -139,7 +139,7 @@ export class EditorDisplay {
 	}
 
 	public selectFile(editorState) {
-		console.log("select file works");
+		console.log(editorState);
 		if(this.selectedEditor) {
 			this.selectedEditor.selected = false;
 		}

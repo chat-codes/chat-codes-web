@@ -26,6 +26,7 @@ export class AppComponent implements OnInit{
 
   @ViewChild(EditorDisplay) editorDisplay: EditorDisplay;
   selectFileEmitterEvent(editorState){
+    console.log("bad bad choice");
     this.editorDisplay.selectFile(editorState);
   }
 
@@ -35,8 +36,8 @@ export class AppComponent implements OnInit{
         start: data.newRange.start[1],
         end: data.newRange.end[1]
       };
-      console.log(this.chatInputSelectionRange.start);
-      console.log(this.chatInputSelectionRange.end);
+      //console.log(this.chatInputSelectionRange.start);
+      //console.log(this.chatInputSelectionRange.end);
   }
 
   //update chatInputMessage String
@@ -65,12 +66,12 @@ export class AppComponent implements OnInit{
 
   editorCursorSelectionChanged(data){
     this.updateCISelectionFlag = false;
-    console.log("editor selection event works! set updateCISelectionFlag as false");
+    //console.log("editor selection event works! set updateCISelectionFlag as false");
     var startRow = data.newRange.start[0];  var startCol = data.newRange.start[1];
     var endRow = data.newRange.end[0];      var endCol = data.newRange.end[1];
 
-    console.log("chatinputSelection start" + this.chatInputSelectionRange.start);
-    console.log("chatinputSelection end" + this.chatInputSelectionRange.end);
+    //console.log("chatinputSelection start" + this.chatInputSelectionRange.start);
+    //console.log("chatinputSelection end" + this.chatInputSelectionRange.end);
 
     if( (this.chatInputSelectionRange.start==this.chatInputSelectionRange.end && this.chatInputSelectionRange.start==0
     && (!message || message=='') ) || this.chatInputSelectionRange.start!=this.chatInputSelectionRange.end ){
@@ -80,9 +81,9 @@ export class AppComponent implements OnInit{
       if( startRow==endRow && startCol==endCol){
         if(this.chatInputSelectionType=="A WRITTEN LINK"){
           var messageTemp = this.message.substring(this.chatInputSelectionRange.start, this.chatInputSelectionRange.end+1);
-          console.log(messageTemp);
+          //console.log(messageTemp);
           messageTemp = messageTemp.substring(1, messageTemp.indexOf("]("));
-          console.log(messageTemp);
+          //console.log(messageTemp);
            if(messageTemp=="This is a link!"){
              this.attachChangedString("");
              this.chatInputSelectionRange.start = 0;
@@ -155,23 +156,23 @@ export class AppComponent implements OnInit{
       }
       if(this.chatInputSelectionType == "Chosen Message"){
         var messageTemp = message.substring(this.chatInputSelectionRange.start, this.chatInputSelectionRange.end);
-        console.log("CHOSen Message Check");
-        console.log(messageTemp);
+        //console.log("CHOSen Message Check");
+        //console.log(messageTemp);
         if(messageTemp.indexOf('[')!=-1 || messageTemp.indexOf(']')!=-1 ||
           messageTemp.indexOf('(')!=-1 || messageTemp.indexOf(')')!=-1){
              this.chatInputSelectionType = "NOT A LEGAL CHOSEN MESSAGE";
           }
       }
-      console.log(this.chatInputSelectionType);
+      //console.log(this.chatInputSelectionType);
   }
   //Seemes this does not work
   setChatInputSelectionRange(startCol, endCol){
     const editor = this.chatInput.editor.getEditor();
     var Range = ace.acequire('ace/range').Range;
     editor.selection.setRange(new Range(0, startCol, 0, endCol));
-    console.log(editor.getSelectedText());
+    //console.log(editor.getSelectedText());
     var marker = editor.getSession().addMarker(new Range(0, startCol, 0, endCol),"warning","line", false);
-    console.log("set selection!");
+    //console.log("set selection!");
   }
 
   constructor() {
