@@ -29,6 +29,12 @@ export class AppComponent implements OnInit{
     console.log("bad bad choice");
     this.editorDisplay.selectFile(editorState);
   }
+  scrollToLineEmitterEvent(scrollToLineNumber){
+    var editor = this.editorDisplay.editor.getEditor();
+    editor.resize(true);
+    editor.scrollToLine(scrollToLineNumber, true, true, function () {});
+    //editor.gotoLine(scrollToLineNumber, 0, true);
+  }
 
   //updata ChatInputSelection Range
   updataChatInputSelection(data):void{

@@ -40,4 +40,8 @@ export class ChatMessagesDisplay {
   selectFileEmitterEvent(editorState){
     this.selectFileEmitter.emit(editorState);
   }
+  @Output() scrollToLineEmitter = new EventEmitter<any>();
+  scrollToLineEmitterEvent(scrollToLineNumber){
+    this.scrollToLineEmitter.emit(scrollToLineNumber);
+  }
 }

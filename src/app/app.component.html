@@ -41,7 +41,9 @@
             <timeline-display></timeline-display>
         </div> -->
         <div class="col-4">
-            <chat-messages (selectFileEmitter) = 'selectFileEmitterEvent($event)'
+            <chat-messages
+            (selectFileEmitter) = 'selectFileEmitterEvent($event)'
+            (scrollToLineEmitter)='scrollToLineEmitterEvent($event)'
             [commLayer]='commLayer'></chat-messages>
         </div>
     </div>

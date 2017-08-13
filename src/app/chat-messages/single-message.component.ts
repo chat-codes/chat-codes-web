@@ -47,6 +47,7 @@ export class ChatMessageDisplay {
   		$('a.line_ref', $elem).on('mouseenter', (me_event) => {
   			const {file, range} = this.getHighlightInfo(me_event.target);
   			const highlightID = this.addHighlight(file, range);
+        //const middleLine = range
         if(this.redoFlag){
           this.undoDelta(file);
           this.undoFlag = true;
@@ -89,10 +90,13 @@ export class ChatMessageDisplay {
   	}
 
     @Output() selectFileEmitter = new EventEmitter<any>();
+    @Output() scrollToLineEmitter = new EventEmitter<any>();
   	private focusRange(editorID, range) {
   		var editorState = this.editorStateTracker.focus(editorID, range, this.timestamp);
       console.log(editorState);
       this.selectFileEmitter.emit(editorState);
+      const middleLine = Math.round( (range.start[0] + range.end[0])/2 );
+      this.scrollToLineEmitter.emit(middleLine);
   	}
 
 }
