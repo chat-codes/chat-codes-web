@@ -4,6 +4,7 @@ import {MessageGroups} from 'chat-codes-services/src/chat-messages';
 import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
 import {CommunicationService} from 'chat-codes-services/src/communication-service';
 import {WebCommunicationService} from '../web-communication.service';
+import {EditorDisplay} from '../editor/editor.component';
 
 @Component({
   selector: 'chat-messages',
@@ -13,6 +14,7 @@ import {WebCommunicationService} from '../web-communication.service';
 
 export class ChatMessagesDisplay {
     @Input() commLayer: WebCommunicationService;
+    @Input() editor:EditorDisplay;
     ngAfterViewInit() {
       this.scrollToBottom();
       let at_bottom = false;

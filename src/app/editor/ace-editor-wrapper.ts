@@ -73,7 +73,18 @@ export class AceEditorWrapper {
 	}
 	private getRangeFromSerializedRange(serializedRange) {
 		const Range = ace.acequire('ace/range').Range
-		return new Range(serializedRange.start[0], serializedRange.start[1], serializedRange.end[0], serializedRange.end[1]);
+		let startRow = serializedRange.start[0];
+		let startColumn = serializedRange.start[1];
+		let endRow = serializedRange.end[0];
+		let endColumn = serializedRange.end[1];
+		if(startColumn < 0) {
+			startColumn = 0;
+		}
+		if(endColumn < 0) {
+			endRow = endRow+1;
+			endColumn = 0;
+		}
+		return new Range(startRow, startColumn, endRow, endColumn);
 	}
 	private getAnchorFromLocation(doc, loc) {
 		const Anchor = ace.acequire('ace/anchor').Anchor;
@@ -133,6 +144,10 @@ export class AceEditorWrapper {
 		this.cursorMarkers[id] = markerID;
 	}
 	public saveFile() {};
+	public setReadOnly(isReadOnly:boolean, extraInfo){
+		const {editor} = extraInfo;
+		editor.setReadOnly(isReadOnly);
+	}
 	public addHighlight(range) {
 		const aceRange = this.getRangeFromSerializedRange(range);
 		const markerID = this.session.addMarker(aceRange, this.clazz + ' user-1', false);
@@ -141,9 +156,16 @@ export class AceEditorWrapper {
 	public removeHighlight(id) {
 		this.session.removeMarker(id);
 	}
-	public focus(range) {
+	public focus(range, extraInfo) {
+		// scrollToRow(range.start[0]);
+		const {editor} = extraInfo;
+
 		const aceRange = this.getRangeFromSerializedRange(range);
 		const markerID = this.session.addMarker(aceRange, this.clazz + ' user-1', false);
+
+		const averageRow = Math.round((aceRange.start.row + aceRange.end.row)/2);
+
+		editor.scrollToLine(averageRow, true, true, () => {});
 		setTimeout(() => {
 			this.session.removeMarker(markerID);
 		}, 2000);

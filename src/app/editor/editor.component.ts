@@ -64,7 +64,7 @@ export class EditorDisplay {
 		};
 	}
     ngAfterViewInit() {
-        const editor = this.editor.getEditor();
+		const editor = this.editor.getEditor();
 	    editor.$blockScrolling = Infinity;
 
 		editor.commands.addCommand({
@@ -136,15 +136,18 @@ export class EditorDisplay {
 	private getTimestamp():number {
 		return (new Date()).getTime();
 	}
+	public getEditorInstance() {
+		return this.editor.getEditor();
+	}
 
-	private selectFile(editorState) {
+	public selectFile(editorState) {
 		if(this.selectedEditor) {
 			this.selectedEditor.selected = false;
 		}
 		const aceWrapper = editorState.getEditorWrapper();
 		const session = aceWrapper.getSession();
 		editorState.selected = true;
-	    const editor = this.editor.getEditor();
+	    const editor = this.getEditorInstance();
 		editor.setSession(session);
 		this.selectedEditor = editorState;
 

@@ -14,6 +14,7 @@ import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
 export class ChatMessageDisplay {
     @Input() editorStateTracker:EditorStateTracker;
     @Input() message;
+    @Input() editor;
     @ViewChild('elem') elem;
     ngAfterViewInit() {
       const $elem = $(this.elem.nativeElement);
@@ -29,14 +30,14 @@ export class ChatMessageDisplay {
 
   		$('a.line_ref', $elem).on('mouseenter', (me_event) => {
   			const {file, range} = this.getHighlightInfo(me_event.currentTarget);
-  			const highlightID = this.addHighlight(file, range);
+  			const highlightID = this.addHighlight(file, range, this.message.timestamp);
   			$(me_event.target).on('mouseleave.removeHighlight', (ml_event) => {
   				this.removeHighlight(file, highlightID);
   				$(me_event.target).off('mouseleave.removeHighlight');
   			});
           }).on('click', (c_event) => {
   			const {file, range} = this.getHighlightInfo(c_event.currentTarget);
-  			this.focusRange(file, range);
+  			this.focusRange(file, range, this.message.timestamp);
   		});
     }
   	private getHighlightInfo(elem) {
@@ -52,13 +53,19 @@ export class ChatMessageDisplay {
   			}
   		};
   	}
-  	private addHighlight(editorID, range) {
-  		return this.editorStateTracker.addHighlight(editorID, range);
+  	private addHighlight(editorID, range, timestamp) {
+  		return this.editorStateTracker.addHighlight(editorID, range, timestamp, {
+        editor: this.editor.getEditorInstance()
+      });
   	}
   	private removeHighlight(editorID, highlightID) {
-  		return this.editorStateTracker.removeHighlight(editorID, highlightID);
+  		return this.editorStateTracker.removeHighlight(editorID, highlightID, {
+        editor: this.editor.getEditorInstance()
+      });
   	}
-  	private focusRange(editorID, range) {
-  		return this.editorStateTracker.focus(editorID, range);
+  	private focusRange(editorID, range, timestamp) {
+			const editorState = this.editorStateTracker.getEditorState(editorID);
+      this.editor.selectFile(editorState);
+  		return this.editorStateTracker.focus(editorID, range, timestamp, {editor: this.editor.getEditorInstance()});
   	}
 }
