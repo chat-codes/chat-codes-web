@@ -65,6 +65,7 @@ export class EditorDisplay {
 	}
     ngAfterViewInit() {
         const editor = this.editor.getEditor();
+	    editor.$blockScrolling = Infinity;
 
 		editor.commands.addCommand({
 			name: 'saveContents',
@@ -159,6 +160,8 @@ export class EditorDisplay {
 			// console.log('selected once - "editor.components.ts"');
 			//console.log(editorState);
 			this.cursorSelectionChanged.emit({
+				editor: editor,
+				session: session,
 				fileName: editorState.title,
 				newRange: serializedRanges[0],
 				type: 'change-selection'

@@ -28,14 +28,14 @@ export class ChatMessageDisplay {
   		// }
 
   		$('a.line_ref', $elem).on('mouseenter', (me_event) => {
-  			const {file, range} = this.getHighlightInfo(me_event.target);
+  			const {file, range} = this.getHighlightInfo(me_event.currentTarget);
   			const highlightID = this.addHighlight(file, range);
   			$(me_event.target).on('mouseleave.removeHighlight', (ml_event) => {
   				this.removeHighlight(file, highlightID);
   				$(me_event.target).off('mouseleave.removeHighlight');
   			});
           }).on('click', (c_event) => {
-  			const {file, range} = this.getHighlightInfo(c_event.target);
+  			const {file, range} = this.getHighlightInfo(c_event.currentTarget);
   			this.focusRange(file, range);
   		});
     }

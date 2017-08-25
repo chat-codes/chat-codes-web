@@ -51,7 +51,7 @@
         <!-- <div class="col-1"></div> -->
         <div class="col-4">
             <chat-input  [message]="message" (send)='sendTextMessage($event)'
-            (typing)='updateTypingStatus($event)' (messageChanged)='chatinputMessageChanged($event)'></chat-input>
+            (typing)='updateTypingStatus($event)' (messageChanged)='chatinputMessageChanged($event)' #chatinput></chat-input>
         </div>
     </div>
 </div>

@@ -35,4 +35,13 @@ export class ChatMessagesDisplay {
         return Math.abs(element.scrollTop + element.clientHeight - element.scrollHeight) < 100;
     }
   @ViewChild('messageDisplay') messageDisplay;
+
+  @Output() selectFileEmitter = new EventEmitter<any>();
+  selectFileEmitterEvent(editorState){
+    this.selectFileEmitter.emit(editorState);
+  }
+  @Output() scrollToLineEmitter = new EventEmitter<any>();
+  scrollToLineEmitterEvent(scrollToLineNumber){
+    this.scrollToLineEmitter.emit(scrollToLineNumber);
+  }
 }

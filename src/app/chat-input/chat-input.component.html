@@ -1,6 +1,15 @@
-<textarea class="form-control" placeholder="Say something"
+<!-- <textarea class="form-control" placeholder="Say something"
         (ngModelChange)="onTextareaChange($event)"
         (keydown)="onTextareaKeydown($event)"
         [(ngModel)]="message" >
-></textarea>
-<!-- <ace-editor [theme]="'chrome'" #editor></ace-editor> -->
+></textarea> -->
+<ace-editor [theme]="'chrome'" id='chat-input-editor' class='form-control' [(ngModel)]='message' (keydown)='onTextareaKeydown($event)' #editor></ace-editor>
+<!-- <ace-editor id="chat-input-editor"
+            [theme]="'chrome'"
+            class="form-control"
+            placeholder="Say something"
+            (click)="onClickChange($event)"
+            (ngModelChange)="onTextareaChange($event)"
+            (keydown)="onTextareaKeydown($event)"
+            [(ngModel)]="message"
+            #chat-input></ace-editor> -->
