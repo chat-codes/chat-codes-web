@@ -5,13 +5,13 @@
         <div class="col">Connecting...</div>
     </div>
 </div>
-<div class="container" *ngIf="hasName && connected">
-    <nav class="navbar">
+<div class="container-fluid" *ngIf="hasName && connected">
+    <!-- <nav class="navbar">
         <span class="navbar-brand">
             <img src="assets/images/cc_icon.svg" class="logo" />
             <input type="text" [value]="getChatURL()" readonly />
         </span>
-    </nav>
+    </nav> -->
     <div class="row" id="list_row">
         <div class="col-8">
             <ul class='files nav nav-tabs'>

@@ -17,12 +17,13 @@ export class EditMessageDisplay {
     @Input() messageGroup:EditGroup;
     @Input() editor;
     @ViewChild('elem') elem;
-    private authors:Array<ChatUser> = [];
-    private numAuthors:number = 0;
-    private editorStates:Array<EditorState> = [];
-    private numEditorStates:number = 0;
+    public authors:Array<ChatUser> = [];
+    public numAuthors:number = 0;
+    public editorStates:Array<EditorState> = [];
+    public numEditorStates:number = 0;
+
     ngAfterViewInit() {
-        this.updateVariables();
+        setTimeout(() => { this.updateVariables(); }, 0);
 
 		(this.messageGroup as any).on('delta-added', () => {
             this.updateVariables();

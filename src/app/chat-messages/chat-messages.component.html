@@ -6,7 +6,7 @@
         <li class='messageGroup' *ngFor="let messageGroup of commLayer.messageGroups.getMessageGroups()">
             <ul *ngIf="isChatMessage(messageGroup)" class='messages list-group'  [ngClass]='"user-"+messageGroup.getSender().getColorIndex()'>
                 <li class='header list-group-item'>
-                    <span class="sender">{{messageGroup.getSender().getName()}}</span>&nbsp;<span class="time">({{messageGroup.getTimestamp() | amTimeAgo}})</span>:
+                    <span class="sender">{{messageGroup.getSender().getName()}}</span>&nbsp;<span class="time">({{messageGroup.getTimestamp() | amTimeAgo}})</span>
                 </li>
                 <li *ngFor="let message of messageGroup.getMessages()" class='message list-group-item'>
                     <chat-message [message]='message' [editorStateTracker]='commLayer.getEditorStateTracker()' [editor]='editor' ></chat-message>

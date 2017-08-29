@@ -24,10 +24,12 @@ export class ChatInput implements OnInit{
         let editor = this.editor.getEditor();
         const session = editor.getSession();
         editor.$blockScrolling = Infinity;
+        editor.setHighlightActiveLine(false);
+        editor.renderer.setShowGutter(false);
         session.setUseWrapMode(true);
         session.setWrapLimitRange(chatInputSoftWrapNumber,chatInputSoftWrapNumber);
         session.setOption("indentedSoftWrap", false);
-        editor.renderer.setShowGutter(false);
+        session.setMode('markdown');
     }
 
     @ViewChild('editor') editor;
@@ -59,7 +61,7 @@ export class ChatInput implements OnInit{
         }
     };
     private rangeFromStartAndEnd(start, end) {
-        const Range = ace.acequire('ace/range').Range;
+        const Range = ace.require('ace/range').Range;
         let startRow = _.has(start, 'row') ? start.row : start[0];
         let startCol = _.has(start, 'column') ? start.column : start[1];
         let endRow = _.has(end, 'row') ? end.row : end[0];
@@ -69,8 +71,8 @@ export class ChatInput implements OnInit{
     };
 
     public onEditorCursorSelectionChanged(data):void {
-        const Search = ace.acequire('ace/search').Search;
-        const Range = ace.acequire('ace/range').Range;
+        const Search = ace.require('ace/search').Search;
+        const Range = ace.require('ace/range').Range;
         const chatEditor = this.editor.getEditor();
         const chatSession = chatEditor.getSession();
         const chatDocument = chatSession.getDocument();

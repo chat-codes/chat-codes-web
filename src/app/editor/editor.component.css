@@ -1,3 +1,5 @@
 ace-editor {
     height: 100%;
+    border-right: 1px solid #EEE;
+    border-bottom: 1px solid #EEE;
 }

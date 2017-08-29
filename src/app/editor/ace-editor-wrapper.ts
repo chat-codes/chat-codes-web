@@ -37,7 +37,7 @@ export class AceEditorWrapper {
 		this.editorState = editorState;
 	}
 	private editorState;
-	private session = new (ace.acequire('ace/edit_session').EditSession)('');
+	private session = new (ace.require('ace/edit_session').EditSession)('');
 	public setGrammar(grammarName:string) {
     	this.session.setMode(this.getAceGrammarName(grammarName));
 	}
@@ -72,7 +72,7 @@ export class AceEditorWrapper {
 		};
 	}
 	private getRangeFromSerializedRange(serializedRange) {
-		const Range = ace.acequire('ace/range').Range
+		const Range = ace.require('ace/range').Range
 		let startRow = serializedRange.start[0];
 		let startColumn = serializedRange.start[1];
 		let endRow = serializedRange.end[0];
@@ -87,7 +87,7 @@ export class AceEditorWrapper {
 		return new Range(startRow, startColumn, endRow, endColumn);
 	}
 	private getAnchorFromLocation(doc, loc) {
-		const Anchor = ace.acequire('ace/anchor').Anchor;
+		const Anchor = ace.require('ace/anchor').Anchor;
 		return new Anchor(doc, loc[0],loc[1]);
 	}
 	private getAceGrammarName(grammarName) {

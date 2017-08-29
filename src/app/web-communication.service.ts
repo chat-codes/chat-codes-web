@@ -1,4 +1,4 @@
-import {Injectable,EventEmitter} from '@angular/core';
+import {EventEmitter} from '@angular/core';
 import * as _ from 'underscore';
 import { CommunicationService, ChannelCommunicationService } from 'chat-codes-services/src/communication-service';
 import { ChatUserList, ChatUser } from 'chat-codes-services/src/chat-user';
@@ -9,7 +9,6 @@ import { EditorStateTracker } from 'chat-codes-services/src/editor-state-tracker
 import { AceEditorWrapper } from './editor/ace-editor-wrapper';
 
 
-@Injectable()
 export class WebCommunicationService {
     constructor(username:string, private channelName:string) {
         this.commService = new CommunicationService(false, {

@@ -18,19 +18,30 @@ export class ChatMessagesDisplay {
     ngAfterViewInit() {
         this.scrollToBottom();
         let at_bottom = false;
+        (this.commLayer.messageGroups as any).on('group-will-be-added', (event) => {
+            at_bottom = this.atBottom();
+        });
         (this.commLayer.messageGroups as any).on('message-will-be-added', (event) => {
             at_bottom = this.atBottom();
         });
+        (this.commLayer.messageGroups as any).on('delta-will-be-added', (event) => {
+            at_bottom = this.atBottom();
+        });
+        (this.commLayer.messageGroups as any).on('group-added', (event) => {
+            setTimeout(() => { if(at_bottom) { this.scrollToBottom(); } }, 0);
+        });
         (this.commLayer.messageGroups as any).on('message-added', (event) => {
-            if(at_bottom) {
-                this.scrollToBottom();
-            }
+            setTimeout(() => { if(at_bottom) { this.scrollToBottom(); } }, 0);
+        });
+        (this.commLayer.messageGroups as any).on('delta-added', (event) => {
+            setTimeout(() => { if(at_bottom) { this.scrollToBottom(); } }, 0);
         });
     }
     private scrollToBottom(): void {
+        const element = this.messageDisplay.nativeElement;
         try {
-            this.messageDisplay.nativeElement.scrollTop = this.messageDisplay.nativeElement.scrollHeight;
-        } catch (err) { }
+            element.scrollTop = element.scrollHeight;
+        } catch (err) { console.error(err); }
     }
     private atBottom():boolean {
         const element = this.messageDisplay.nativeElement;

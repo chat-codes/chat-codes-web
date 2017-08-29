@@ -39,8 +39,13 @@
     }
 }
 
-.user-1 { color: red; }
-.user-2 { color: orange; }
-.user-3 { color: yellow; }
-.user-4 { color: green; }
-.user-5 { color: blue; }
+.user.isme {
+    border: 1px solid #007bff;
+}
+
+.user-1 { color: #007bff; } /* blue */
+.user-2 { color: #dc3545; } /* red */
+.user-3 { color: #fd7e14; } /* orange */
+.user-4 { color: #ffc107; } /* yellow */
+.user-5 { color: #28a745; } /* green */
+

@@ -9,6 +9,8 @@
 .message-display {
     overflow-y: auto;
     height: 100%;
+    border-top: 1px solid #DDD;
+    padding-right: 5px;
 }
 
 .typing {

@@ -8,7 +8,7 @@ import * as _ from 'underscore';
 })
 
 export class NameEntry {
-  private valueChange(name:string) {
+  public valueChange(name:string):void {
     const value = name.trim();
 
     if(value.length === 0) {
@@ -22,7 +22,7 @@ export class NameEntry {
       this.feedbackClass = '';
     }
   }
-  private onKeydown(event) {
+  public onKeydown(event):void {
     if(event.keyCode === 13) {
       const value = this.value.trim();
       if(value.length > 0 && value.length < this.MAX_LENGTH) {
@@ -32,8 +32,8 @@ export class NameEntry {
   }
   @Output()
   public onEnter:EventEmitter<any> = new EventEmitter();
-  private value:string;
-  private feedback:string='';
-  private feedbackClass:string='';
+  public value:string;
+  public feedback:string='';
+  public feedbackClass:string='';
   private MAX_LENGTH = 20;
 }

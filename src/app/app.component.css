@@ -2,7 +2,7 @@ img.logo {
     height: 40px;
 }
 
-.container {
+.container-fluid {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -13,6 +13,15 @@ img.logo {
 }
 #input_row,#list_row,.navbar {
     flex-grow: 0;
+}
+#list_row {
+    min-height: 42px;
+    margin-top: 15px;
+}
+.navbar { min-height: 42px; }
+#input_row {
+    min-height: 48px;
+    margin-bottom: 15px;
 }
 
 chat-messages,code-editor,terminal {
@@ -79,8 +88,9 @@ ul.messageGroups ul.messages > li:first-child {
 }
 
 
-.user-1 { color: red; }
-.user-2 { color: orange; }
-.user-3 { color: yellow; }
-.user-4 { color: green; }
-.user-5 { color: blue; }
+.user-1 { color: #007bff; } /* blue */
+.user-2 { color: #dc3545; } /* red */
+.user-3 { color: #fd7e14; } /* orange */
+.user-4 { color: #ffc107; } /* yellow */
+.user-5 { color: #28a745; } /* green */
+
