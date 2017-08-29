@@ -3,7 +3,14 @@
         (keydown)="onTextareaKeydown($event)"
         [(ngModel)]="message" >
 ></textarea> -->
-<ace-editor [theme]="'chrome'" id='chat-input-editor' class='form-control' [(ngModel)]='message' (keydown)='onTextareaKeydown($event)' #editor></ace-editor>
+<ace-editor [theme]="'chrome'"
+				id='chat-input-editor'
+				class='form-control'
+				[(ngModel)]='message'
+				(keydown)='onTextareaKeydown($event)'
+	            (ngModelChange)="onTextareaChange($event)"
+	            placeholder="Say something"
+				#editor></ace-editor>
 <!-- <ace-editor id="chat-input-editor"
             [theme]="'chrome'"
             class="form-control"

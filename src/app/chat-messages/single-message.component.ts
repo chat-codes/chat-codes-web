@@ -1,14 +1,14 @@
 import {Component,Injectable,EventEmitter,Output,Input,ViewChild} from '@angular/core';
 import * as _ from 'underscore';
 import * as $ from 'jquery';
-import {MessageGroups} from 'chat-codes-services/src/chat-messages';
+import {MessageGroups, MessageGroup, EditGroup} from 'chat-codes-services/src/chat-messages';
 import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
 
 
 @Component({
-  selector: 'chat-message',
-  templateUrl: './single-message.component.html',
-  styleUrls: ['./single-message.component.css'],
+    selector: 'chat-message',
+    templateUrl: './single-message.component.html',
+    styleUrls: ['./single-message.component.css'],
 })
 
 export class ChatMessageDisplay {
@@ -17,16 +17,8 @@ export class ChatMessageDisplay {
     @Input() editor;
     @ViewChild('elem') elem;
     ngAfterViewInit() {
-      const $elem = $(this.elem.nativeElement);
-      $elem.html(this.message.html);
-  		// if(this.message.editorID) {
-  		// 	$elem.append($('<a />').attr({
-  		// 		'data-file': this.message.editorID,
-  		// 		'data-start': '1,1',
-  		// 		'data-end': '2,2',
-  		// 		'href': 'javascript:void(0)'
-  		// 	}).addClass('line_ref').text('LINK'));
-  		// }
+        const $elem = $(this.elem.nativeElement);
+        $elem.html(this.message.html);
 
   		$('a.line_ref', $elem).on('mouseenter', (me_event) => {
   			const {file, range} = this.getHighlightInfo(me_event.currentTarget);
@@ -35,7 +27,7 @@ export class ChatMessageDisplay {
   				this.removeHighlight(file, highlightID);
   				$(me_event.target).off('mouseleave.removeHighlight');
   			});
-          }).on('click', (c_event) => {
+        }).on('click', (c_event) => {
   			const {file, range} = this.getHighlightInfo(c_event.currentTarget);
   			this.focusRange(file, range, this.message.timestamp);
   		});
@@ -55,17 +47,17 @@ export class ChatMessageDisplay {
   	}
   	private addHighlight(editorID, range, timestamp) {
   		return this.editorStateTracker.addHighlight(editorID, range, timestamp, {
-        editor: this.editor.getEditorInstance()
-      });
+            editor: this.editor.getEditorInstance()
+        });
   	}
   	private removeHighlight(editorID, highlightID) {
   		return this.editorStateTracker.removeHighlight(editorID, highlightID, {
-        editor: this.editor.getEditorInstance()
-      });
+            editor: this.editor.getEditorInstance()
+        });
   	}
   	private focusRange(editorID, range, timestamp) {
-			const editorState = this.editorStateTracker.getEditorState(editorID);
-      this.editor.selectFile(editorState);
+    	const editorState = this.editorStateTracker.getEditorState(editorID);
+        this.editor.selectFile(editorState);
   		return this.editorStateTracker.focus(editorID, range, timestamp, {editor: this.editor.getEditorInstance()});
   	}
 }

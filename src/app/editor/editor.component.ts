@@ -97,10 +97,19 @@ export class EditorDisplay {
 			}
 		});
 
+		this.commLayer.history.subscribe((event) => {
+			const {editorState} = event;
+			const editors = editorState.getAllEditors();
+			if(editors.length > 0) {
+				this.selectFile(editors[0]);
+			}
+		})
+
 		this.commLayer.editorOpened.subscribe((event) => {
 			const editorStateTracker = this.commLayer.channelService.editorStateTracker;
 			const editorState = editorStateTracker.getEditorState(event.id);
-			this.selectFile(editorState);
+			// this.selectFile(editorState);
+			this.onEditorOpened(editorState);
 		});
     }
 	private onEditorOpened(state) {

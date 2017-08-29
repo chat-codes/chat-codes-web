@@ -12,6 +12,7 @@ import { TerminalDisplay } from './terminal/terminal.component';
 import { TimelineDisplay } from './timeline/timeline.component';
 import { ChatMessagesDisplay } from './chat-messages/chat-messages.component';
 import { ChatMessageDisplay } from './chat-messages/single-message.component';
+import { EditMessageDisplay } from './chat-messages/edit-message.component';
 
 import { MomentModule } from 'angular2-moment';
 
@@ -25,6 +26,7 @@ import { MomentModule } from 'angular2-moment';
     TerminalDisplay,
     TimelineDisplay,
     ChatMessagesDisplay,
+    EditMessageDisplay,
     ChatMessageDisplay
   ],
   imports: [

@@ -26,6 +26,7 @@ export class WebCommunicationService {
         (this.channelService as any).on('editor-state', (e) => { this.editorState.emit(e); });
         (this.channelService as any).on('editor-opened', (e) => { this.editorOpened.emit(e); });
         (this.channelService as any).on('terminal-data', (e) => { this.terminalData.emit(e); });
+        (this.channelService as any).on('history', (e) => { this.history.emit(e); });
 
         this.userList = this.channelService.userList;
         this.messageGroups = this.channelService.messageGroups;
@@ -54,6 +55,7 @@ export class WebCommunicationService {
     public editorState: EventEmitter<any> = new EventEmitter();
     public editorOpened: EventEmitter<any> = new EventEmitter();
     public terminalData: EventEmitter<any> = new EventEmitter();
+    public history: EventEmitter<any> = new EventEmitter();
 
     public userList:ChatUserList;
     public messageGroups:MessageGroups;

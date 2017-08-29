@@ -3,14 +3,17 @@
         (no messages)
     </div>
     <ul class='messageGroups'>
-        <li class='messageGroup' *ngFor="let messageGroup of commLayer.messageGroups.getMessageGroups()" [ngClass]='"user-"+messageGroup.getSender().colorIndex'>
-            <ul class='messages list-group'>
+        <li class='messageGroup' *ngFor="let messageGroup of commLayer.messageGroups.getMessageGroups()">
+            <ul *ngIf="isChatMessage(messageGroup)" class='messages list-group'  [ngClass]='"user-"+messageGroup.getSender().getColorIndex()'>
                 <li class='header list-group-item'>
-                    <span class="sender">{{messageGroup.getSender().name}}</span>&nbsp;<span class="time">({{messageGroup.getTimestamp(0) | amTimeAgo}})</span>:
+                    <span class="sender">{{messageGroup.getSender().getName()}}</span>&nbsp;<span class="time">({{messageGroup.getTimestamp() | amTimeAgo}})</span>:
                 </li>
                 <li *ngFor="let message of messageGroup.getMessages()" class='message list-group-item'>
                     <chat-message [message]='message' [editorStateTracker]='commLayer.getEditorStateTracker()' [editor]='editor' ></chat-message>
                 </li>
+            </ul>
+            <ul *ngIf="isEditMessage(messageGroup)" class='edit-messages list-group'>
+                <edit-message-group [messageGroup]='messageGroup' [editor]='editor' [editorStateTracker]='commLayer.getEditorStateTracker()'></edit-message-group>
             </ul>
         </li>
     </ul>

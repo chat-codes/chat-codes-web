@@ -1,0 +1,10 @@
+<div>
+	<span *ngFor="let author of authors; let i = index">
+		<span [ngClass]='"user-"+author.getColorIndex()'>{{author.getName()}}</span><span *ngIf="numAuthors>2 && i<numAuthors-2">, </span><span *ngIf="numAuthors>2 && i===numAuthors-2">, and</span><span *ngIf="numAuthors==2 && i==0"> and</span>
+	</span>
+	edited
+	<span *ngFor="let editorState of editorStates; let i = index">
+		<span><a (click)='openFile(editorState)' href="javascript:void(0)">{{editorState.getTitle()}}</a></span><span *ngIf="numEditorStates>2 && i<numEditorStates-2">, </span><span *ngIf="numEditorStates>2 && i===numEditorStates-2">, and</span><span *ngIf="numEditorStates==2 && i==0"> and</span>
+	</span>
+	<span class="time">({{messageGroup.getTimestamp() | amTimeAgo}})</span>
+</div>
