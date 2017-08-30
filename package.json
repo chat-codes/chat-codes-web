@@ -21,6 +21,7 @@
     "@angular/platform-browser": "^4.0.0",
     "@angular/platform-browser-dynamic": "^4.0.0",
     "@angular/router": "^4.0.0",
+    "@types/underscore": "^1.8.2",
     "angular2-moment": "^1.4.0",
     "bootstrap": "^4.0.0-alpha.6",
     "chat-codes-services": "file:../chat-codes-services",
@@ -31,7 +32,6 @@
     "pusher-js": "^4.1.0",
     "rxjs": "^5.1.0",
     "showdown": "^1.7.1",
-    "snapsvg-cjs": "0.0.4",
     "underscore": "^1.8.3",
     "xterm": "^2.8.0",
     "zone.js": "^0.8.4"

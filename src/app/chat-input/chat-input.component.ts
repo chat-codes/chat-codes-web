@@ -57,7 +57,9 @@ export class ChatInput implements OnInit{
             this.setTypingStatus(STATUS.IDLE);
             this.clearActiveTypingTimeout();
 
-            this.send.emit(toSend);
+            if(toSend) {
+                this.send.emit(toSend);
+            }
         }
     };
     private rangeFromStartAndEnd(start, end) {
@@ -115,7 +117,7 @@ export class ChatInput implements OnInit{
             needle: messageRegex
         });
         let matchRanges = searchQuery.findAll(chatSession);
-        _.each(matchRanges, (matchRange) => {
+        _.each(matchRanges, (matchRange:any) => {
             if(matchRange.intersects(chatInputSelectionRange)) {
                 if(matchRange.isEqual(chatInputSelectionRange)) { // replace the text and the content
                     if(locationString) {
