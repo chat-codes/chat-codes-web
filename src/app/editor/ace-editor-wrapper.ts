@@ -14,6 +14,7 @@ export class AceEditorWrapper {
 			const cursor = selection.getCursor();
 
 			channelCommunicationService.emitCursorPositionChanged({
+				id: 0,
 				editorID: state.id,
 				type: 'change-position',
 				newBufferPosition: [cursor.row, cursor.column]
@@ -27,6 +28,7 @@ export class AceEditorWrapper {
 				};
 			});
 			channelCommunicationService.emitCursorSelectionChanged({
+				id: 0,
 				editorID: state.id,
 				newRange: serializedRanges[0],
 				type: 'change-selection'

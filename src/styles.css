@@ -1,28 +1,28 @@
 /* You can add global styles to this file, and also import other style files */
 .remoteCursor {
     position: absolute;
-    background-color: red;
     z-index: 5;
+    opacity: 0.3;
 }
 
-.remoteCursor.user-1 { background-color: red; opacity: 0.3; }
-.remoteCursor.user-2 { background-color: orange; opacity: 0.3; }
-.remoteCursor.user-3 { background-color: yellow; opacity: 0.3; }
-.remoteCursor.user-4 { background-color: green; opacity: 0.3; }
-.remoteCursor.user-5 { background-color: blue; opacity: 0.3; }
+.remoteCursor.user-1 { background-color: #007bff; }
+.remoteCursor.user-2 { background-color: #dc3545; }
+.remoteCursor.user-3 { background-color: #fd7e14; }
+.remoteCursor.user-4 { background-color: #ffc107; }
+.remoteCursor.user-5 { background-color: #28a745; }
 
-.remoteCursor.carret.user-1 { border-left-color: red; }
-.remoteCursor.carret.user-2 { border-left-color: orange; }
-.remoteCursor.carret.user-3 { border-left-color: yellow; }
-.remoteCursor.carret.user-4 { border-left-color: green; }
-.remoteCursor.carret.user-5 { border-left-color: blue; }
+.remoteCursor.carret.user-1 { border-left-color: #007bff; }
+.remoteCursor.carret.user-2 { border-left-color: #dc3545; }
+.remoteCursor.carret.user-3 { border-left-color: #fd7e14; }
+.remoteCursor.carret.user-4 { border-left-color: #ffc107; }
+.remoteCursor.carret.user-5 { border-left-color: #28a745; }
 
 .remoteCursor.carret {
     position: absolute;
     border-left-width: 2px;
     border-left-style: solid;
-    /*border-left: 2px solid orange;*/
     z-index: 6;
+    opacity: 0.9;
 }
 
 html,body {
