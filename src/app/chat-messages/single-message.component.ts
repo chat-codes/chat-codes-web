@@ -40,8 +40,8 @@ export class ChatMessageDisplay {
   		return {
   			file: $elem.attr('data-file'),
   			range: {
-  				start: _.map(start.split(','), x => parseInt(x)),
-  				end: _.map(end.split(','), x => parseInt(x))
+  				start: _.map(start.split(','), (x:string) => parseInt(x)),
+  				end: _.map(end.split(','), (x:string) => parseInt(x))
   			}
   		};
   	}

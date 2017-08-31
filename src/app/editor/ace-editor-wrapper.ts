@@ -20,7 +20,7 @@ export class AceEditorWrapper {
 			});
 		});
 		selection.on('changeSelection', (event) => {
-			const serializedRanges = _.map(selection.getAllRanges(), (range) => {
+			const serializedRanges = _.map(selection.getAllRanges(), (range:any) => {
 				return {
 					start: [range.start.row, range.start.column],
 					end: [range.end.row, range.end.column]
