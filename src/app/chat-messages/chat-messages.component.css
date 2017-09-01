@@ -28,3 +28,8 @@ ul.messageGroups > li.messageGroup {
 li.messageGroup  .header {
     background-color: #EEE;
 }
+
+.revert {
+    position: absolute;
+    right: 5px;
+}

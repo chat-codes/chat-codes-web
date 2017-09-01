@@ -30,3 +30,6 @@ html,body {
     margin: 0px;
     overflow: hidden;
 }
+.d2h-diff-table {
+    position: relative;
+}

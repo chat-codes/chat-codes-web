@@ -1,7 +1,7 @@
 import {Component,Injectable,EventEmitter,Output,Input,ViewChild} from '@angular/core';
 import * as _ from 'underscore';
 import * as $ from 'jquery';
-import {MessageGroups, MessageGroup, EditGroup} from 'chat-codes-services/src/chat-messages';
+import {MessageGroups, TextMessageGroup, TextMessage, EditGroup} from 'chat-codes-services/src/chat-messages';
 import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
 
 
@@ -13,23 +13,25 @@ import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
 
 export class ChatMessageDisplay {
     @Input() editorStateTracker:EditorStateTracker;
-    @Input() message;
+    @Input() message:TextMessage;
     @Input() editor;
     @ViewChild('elem') elem;
     ngAfterViewInit() {
         const $elem = $(this.elem.nativeElement);
-        $elem.html(this.message.html);
+        $elem.html(this.message.getHTML());
 
   		$('a.line_ref', $elem).on('mouseenter', (me_event) => {
+            let startingTimestamp:number = this.editorStateTracker.getCurrentTimestamp();
   			const {file, range} = this.getHighlightInfo(me_event.currentTarget);
-  			const highlightID = this.addHighlight(file, range, this.message.timestamp);
+  			const highlightID = this.addHighlight(file, range, this.message.getTimestamp());
   			$(me_event.target).on('mouseleave.removeHighlight', (ml_event) => {
+                this.editorStateTracker.setCurrentTimestamp(startingTimestamp, {editor: this.editor.getEditorInstance()});
   				this.removeHighlight(file, highlightID);
   				$(me_event.target).off('mouseleave.removeHighlight');
   			});
         }).on('click', (c_event) => {
   			const {file, range} = this.getHighlightInfo(c_event.currentTarget);
-  			this.focusRange(file, range, this.message.timestamp);
+  			this.focusRange(file, range, this.message.getTimestamp());
   		});
     }
   	private getHighlightInfo(elem) {
@@ -51,7 +53,7 @@ export class ChatMessageDisplay {
         });
   	}
   	private removeHighlight(editorID, highlightID) {
-  		return this.editorStateTracker.removeHighlight(editorID, highlightID, {
+  		this.editorStateTracker.removeHighlight(editorID, highlightID, {
             editor: this.editor.getEditorInstance()
         });
   	}
