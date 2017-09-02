@@ -33,3 +33,7 @@ li.messageGroup  .header {
     position: absolute;
     right: 5px;
 }
+
+.cameAfterTimestamp .text-messages {
+    opacity: 0.5;
+}

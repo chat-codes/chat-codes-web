@@ -3,3 +3,16 @@ ace-editor {
     border-right: 1px solid #EEE;
     border-bottom: 1px solid #EEE;
 }
+
+.message {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 0.8em;
+    z-index: 99;
+    background-color: #EEE;
+    padding: 5px;
+    border: 1px solid #CCC;
+    opacity: 0.8;
+    color: #999;
+}

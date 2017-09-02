@@ -25,19 +25,13 @@ export class ChatMessagesDisplay {
         (this.commLayer.messageGroups as any).on('group-will-be-added', (event) => {
             at_bottom = this.atBottom();
         });
-        (this.commLayer.messageGroups as any).on('message-will-be-added', (event) => {
-            at_bottom = this.atBottom();
-        });
-        (this.commLayer.messageGroups as any).on('delta-will-be-added', (event) => {
+        (this.commLayer.messageGroups as any).on('item-will-be-added', (event) => {
             at_bottom = this.atBottom();
         });
         (this.commLayer.messageGroups as any).on('group-added', (event) => {
             setTimeout(() => { if(at_bottom) { this.scrollToBottom(); } }, 0);
         });
-        (this.commLayer.messageGroups as any).on('message-added', (event) => {
-            setTimeout(() => { if(at_bottom) { this.scrollToBottom(); } }, 0);
-        });
-        (this.commLayer.messageGroups as any).on('delta-added', (event) => {
+        (this.commLayer.messageGroups as any).on('item-added', (event) => {
             setTimeout(() => { if(at_bottom) { this.scrollToBottom(); } }, 0);
         });
         (this.editorStateTracker as any).on('timestampChanged', (event) => {

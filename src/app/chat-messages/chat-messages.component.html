@@ -3,8 +3,8 @@
         (no messages)
     </div>
     <ul class='messageGroups'>
-        <li class='messageGroup' *ngFor="let messageGroup of commLayer.messageGroups.getMessageGroups()">
-            <ul *ngIf="isChatMessage(messageGroup)" class='messages list-group'  [ngClass]='"user-"+messageGroup.getSender().getColorIndex()' (click)="revert(messageGroup)">
+        <li class='messageGroup' *ngFor="let messageGroup of commLayer.messageGroups.getMessageGroups()" [ngClass]='{cameAfterTimestamp: (!editorStateTracker.isAtLatest() && messageGroup.getEarliestTimestamp() > editorStateTracker.getCurrentTimestamp())}'>
+            <ul *ngIf="isChatMessage(messageGroup)" class='text-messages list-group'  [ngClass]='"user-"+messageGroup.getSender().getColorIndex()' (click)="revert(messageGroup)">
                 <li class='header list-group-item'>
                     <span class="sender">{{messageGroup.getSender().getName()}}</span>&nbsp;<span class="time">({{messageGroup.getLatestTimestamp() | amTimeAgo}})</span>
                     <!-- <button *ngIf='this.currentTimestamp!==messageGroup.getTimestamp()' class="btn btn-default btn-sm revert" (click)="revert(messageGroup)">Look</button> -->
