@@ -9,10 +9,11 @@
 		</span>
 		<span class="time">({{messageGroup.getLatestTimestamp() | amTimeAgo}})</span>
 	</div>
-	<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+	<div class="btn-toolbar" role="toolbar">
 		<div class="btn-group" role="group">
-			<button type='button' class='btn btn-secondary btn-sm' (click)='showCodeBefore()'>Show Code Before</button>
-			<button type='button' class='btn btn-secondary btn-sm' (click)='showCodeAfter()'>Show Code After</button>
+			<button type='button' class='btn btn-secondary btn-sm' [ngClass]='{"active": isShowingCodeBefore()}' (click)='showCodeBefore()'>Show before</button>
+			<button type='button' class='btn btn-secondary btn-sm' [ngClass]='{"active": isShowingCodeAfter()}' (click)='showCodeAfter()'>Show after</button>
+			<button *ngIf='isShowingCodeBefore()||isShowingCodeAfter()' type='button' class='btn btn-primary btn-sm' (click)='showLatestCode()'>Show current</button>
 		</div>
 		<div class="btn-group" role="group">
 		    <button class='btn btn-secondary btn-sm' [ngClass]="{'active': showingChanges}" (click)="toggleShowingChanges()">

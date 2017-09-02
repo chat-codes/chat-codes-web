@@ -4,7 +4,7 @@
     </div>
     <ul class='messageGroups'>
         <li class='messageGroup' *ngFor="let messageGroup of commLayer.messageGroups.getMessageGroups()" [ngClass]='{cameAfterTimestamp: (!editorStateTracker.isAtLatest() && messageGroup.getEarliestTimestamp() > editorStateTracker.getCurrentTimestamp())}'>
-            <ul *ngIf="isChatMessage(messageGroup)" class='text-messages list-group'  [ngClass]='"user-"+messageGroup.getSender().getColorIndex()' (click)="revert(messageGroup)">
+            <ul *ngIf="isChatMessage(messageGroup)" class='text-messages list-group'  [ngClass]='"user-"+messageGroup.getSender().getColorIndex() + ((editorStateTracker.getCurrentTimestamp() === messageGroup.getLatestTimestamp()) ? " isCurrentTimestamp":"")' (click)="revert(messageGroup)">
                 <li class='header list-group-item'>
                     <span class="sender">{{messageGroup.getSender().getName()}}</span>&nbsp;<span class="time">({{messageGroup.getLatestTimestamp() | amTimeAgo}})</span>
                     <!-- <button *ngIf='this.currentTimestamp!==messageGroup.getTimestamp()' class="btn btn-default btn-sm revert" (click)="revert(messageGroup)">Look</button> -->
@@ -18,8 +18,8 @@
                 <edit-message-group [messageGroup]='messageGroup' [editor]='editor' [editorStateTracker]='commLayer.getEditorStateTracker()'></edit-message-group>
             </ul>
         </li>
-        <li *ngIf='this.currentTimestamp >= 0'>
-            <button class='btn btn-primary btn-lg btn-block' (click)="toLatest($event)">Back to Latest</button>
+        <li [style.visibility]='this.currentTimestamp >= 0 ? "visible" : "hidden"'>
+            <button class='btn btn-primary btn-sm btn-block' (click)="toLatest($event)">Show current</button>
         </li>
     </ul>
     <div class='typing'>

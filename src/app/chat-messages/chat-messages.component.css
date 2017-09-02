@@ -37,3 +37,7 @@ li.messageGroup  .header {
 .cameAfterTimestamp .text-messages {
     opacity: 0.5;
 }
+li.messageGroup .isCurrentTimestamp {
+    border: 1px solid #0275d8;
+    border-radius: 5px;
+}

@@ -2,6 +2,7 @@ import {Component, ViewChild, EventEmitter, Output, Input} from '@angular/core';
 import { WebCommunicationService } from '../web-communication.service';
 import { ChatUserList, ChatUser } from 'chat-codes-services/src/chat-user';
 import {ChatInput} from '../chat-input/chat-input.component'
+import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
 
 import * as _ from 'underscore';
 
@@ -14,7 +15,9 @@ declare let ace: any;
 })
 export class EditorDisplay {
     constructor() { }
-    ngOnInit() { }
+    ngOnInit() {
+		this.editorStateTracker = this.commLayer.getEditorStateTracker();
+	}
 	atomIDToEditSessionMap = {}
 	files: Array<any> = []
 	selectedEditor:any=false;
@@ -156,6 +159,12 @@ export class EditorDisplay {
 		const Range = ace.require('ace/range').Range
 		return new Range(serializedRange.start[0], serializedRange.start[1], serializedRange.end[0], serializedRange.end[1]);
 	}
+
+	public toLatest() {
+		this.editorStateTracker.toLatestTimestamp({editor: this.editor.getEditor() });
+	}
+
+	public editorStateTracker:EditorStateTracker;
 
     @ViewChild('editor') editor;
     @Input() commLayer: WebCommunicationService;

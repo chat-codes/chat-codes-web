@@ -20,18 +20,23 @@ export class ChatMessageDisplay {
         const $elem = $(this.elem.nativeElement);
         $elem.html(this.message.getHTML());
 
+        let startingTimestamp:number = -10;
   		$('a.line_ref', $elem).on('mouseenter', (me_event) => {
-            let startingTimestamp:number = this.editorStateTracker.getCurrentTimestamp();
+            startingTimestamp = this.editorStateTracker.getCurrentTimestamp();
   			const {file, range} = this.getHighlightInfo(me_event.currentTarget);
   			const highlightID = this.addHighlight(file, range, this.message.getTimestamp());
   			$(me_event.target).on('mouseleave.removeHighlight', (ml_event) => {
-                this.editorStateTracker.setCurrentTimestamp(startingTimestamp, {editor: this.editor.getEditorInstance()});
+                if(startingTimestamp !== -10) {
+                    this.editorStateTracker.setCurrentTimestamp(startingTimestamp, {editor: this.editor.getEditorInstance()});
+                }
   				this.removeHighlight(file, highlightID);
   				$(me_event.target).off('mouseleave.removeHighlight');
   			});
         }).on('click', (c_event) => {
   			const {file, range} = this.getHighlightInfo(c_event.currentTarget);
   			this.focusRange(file, range, this.message.getTimestamp());
+
+            startingTimestamp = -10;
   		});
     }
   	private getHighlightInfo(elem) {

@@ -4,6 +4,12 @@ ace-editor {
     border-bottom: 1px solid #EEE;
 }
 
+ace-editor.locked {
+    background: url('../../assets/images/lock_icon.svg') center center;
+    background-size: 20%;
+    background-repeat: no-repeat;
+}
+
 .message {
     position: absolute;
     right: 20px;

@@ -69,4 +69,13 @@ export class EditMessageDisplay {
     public showCodeAfter() {
   		return this.editorStateTracker.goAfterDelta(this.messageGroup.getLatestItem(), {editor: this.editor.getEditorInstance()});
     }
+    public isShowingCodeBefore():boolean {
+  		return this.editorStateTracker.isShowingCodeBefore(this.messageGroup.getEarliestItem());
+    }
+    public isShowingCodeAfter():boolean {
+  		return this.editorStateTracker.isShowingCodeAfter(this.messageGroup.getLatestItem());
+    }
+    public showLatestCode() {
+        this.editorStateTracker.toLatestTimestamp({editor: this.editor.getEditorInstance() });
+    }
 }
