@@ -1,2 +1,2 @@
-<div *ngIf='!editorStateTracker.isAtLatest()' class="message">Showing code from {{editorStateTracker.getCurrentTimestamp() | amTimeAgo}} <button class='btn btn-sm btn-primary' (click)='toLatest()'>Show current</button></div>
+<div *ngIf='!editorStateTracker.isAtLatest()' class="message">Showing code from <timestamp [t]='editorStateTracker.getCurrentTimestamp()'></timestamp><button class='btn btn-sm btn-primary' (click)='toLatest()'>Show current</button></div>
 <ace-editor [ngClass]='{locked: !this.editorStateTracker.isAtLatest() }' [theme]="'chrome'" #editor></ace-editor>

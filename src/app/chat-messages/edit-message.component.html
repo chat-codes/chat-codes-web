@@ -7,7 +7,7 @@
 		<span *ngFor="let editorState of editorStates; let i = index">
 			<span><a (click)='openFile(editorState)' href="javascript:void(0)">{{editorState.getTitle()}}</a></span><span *ngIf="numEditorStates>2 && i<numEditorStates-2">, </span><span *ngIf="numEditorStates>2 && i===numEditorStates-2">, and</span><span *ngIf="numEditorStates==2 && i==0"> and</span>
 		</span>
-		<span class="time">({{messageGroup.getLatestTimestamp() | amTimeAgo}})</span>
+		<timestamp [t]='messageGroup.getLatestTimestamp()' [parens]='true'></timestamp>
 	</div>
 	<div class="btn-toolbar" role="toolbar">
 		<div class="btn-group" role="group">

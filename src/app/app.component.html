@@ -46,7 +46,8 @@
     </div>
     <div class="row" id="input_row">
         <div class="col-8">
-            <terminal [commLayer]='commLayer'></terminal>
+            <!-- <terminal [commLayer]='commLayer'></terminal> -->
+            <python-output [commLayer]='commLayer' [editor]='codeEditor'></python-output>
         </div>
         <!-- <div class="col-1"></div> -->
         <div class="col-4">

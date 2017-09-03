@@ -20,6 +20,7 @@ img.logo {
 }
 .navbar { min-height: 42px; }
 #input_row {
+    height: 70px;
     min-height: 48px;
     margin-bottom: 15px;
 }

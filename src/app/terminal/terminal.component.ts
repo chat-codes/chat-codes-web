@@ -3,9 +3,9 @@ import {WebCommunicationService} from '../web-communication.service';
 import * as Terminal from 'xterm';
 
 @Component({
-  selector: 'terminal',
-  templateUrl: './terminal.component.html',
-  styleUrls: ['./terminal.component.css'],
+    selector: 'terminal',
+    templateUrl: './terminal.component.html',
+    styleUrls: ['./terminal.component.css'],
 })
 
 export class TerminalDisplay {
@@ -20,7 +20,7 @@ export class TerminalDisplay {
 
         term.write('$ ');
         term.on('data', (key) => {
-          this.commLayer.writeToTerminal(key);
+            this.commLayer.writeToTerminal(key);
         });
         this.commLayer.terminalData.subscribe((event) => {
             term.write(event.data);
