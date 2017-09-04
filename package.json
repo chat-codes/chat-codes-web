@@ -24,7 +24,7 @@
     "@types/underscore": "^1.8.2",
     "angular2-moment": "^1.4.0",
     "bootstrap": "^4.0.0-alpha.6",
-    "chat-codes-services": "file:../chat-codes-services",
+    "chat-codes-services": "https://github.com/soney/chat-codes-services.git",
     "core-js": "^2.4.1",
     "diff-match-patch": "^1.0.0",
     "diff2html": "^2.3.0",

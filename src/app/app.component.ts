@@ -68,7 +68,7 @@ export class AppComponent implements OnInit {
         if (channelName) {
             this.channelName = channelName;
         }
-        this.setName('remote');
+        // this.setName('remote');
     };
 
     private commLayer: WebCommunicationService;

@@ -1,7 +1,7 @@
 import {ViewChild, Component, EventEmitter, Output, Input} from '@angular/core';
 import {WebCommunicationService} from '../web-communication.service';
 import * as Terminal from 'xterm';
-import * as skulpt from 'skulpt'
+import * as skulpt from 'skulpt';
 import {EditorDisplay} from '../editor/editor.component';
 
 @Component({
