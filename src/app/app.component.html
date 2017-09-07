@@ -21,6 +21,11 @@
                         <span class='modifiedFlag' [ngClass]="{'modified':editorState.getIsModified()}"></span>
                     </a>
                 </li>
+                <li *ngIf="commLayer.channelService.isRoot()" class='nav-item'>
+                    <a class='nav-link' href='javascript:void(0);' (click)="createNewFile()">
+                        +
+                    </a>
+                </li>
             </ul>
         </div>
         <!-- <div class="col-1"></div> -->

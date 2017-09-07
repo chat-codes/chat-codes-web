@@ -18,57 +18,16 @@ export class AppComponent implements OnInit {
     private message: String;
     @ViewChild('chatinput') private chatinput;
 
-    // chatinputMessageChanged(message):void{
-    //   this.message = message;
-    // }
     editorCursorSelectionChanged(data) {
         this.chatinput.onEditorCursorSelectionChanged(data);
-        // var startRow = data.newRange.start[0]; var startCol = data.newRange.start[1];
-        // var endRow = data.newRange.end[0]; var endCol = data.newRange.end[1];
-        // if( startRow==endRow && startCol==endCol ){
-        //   var message = this.getTypeMessage(this.message);
-        //   if(message == "This is a link!"){
-        //     this.message = undefined
-        //   }else{
-        //     this.message = message;
-        //   }
-        // }else{
-        //   this.message = this.getTypeMessage(this.message);
-        // //   console.log(this.getActiveEditors());
-        //   var messageTemp = "["+this.message+"]("+this.getOpenFileTitle()+":L"+startRow+","+startCol+"-L"+endRow+","+endCol+")";
-        //   this.message = messageTemp;
-        // }
     }
-    // getTypeMessage(message):String{
-    //   if(message != undefined){
-    //     var start = message.indexOf("[");
-    //     var end = message.indexOf("]");
-    //     if(start!=-1 && end!=-1 && start<end){
-    //       return message.substring(start+1, end);
-    //     }else{
-    //       return message;
-    //     }
-    //   }else{
-    //     return("This is a link!")
-    //   }
-    // }
-    // getOpenFileTitle():String{
-    //   var editorStates = this.getActiveEditors();
-    //   var title;
-    //   _.each(editorStates, (editorstate)=>{
-    //     if(editorstate.selected == true){
-    //       title = editorstate.title;
-    //     }
-    //   })
-    //   return title;
-    // }
 
     constructor() {
         const channelName = Location.stripTrailingSlash(location.pathname.substring(1));
         if (channelName) {
             this.channelName = channelName;
         }
-        // this.setName('remote');
+        this.setName('remote');
     };
 
     private commLayer: WebCommunicationService;
@@ -94,9 +53,41 @@ export class AppComponent implements OnInit {
     };
     getActiveEditors() {
         return this.commLayer.getActiveEditors();
-    }
+    };
+    public createNewFile() {
+        this.commLayer.ready().then(() => {
+            const id:string = guid();
+            const title:string = 'file-'+editorTitle;
+            editorTitle++;
+            this.commLayer.channelService.emitEditorOpened({
+                id: id
+            });
+    		const openDelta =  {
+    			type: 'open',
+    			id: id,
+    			contents: '',
+    			grammarName: 'None',
+    			title: title,
+    			modified: false
+    		};
+            this.commLayer.channelService.emitEditorChanged(openDelta);
+        });
+    };
     private name:string = '';
     public hasName: boolean = false;
     public connected: boolean = false;
     private channelName:string = 'example_channel';
+    @ViewChild('codeEditor') codeEditor;
+}
+
+let editorTitle:number = 1;
+
+function guid():string {
+    function s4():string {
+        return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+            s4() + '-' + s4() + s4() + s4();
 }

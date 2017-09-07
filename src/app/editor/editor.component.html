@@ -1,2 +1,5 @@
 <div *ngIf='!editorStateTracker.isAtLatest()' class="message">Showing code from <timestamp [t]='editorStateTracker.getCurrentTimestamp()'></timestamp><button class='btn btn-sm btn-primary' (click)='toLatest()'>Show current</button></div>
-<ace-editor [ngClass]='{locked: !this.editorStateTracker.isAtLatest() }' [theme]="'chrome'" #editor></ace-editor>
+<ace-editor [hidden]='selectedEditor==false' [ngClass]='{locked: !this.editorStateTracker.isAtLatest() }' [theme]="'chrome'" #editor></ace-editor>
+<div class='no-editor-open' *ngIf='selectedEditor===false'>
+    (no file is open)
+</div>

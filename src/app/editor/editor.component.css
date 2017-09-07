@@ -22,3 +22,11 @@ ace-editor.locked {
     opacity: 0.8;
     color: #999;
 }
+
+.no-editor-open {
+    text-align: center;
+    vertical-align: middle;
+    font-size: 2em;
+    color: #AAA;
+    font-weight: lighter;
+}

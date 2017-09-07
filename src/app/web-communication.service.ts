@@ -11,7 +11,7 @@ import { AceEditorWrapper } from './editor/ace-editor-wrapper';
 
 export class WebCommunicationService {
     constructor(username:string, private channelName:string) {
-        this.commService = new CommunicationService(false, {
+        this.commService = new CommunicationService({
             username: username,
             // host: 'localhost',
             // port: 3000,
