@@ -114,6 +114,10 @@ export class EditorDisplay {
 			this.selectFile(editorState);
 			// this.onEditorOpened(editorState);
 		});
+		const activeEditors = this.editorStateTracker.getActiveEditors();
+		if(activeEditors.length > 0) {
+			this.selectFile(activeEditors[0]);
+		}
     }
 	private getTimestamp():number {
 		return (new Date()).getTime();
@@ -141,9 +145,6 @@ export class EditorDisplay {
 					end: [range.end.row, range.end.column]
 				};
 			});
-			//console.log(this.chatInput);
-			// console.log('selected once - "editor.components.ts"');
-			//console.log(editorState);
 			this.cursorSelectionChanged.emit({
 				editor: editor,
 				session: session,
