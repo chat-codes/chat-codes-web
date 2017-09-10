@@ -1,4 +1,5 @@
 import { Component, Input, ViewEncapsulation, ViewChild, OnInit } from '@angular/core';
+import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
 import { WebCommunicationService } from './web-communication.service';
 import { Location } from '@angular/common';
 import * as _ from 'underscore';
@@ -30,14 +31,17 @@ export class AppComponent implements OnInit {
         this.setName('remote');
     };
 
-    private commLayer: WebCommunicationService;
+    public editorStateTracker: EditorStateTracker;
+    public commLayer: WebCommunicationService;
     private at_bottom: boolean = false;
 
     public setName(name:string): void {
-        this.hasName = true;
         this.name = name;
+        this.hasName = true;
 
         this.commLayer = new WebCommunicationService(this.name, this.channelName);
+        this.editorStateTracker = this.commLayer.getEditorStateTracker();
+
         this.commLayer.ready().then((channel) => {
             this.connected = true;
         });

@@ -17,9 +17,10 @@ export class ChatMessagesDisplay {
     @Input() editorStateTracker: EditorStateTracker;
     @Input() editor:EditorDisplay;
     private currentTimestamp:number=-1;
+    constructor() {
+        // this.editorStateTracker = this.commLayer.getEditorStateTracker();
+    }
     ngAfterViewInit() {
-        this.editorStateTracker = this.commLayer.getEditorStateTracker();
-
         this.scrollToBottom();
         let at_bottom = false;
         (this.commLayer.messageGroups as any).on('group-will-be-added', (event) => {
