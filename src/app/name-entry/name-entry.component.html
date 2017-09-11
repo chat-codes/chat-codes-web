@@ -1,2 +1,22 @@
-<input [class]="feedbackClass" placeholder="Your name" type='text' (ngModelChange)="valueChange($event)" [(ngModel)]="value" (keydown)="onKeydown($event)"/>
-{{feedback}}
+<div class="container-fluid">
+    <div class="name-label row">
+        <div class="col-12">
+            <label for="uname">Username:</label>
+        </div>
+    </div>
+    <div class="name-entry row">
+        <div class="col-12">
+            <div class="input-group input-group-lg">
+                <input #inp id='uname' class='form-control' [class]="feedbackClass" placeholder="Your name" type='text' (ngModelChange)="valueChange($event)" [(ngModel)]="value" (keydown)="onKeydown($event)"/>
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" (click)='doSubmit()'>Go</button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="feedback row">
+        <div class="col-12">
+            {{feedback}}
+        </div>
+    </div>
+</div>

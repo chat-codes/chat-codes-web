@@ -30,6 +30,10 @@ export class ChatInput implements OnInit{
         session.setWrapLimitRange(chatInputSoftWrapNumber,chatInputSoftWrapNumber);
         session.setOption("indentedSoftWrap", false);
         session.setMode('markdown');
+
+        setTimeout(() => {
+            editor.focus();
+        }, 100);
     }
 
     @ViewChild('editor') editor;
