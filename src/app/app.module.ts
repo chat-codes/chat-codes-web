@@ -13,6 +13,7 @@ import { TimestampDisplay } from './timestamp/timestamp.component';
 import { ChatMessagesDisplay } from './chat-messages/chat-messages.component';
 import { ChatMessageDisplay } from './chat-messages/single-message.component';
 import { EditMessageDisplay } from './chat-messages/edit-message.component';
+import { ConnectionMessageDisplay } from './chat-messages/connection-message.component';
 import { PythonOutputDisplay } from './python_out/python_out.component';
 
 import { MomentModule } from 'angular2-moment';
@@ -29,6 +30,7 @@ import { MomentModule } from 'angular2-moment';
     EditMessageDisplay,
     TimestampDisplay,
     ChatMessageDisplay,
+    ConnectionMessageDisplay,
     PythonOutputDisplay
   ],
   imports: [

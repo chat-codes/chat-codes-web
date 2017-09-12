@@ -1,0 +1,11 @@
+<div class="full_connection_message">
+	<div class="connection_message">
+		<span class="users" *ngFor="let user of users; let i = index">
+			<span [ngClass]='"user-"+user.getColorIndex()'>{{user.getName()}}</span><span *ngIf="numUsers>2 && i<numUsers-2">, </span><span *ngIf="numUsers>2 && i===numUsers-2">, and</span><span *ngIf="numUsers==2 && i==0"> and</span>
+		</span>
+		<span class="action">
+			{{action}}
+		</span>
+		<timestamp [t]='messageGroup.getLatestTimestamp()' [parens]='true'></timestamp>
+	</div>
+</div>

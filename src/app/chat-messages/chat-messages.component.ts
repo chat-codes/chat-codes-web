@@ -1,6 +1,6 @@
 import {Component,Injectable,EventEmitter,Output,Input,ViewChild} from '@angular/core';
 import * as _ from 'underscore';
-import {MessageGroups, TextMessageGroup, EditGroup} from 'chat-codes-services/src/chat-messages';
+import {MessageGroups, TextMessageGroup, EditGroup, ConnectionMessageGroup} from 'chat-codes-services/src/chat-messages';
 import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
 import {CommunicationService} from 'chat-codes-services/src/communication-service';
 import {WebCommunicationService} from '../web-communication.service';
@@ -57,6 +57,9 @@ export class ChatMessagesDisplay {
     };
     private isEditMessage(message):boolean {
         return message instanceof EditGroup;
+    };
+    private isConnectMessage(message):boolean {
+        return message instanceof ConnectionMessageGroup;
     };
     private updateCurrentTimestamp() {
         this.currentTimestamp = this.editorStateTracker.getCurrentTimestamp();

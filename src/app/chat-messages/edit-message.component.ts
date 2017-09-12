@@ -31,7 +31,7 @@ export class EditMessageDisplay {
     ngAfterViewInit() {
         setTimeout(() => { this.updateVariables(); }, 0);
 
-		(this.messageGroup as any).on('delta-added', () => {
+		(this.messageGroup as any).on('item-added', () => {
             this.updateVariables();
         });
     }
