@@ -1,32 +1,34 @@
 <div class="full_edit_message">
-	<div class="btn-toolbar" role="toolbar">
+	<!-- <div class="btn-toolbar" role="toolbar">
 		<div class="btn-group" role="group">
-			<button type='button' class='btn btn-secondary btn-sm' [ngClass]='{"active": isShowingCodeBefore()}' (click)='showCodeBefore()'>Show code before</button>
+			<button type='button' class='btn btn-secondary btn-sm' [ngClass]='{"active": isShowingCodeBefore()}' (click)='showCodeBefore()'>Show code before</button> -->
 			<!-- <button *ngIf='isShowingCodeBefore()' type='button' class='btn btn-primary btn-sm' (click)='showLatestCode()'>Show current code</button> -->
-		</div>
-	</div>
+		<!-- </div>
+	</div> -->
 	<div class="edit_message">
 		<span class="authors" *ngFor="let author of authors; let i = index">
 			<span [ngClass]='"user-"+author.getColorIndex()'>{{author.getName()}}</span><span *ngIf="numAuthors>2 && i<numAuthors-2">, </span><span *ngIf="numAuthors>2 && i===numAuthors-2">, and</span><span *ngIf="numAuthors==2 && i==0"> and</span>
 		</span>
-		edited
+		<span class="action">edited</span>
 		<span *ngFor="let editorState of editorStates; let i = index">
 			<span><a (click)='openFile(editorState)' href="javascript:void(0)">{{editorState.getTitle()}}</a></span><span *ngIf="numEditorStates>2 && i<numEditorStates-2">, </span><span *ngIf="numEditorStates>2 && i===numEditorStates-2">, and</span><span *ngIf="numEditorStates==2 && i==0"> and</span>
 		</span>
 		<timestamp [t]='messageGroup.getLatestTimestamp()' [parens]='true'></timestamp>
+		<a (click)='toggleDetails()' href="javascript:void(0)">{{showingDetails ? "(less)" : "(more)"}}</a>
 	</div>
-	<div class="btn-toolbar" role="toolbar">
+	<!-- <div *ngIf='showingDetails' class="btn-toolbar" role="toolbar">
 		<div class="btn-group" role="group">
-			<button type='button' class='btn btn-secondary btn-sm' [ngClass]='{"active": isShowingCodeAfter()}' (click)='showCodeAfter()'>Show code after</button>
-			<!-- <button *ngIf='isShowingCodeAfter()' type='button' class='btn btn-primary btn-sm' (click)='showLatestCode()'>Show current</button> -->
+			<button type='button' class='btn btn-secondary btn-sm' [ngClass]='{"active": isShowingCodeBefore()}' (click)='showCodeBefore()'>Show before</button>
+			<button type='button' class='btn btn-secondary btn-sm' [ngClass]='{"active": isShowingCodeAfter()}' (click)='showCodeAfter()'>Show after</button>
+			<button *ngIf='isShowingCodeAfter()' type='button' class='btn btn-primary btn-sm' (click)='showLatestCode()'>Show current</button>
 		</div>
 		<div class="btn-group" role="group">
 		    <button class='btn btn-secondary btn-sm' [ngClass]="{'active': showingChanges}" (click)="toggleShowingChanges()">
 		        {{showingChanges ? "Hide diff" : "Show diff"}}
 		    </button>
 		</div>
-	</div>
-	<div *ngIf="showingChanges" class="diff">
+	</div> -->
+	<div *ngIf="showingChanges && showingDetails" class="diff">
 		<div *ngFor="let dhtml of diffHTMLs" class="file_diff">
 			<div [innerHTML]="dhtml">
 			</div>
