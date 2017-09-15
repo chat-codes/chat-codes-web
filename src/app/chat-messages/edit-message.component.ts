@@ -32,7 +32,7 @@ export class EditMessageDisplay {
     ngAfterViewInit() {
         setTimeout(() => { this.updateVariables(); }, 0);
 
-        const deboucnedUpdateVariables = _.debounce(_.bind(this.updateVariables, this), 100);
+        const deboucnedUpdateVariables = _.debounce(_.bind(this.updateVariables, this), 1000);
 		(this.messageGroup as any).on('item-added', () => {
             deboucnedUpdateVariables();
         });
