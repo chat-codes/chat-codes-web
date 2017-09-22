@@ -18,12 +18,13 @@ export class EditMessageDisplay {
     @Input() messageGroup:EditGroup;
     @Input() editor;
     @ViewChild('elem') elem;
+    public showingDetails:boolean = false;
     public authors:Array<ChatUser> = [];
     public numAuthors:number = 0;
     public editorStates:Array<EditorState> = [];
     public numEditorStates:number = 0;
 
-    public showingChanges:boolean = false;
+    public showingChanges:boolean = true;
 
     private diffSummaries:Array<any> = [];
     private diffHTMLs:Array<string> = [];
@@ -31,9 +32,18 @@ export class EditMessageDisplay {
     ngAfterViewInit() {
         setTimeout(() => { this.updateVariables(); }, 0);
 
+        const deboucnedUpdateVariables = _.debounce(_.bind(this.updateVariables, this), 1000);
 		(this.messageGroup as any).on('item-added', () => {
-            this.updateVariables();
+            deboucnedUpdateVariables();
         });
+    }
+    public toggleDetails() {
+        this.showingDetails = !this.showingDetails;
+        if(this.showingDetails) {
+            this.updateDiffHTMLs();
+        } else {
+            this.showLatestCode();
+        }
     }
     private updateVariables():void {
         this.authors = this.messageGroup.getAuthors();
@@ -41,7 +51,7 @@ export class EditMessageDisplay {
         this.editorStates = this.messageGroup.getEditorStates();
         this.numEditorStates = this.editorStates.length;
 
-        if(this.showingChanges) {
+        if(this.showingChanges && this.showingDetails) {
             this.updateDiffHTMLs();
         }
     }

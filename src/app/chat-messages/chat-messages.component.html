@@ -21,9 +21,9 @@
                 <connection-message-group [messageGroup]='messageGroup'></connection-message-group>
             </ul>
         </li>
-        <li [style.visibility]='this.currentTimestamp >= 0 ? "visible" : "hidden"'>
+        <!-- <li [style.visibility]='this.currentTimestamp >= 0 ? "visible" : "hidden"'>
             <button class='btn btn-primary btn-sm btn-block' (click)="toLatest($event)">Show current</button>
-        </li>
+        </li> -->
     </ul>
     <div class='typing'>
         <div *ngFor='let user of commLayer.userList.activeUsers'>
