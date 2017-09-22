@@ -13,10 +13,10 @@ export class WebCommunicationService {
     constructor(username:string, private channelName:string) {
         this.commService = new CommunicationService({
             username: username,
-            // host: 'localhost',
-            // port: 3000,
-            host: 'chat-codes.herokuapp.com',
-            port: 80,
+            host: 'localhost',
+            port: 3000,
+            // host: 'chat-codes.herokuapp.com',
+            // port: 80,
             key: CREDENTIALS.key,
             cluster: CREDENTIALS.cluster
         }, AceEditorWrapper);

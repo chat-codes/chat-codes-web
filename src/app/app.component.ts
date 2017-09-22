@@ -1,10 +1,12 @@
 import { Component, Input, ViewEncapsulation, ViewChild, OnInit } from '@angular/core';
-import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
+import { EditorStateTracker } from 'chat-codes-services/src/editor-state-tracker';
 import { WebCommunicationService } from './web-communication.service';
 import { Location } from '@angular/common';
 import * as _ from 'underscore';
 import * as $ from 'jquery';
 import * as showdown from 'showdown';
+
+import { SharedbAceBinding } from './sharedb-ace-binding';
 
 @Component({
     selector: 'app-root',
@@ -63,8 +65,9 @@ export class AppComponent implements OnInit {
             const id:string = guid();
             const title:string = 'file-'+editorTitle;
             editorTitle++;
-            this.editorStateTracker.createEditor(id, '', 'None', false);
-
+            this.editorStateTracker.createEditor(id, '', 'None', false).then((doc) => {
+                console.log(doc);
+            });
         });
     };
     private name:string = '';
