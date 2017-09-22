@@ -1,5 +1,5 @@
 import { Component, Input, ViewEncapsulation, ViewChild, OnInit } from '@angular/core';
-import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
+import { EditorStateTracker } from 'chat-codes-services/src/editor-state-tracker';
 import { WebCommunicationService } from './web-communication.service';
 import { Location } from '@angular/common';
 import * as _ from 'underscore';
@@ -64,7 +64,8 @@ export class AppComponent implements OnInit {
             const title:string = 'file-'+editorTitle;
             editorTitle++;
             this.commLayer.channelService.emitEditorOpened({
-                id: id
+                id: id,
+                contents: ''
             });
     		const openDelta =  {
     			type: 'open',
