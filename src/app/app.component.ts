@@ -63,18 +63,8 @@ export class AppComponent implements OnInit {
             const id:string = guid();
             const title:string = 'file-'+editorTitle;
             editorTitle++;
-            this.commLayer.channelService.emitEditorOpened({
-                id: id
-            });
-    		const openDelta =  {
-    			type: 'open',
-    			id: id,
-    			contents: '',
-    			grammarName: 'None',
-    			title: title,
-    			modified: false
-    		};
-            this.commLayer.channelService.emitEditorChanged(openDelta);
+            this.editorStateTracker.createEditor(id, '', 'None', false);
+
         });
     };
     private name:string = '';
