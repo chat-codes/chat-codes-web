@@ -14,7 +14,7 @@ export class WebCommunicationService {
         this.commService = new CommunicationService({
             username: username,
             host: 'localhost',
-            port: 8080,
+            port: 8000,
             // host: 'chat-codes.herokuapp.com',
             // port: 80,
             key: CREDENTIALS.key,
