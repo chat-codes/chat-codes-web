@@ -65,9 +65,7 @@ export class AppComponent implements OnInit {
             const id:string = guid();
             const title:string = 'file-'+editorTitle;
             editorTitle++;
-            this.editorStateTracker.createEditor(id, '', 'None', false).then((doc) => {
-                console.log(doc);
-            });
+            this.editorStateTracker.createEditor(id, '', 'None', false);
         });
     };
     private name:string = '';
