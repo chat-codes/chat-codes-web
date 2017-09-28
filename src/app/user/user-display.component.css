@@ -39,13 +39,14 @@
     }
 }
 
-.user.isme {
-    border: 1px solid #007bff;
-}
+.user.isme.user-1 { border: 1px solid #007bff; }
+.user.isme.user-2 { border: 1px solid #dc3545; }
+.user.isme.user-3 { border: 1px solid #fd7e14; }
+.user.isme.user-4 { border: 1px solid #ffc107; }
+.user.isme.user-5 { border: 1px solid #28a745; }
 
 .user-1 { color: #007bff; } /* blue */
 .user-2 { color: #dc3545; } /* red */
 .user-3 { color: #fd7e14; } /* orange */
 .user-4 { color: #ffc107; } /* yellow */
 .user-5 { color: #28a745; } /* green */
-
