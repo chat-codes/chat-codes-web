@@ -47,16 +47,17 @@ export class SharedbAceBinding {
    * })
    */
   constructor(options) {
-    this.editor = options.ace;
-    this.editor.id = `${options.id}-${options.path}`;
-    this.editor.$blockScrolling = Infinity;
-    this.session = this.editor.getSession();
+    // this.editor = options.ace;
+    // this.editor.id = `${options.id}-${options.path}`;
+    // this.editor.$blockScrolling = Infinity;
+    // this.session = this.editor.getSession();
+    this.session = options.session;
     this.newline = this.session.getDocument().getNewLineCharacter();
     this.path = options.path;
     this.doc = options.doc;
     this.pluginWS = options.pluginWS;
     this.plugins = options.plugins || [];
-    this.logger = new Logdown({ prefix: 'shareace' });
+    this.logger = new Logdown('shareace');
 
     // Initialize plugins
     this.plugins.forEach((plugin) => {
@@ -81,7 +82,11 @@ export class SharedbAceBinding {
     this.suppress = true;
     // TODO: fix this
     // This doesn't work for nested JSON sharedb documents > 1
-    this.session.setValue(this.doc.data[this.path[0]]);
+    let data = this.doc.data;
+    for(let i = 0; i<this.path.length; i++) {
+      data = data[this.path[i]];
+    }
+    this.session.setValue(data);
     this.suppress = false;
   }
 

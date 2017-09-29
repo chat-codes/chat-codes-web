@@ -1,12 +1,26 @@
 import {EditorStateTracker,EditorState} from 'chat-codes-services/src/editor-state-tracker';
 import {ChannelCommunicationService} from 'chat-codes-services/src/communication-service';
+import {SharedbAceBinding} from '../sharedb-ace-binding';
 
 declare let ace: any;
 import * as _ from 'underscore';
 
 export class AceEditorWrapper {
 	constructor(state, private channelCommunicationService:ChannelCommunicationService) {
-		this.session.forEditorID = state.id;
+		const {id} = state;
+		this.channelCommunicationService.getShareDBEditors().then((doc) => {
+			let i = 0;
+			for(; i<doc.data.length; i++) {
+				if(doc.data[i].id === id){
+					break;
+				}
+			}
+			const path = [i, 'contents'];
+			const binding = new SharedbAceBinding({
+				doc, path, session:this.session
+			})
+		});
+		this.session.forEditorID = id;
 		this.session.addDynamicMarker(this);
 
 		const selection = this.session.getSelection();
