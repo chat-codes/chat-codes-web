@@ -15,9 +15,6 @@ declare let ace: any;
 })
 export class EditorDisplay {
     constructor() { }
-    ngOnInit() {
-		this.editorStateTracker = this.commLayer.getEditorStateTracker();
-	}
 	atomIDToEditSessionMap = {}
 	files: Array<any> = []
 	selectedEditor:any=false;
@@ -66,7 +63,8 @@ export class EditorDisplay {
 			newText: newText,
 		};
 	}
-    ngAfterViewInit() {
+    ngOnInit() {
+		this.editorStateTracker = this.commLayer.getEditorStateTracker();
 		const editor = this.editor.getEditor();
 	    editor.$blockScrolling = Infinity;
 
