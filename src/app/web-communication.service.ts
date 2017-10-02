@@ -43,8 +43,8 @@ export class WebCommunicationService {
     public sendTextMessage(data) { this.channelService.sendTextMessage(data); };
     public sendTypingStatus(data) { this.channelService.sendTypingStatus(data); };
     public emitEditorChanged(data) { this.channelService.emitEditorChanged(data); };
-    public emitCursorPositionChanged(data) { this.channelService.emitCursorPositionChanged(data); };
-    public emitCursorSelectionChanged(data) { this.channelService.emitCursorSelectionChanged(data); };
+    // public emitCursorPositionChanged(data) { this.channelService.emitCursorPositionChanged(data); };
+    // public emitCursorSelectionChanged(data) { this.channelService.emitCursorSelectionChanged(data); };
     public writeToTerminal(data) { this.channelService.writeToTerminal(data); };
     public getActiveEditors() { return this.channelService.getActiveEditors(); };
     public getEditorStateTracker() { return this.channelService.editorStateTracker; };

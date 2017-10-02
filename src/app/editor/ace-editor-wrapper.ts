@@ -27,8 +27,7 @@ export class AceEditorWrapper {
 		selection.on('changeCursor', (event) => {
 			const cursor = selection.getCursor();
 
-			channelCommunicationService.emitCursorPositionChanged({
-				id: 0,
+			channelCommunicationService.onCursorPositionChanged({
 				editorID: state.id,
 				type: 'change-position',
 				newBufferPosition: [cursor.row, cursor.column]
@@ -41,8 +40,7 @@ export class AceEditorWrapper {
 					end: [range.end.row, range.end.column]
 				};
 			});
-			channelCommunicationService.emitCursorSelectionChanged({
-				id: 0,
+			channelCommunicationService.onCursorSelectionChanged({
 				editorID: state.id,
 				newRange: serializedRanges[0],
 				type: 'change-selection'
@@ -191,23 +189,23 @@ export class AceEditorWrapper {
 	    var start = config.firstRow, end = config.lastRow;
 		const remoteCursors = this.editorState.getRemoteCursors();
 		const cursors = remoteCursors.getCursors();
-		Object.keys(cursors).forEach((cursorID) => {
-			const cursorInfo = cursors[cursorID];
+		cursors.forEach((cursorInfo) => {
 			const {pos} = cursorInfo;
 	        if (!pos || pos.row < start || pos.row > end) {
 	            return;
 	        } else {
 	            // compute cursor position on screen
 	            // this code is based on ace/layer/marker.js
-	            var screenPos = session.documentToScreenPosition(pos)
+	            var screenPos = session.documentToScreenPosition(...pos)
 
 	            var height = config.lineHeight;
 	            var width = config.characterWidth;
 	            var top = markerLayer.$getTop(screenPos.row, config);
 	            var left = markerLayer.$padding + screenPos.column * width;
 	            // can add any html here
+				const user = cursorInfo.user;
 	            html.push(
-	                "<div class='carret "+this.clazz+(cursorInfo.user ? ' user-'+cursorInfo.user.colorIndex:'')+"' style='",
+	                "<div class='carret "+this.clazz+(user ? ' user-'+user.getColorIndex():'')+"' style='",
 	                "height:", height, "px;",
 	                "top:", top, "px;",
 	                "left:", left, "px;", width, "px'></div>"
