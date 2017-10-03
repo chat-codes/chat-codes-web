@@ -1,5 +1,5 @@
 import { Component, Input, ViewEncapsulation, ViewChild, OnInit } from '@angular/core';
-import { EditorStateTracker } from 'chat-codes-services/src/editor-state-tracker';
+import { EditorStateTracker, EditorState } from 'chat-codes-services/src/editor-state-tracker';
 import { WebCommunicationService } from './web-communication.service';
 import { Location } from '@angular/common';
 import * as _ from 'underscore';
@@ -18,7 +18,6 @@ import { SharedbAceBinding } from './sharedb-ace-binding';
 export class AppComponent implements OnInit {
     ngOnInit() { }
 
-    private message: String;
     @ViewChild('chatinput') private chatinput;
 
     editorCursorSelectionChanged(data) {
@@ -60,12 +59,16 @@ export class AppComponent implements OnInit {
     getActiveEditors() {
         return this.commLayer.getActiveEditors();
     };
-    public createNewFile() {
-        this.commLayer.ready().then(() => {
+    public createNewFile():Promise<EditorState> {
+        return this.commLayer.ready().then(() => {
+            return this.commLayer.channelService.getShareDBEditors();
+        }).then((editorsDoc) => {
             const id:string = guid();
-            const title:string = 'file-'+editorTitle;
-            editorTitle++;
-            this.editorStateTracker.createEditor(id, title, '', 'None', false);
+            const title:string = 'file-'+(editorsDoc.data.length+1);
+            return this.editorStateTracker.createEditor(id, title, '', 'Python', false);
+        }).then((es:EditorState) => {
+            this.codeEditor.selectFile(es);
+            return es;
         });
     };
     private name:string = '';
@@ -74,8 +77,6 @@ export class AppComponent implements OnInit {
     private channelName:string = 'example_channel';
     @ViewChild('codeEditor') codeEditor;
 }
-
-let editorTitle:number = 1;
 
 function guid():string {
     function s4():string {

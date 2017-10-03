@@ -37,7 +37,6 @@ export class ChatInput implements OnInit{
     }
 
     @ViewChild('editor') editor;
-    @Input() public message : string;
     @Output() messageChanged = new EventEmitter<any>();
 
     onTextareaChange(val):void {
@@ -53,8 +52,8 @@ export class ChatInput implements OnInit{
 
     onTextareaKeydown(event):void {
         if(event.keyCode === 13) { // Enter
-            const toSend = this.message;
-            this.message = '';
+            const chatEditor = this.editor.getEditor();
+            const toSend = chatEditor.getValue();
             event.preventDefault();
             event.stopPropagation();
 
@@ -62,6 +61,7 @@ export class ChatInput implements OnInit{
             this.clearActiveTypingTimeout();
 
             if(toSend) {
+                chatEditor.setValue('');
                 this.send.emit(toSend);
             }
         }

@@ -78,10 +78,10 @@ export class EditorDisplay {
 				const session = editor.getSession();
 				const editorID = session.forEditorID;
 
-				this.pusher.emitSave({
-					id: session.forEditorID,
-					type: 'save',
-				});
+				// this.pusher.emitSave({
+				// 	id: session.forEditorID,
+				// 	type: 'save',
+				// });
 			}
 		});
 
@@ -160,7 +160,7 @@ export class EditorDisplay {
 	}
 
 	public toLatest() {
-		this.editorStateTracker.toLatestTimestamp({editor: this.editor.getEditor() });
+		this.editorStateTracker.toLatestVersion({editor: this.editor.getEditor() });
 	}
 
 	public editorStateTracker:EditorStateTracker;

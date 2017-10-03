@@ -17,9 +17,9 @@ export class ConnectionMessageDisplay {
     public numUsers:number = 0;
     public action:string = '';
 
-    ngAfterViewInit() {
+    ngOnInit() {
         setTimeout(() => { this.updateVariables(); }, 0);
-        
+
 		(this.messageGroup as any).on('item-added', () => {
             this.updateVariables();
         });
