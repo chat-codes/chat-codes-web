@@ -183,8 +183,6 @@ export class ChatInput implements OnInit{
         }
     }
 
-
-
     private setTypingStatus(newStatus:string):string {
         if(this.typingStatus != newStatus) {
             this.typingStatus = newStatus;
@@ -207,7 +205,7 @@ export class ChatInput implements OnInit{
     }
     private setActiveTypingTimeout() {
         this.activeTypingTimeout = window.setTimeout(() => {
-        this.setTypingStatus(STATUS.IDLE_TYPED);
+            this.setTypingStatus(STATUS.IDLE_TYPED);
         }, this.typingTimeout);
     }
     private clearActiveTypingTimeout():void {
