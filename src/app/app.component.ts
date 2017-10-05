@@ -24,9 +24,12 @@ export class AppComponent implements OnInit {
     }
 
     constructor() {
-        const channelName = Location.stripTrailingSlash(location.pathname.substring(1));
-        if (channelName) {
-            this.channelName = channelName;
+        const paths:Array<string> = location.pathname.substring(1).split('/');
+        if(paths.length > 0) {
+            this.channelName = Location.stripTrailingSlash(paths[0]);
+        }
+        if(paths.length > 1) {
+            this.channelID = Location.stripTrailingSlash(paths[1]);
         }
         // this.setName('remote');
     };
@@ -35,6 +38,11 @@ export class AppComponent implements OnInit {
     public commLayer: CommunicationService;
     public channelCommLayer: ChannelCommunicationService;
     private at_bottom: boolean = false;
+    private name:string = '';
+    public hasName: boolean = false;
+    public connected: boolean = false;
+    private channelName:string;
+    private channelID:string;
 
     public setName(name:string): void {
         this.name = name;
@@ -42,11 +50,10 @@ export class AppComponent implements OnInit {
 
         this.commLayer = new CommunicationService({
             username: this.name,
-            host: window.location.host
-            // host: 'localhost',
-            // port: 8000
+            // host: window.location.host
+            host: 'localhost:8080',
         }, AceEditorWrapper);
-        this.channelCommLayer = this.commLayer.createChannelWithName(this.channelName);
+        this.channelCommLayer = this.commLayer.createChannelWithName(this.channelName, this.channelID);
         this.editorStateTracker = this.channelCommLayer.getEditorStateTracker();
 
         this.channelCommLayer.ready().then((channel) => {
@@ -77,10 +84,6 @@ export class AppComponent implements OnInit {
             return es;
         });
     };
-    private name:string = '';
-    public hasName: boolean = false;
-    public connected: boolean = false;
-    private channelName:string = 'example_channel';
     @ViewChild('codeEditor') codeEditor;
 }
 
