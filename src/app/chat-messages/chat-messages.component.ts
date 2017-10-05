@@ -2,8 +2,7 @@ import {Component,Injectable,EventEmitter,Output,Input,ViewChild,AfterViewInit} 
 import * as _ from 'underscore';
 import {MessageGroups, TextMessageGroup, EditGroup, ConnectionMessageGroup} from 'chat-codes-services/src/chat-messages';
 import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
-import {CommunicationService} from 'chat-codes-services/src/communication-service';
-import {WebCommunicationService} from '../web-communication.service';
+import { CommunicationService, ChannelCommunicationService } from 'chat-codes-services/src/communication-service';
 import {EditorDisplay} from '../editor/editor.component';
 
 @Component({
@@ -13,7 +12,7 @@ import {EditorDisplay} from '../editor/editor.component';
 })
 
 export class ChatMessagesDisplay {
-    @Input() commLayer: WebCommunicationService;
+    @Input() commLayer: ChannelCommunicationService;
     @Input() editorStateTracker: EditorStateTracker;
     @Input() editor:EditorDisplay;
     public willChangeSize:EventEmitter<any> = new EventEmitter();
@@ -25,19 +24,20 @@ export class ChatMessagesDisplay {
     ngOnInit() {
         setTimeout(() => { this.scrollToBottom(); }, 0);
         let at_bottom = false;
-        (this.commLayer.messageGroups as any).on('group-will-be-added', (event) => {
+        const messageGroups = this.commLayer.getMessageGroups() as any;
+        messageGroups.on('group-will-be-added', (event) => {
             at_bottom = this.atBottom();
         });
-        (this.commLayer.messageGroups as any).on('item-will-be-added', (event) => {
+        messageGroups.on('item-will-be-added', (event) => {
             at_bottom = this.atBottom();
         });
         this.willChangeSize.subscribe(() => {
             at_bottom = this.atBottom();
         });
-        (this.commLayer.messageGroups as any).on('group-added', (event) => {
+        messageGroups.on('group-added', (event) => {
             setTimeout(() => { if(at_bottom) { this.scrollToBottom(); } }, 0);
         });
-        (this.commLayer.messageGroups as any).on('item-added', (event) => {
+        messageGroups.on('item-added', (event) => {
             setTimeout(() => { if(at_bottom) { this.scrollToBottom(); } }, 0);
         });
         (this.editorStateTracker as any).on('timestampChanged', (event) => {

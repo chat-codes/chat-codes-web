@@ -1,6 +1,6 @@
 import {Component, ViewChild, EventEmitter, Output, Input} from '@angular/core';
-import { WebCommunicationService } from '../web-communication.service';
 import { ChatUserList, ChatUser } from 'chat-codes-services/src/chat-user';
+import { CommunicationService, ChannelCommunicationService } from 'chat-codes-services/src/communication-service';
 import {ChatInput} from '../chat-input/chat-input.component'
 import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
 
@@ -98,20 +98,6 @@ export class EditorDisplay {
 			}
 		});
 
-		this.commLayer.history.subscribe((event) => {
-			const {editorState} = event;
-			const editors = editorState.getAllEditors();
-			if(editors.length > 0) {
-				this.selectFile(editors[0]);
-			}
-		})
-
-		this.commLayer.editorOpened.subscribe((event) => {
-			const editorStateTracker = this.commLayer.channelService.editorStateTracker;
-			const editorState = editorStateTracker.getEditorState(event.id);
-			this.selectFile(editorState);
-			// this.onEditorOpened(editorState);
-		});
 		const activeEditors = this.editorStateTracker.getActiveEditors();
 		if(activeEditors.length > 0) {
 			this.selectFile(activeEditors[0]);
@@ -166,7 +152,7 @@ export class EditorDisplay {
 	public editorStateTracker:EditorStateTracker;
 
     @ViewChild('editor') editor;
-    @Input() commLayer: WebCommunicationService;
+    @Input() commLayer: ChannelCommunicationService;
 		//@Input() chatInput: ChatInput;
 	@Output() public editorChanged:EventEmitter<any> = new EventEmitter();
 	@Output() public cursorPositionChanged:EventEmitter<any> = new EventEmitter();

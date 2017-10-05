@@ -1,12 +1,11 @@
 import { Component, Input, ViewEncapsulation, ViewChild, OnInit } from '@angular/core';
 import { EditorStateTracker, EditorState } from 'chat-codes-services/src/editor-state-tracker';
-import { WebCommunicationService } from './web-communication.service';
+import { CommunicationService, ChannelCommunicationService } from 'chat-codes-services/src/communication-service';
 import { Location } from '@angular/common';
 import * as _ from 'underscore';
 import * as $ from 'jquery';
 import * as showdown from 'showdown';
-
-import { SharedbAceBinding } from './sharedb-ace-binding';
+import { AceEditorWrapper } from './editor/ace-editor-wrapper';
 
 @Component({
     selector: 'app-root',
@@ -33,17 +32,24 @@ export class AppComponent implements OnInit {
     };
 
     public editorStateTracker: EditorStateTracker;
-    public commLayer: WebCommunicationService;
+    public commLayer: CommunicationService;
+    public channelCommLayer: ChannelCommunicationService;
     private at_bottom: boolean = false;
 
     public setName(name:string): void {
         this.name = name;
         this.hasName = true;
 
-        this.commLayer = new WebCommunicationService(this.name, this.channelName);
-        this.editorStateTracker = this.commLayer.getEditorStateTracker();
+        this.commLayer = new CommunicationService({
+            username: this.name,
+            host: window.location.host
+            // host: 'localhost',
+            // port: 8000
+        }, AceEditorWrapper);
+        this.channelCommLayer = this.commLayer.createChannelWithName(this.channelName);
+        this.editorStateTracker = this.channelCommLayer.getEditorStateTracker();
 
-        this.commLayer.ready().then((channel) => {
+        this.channelCommLayer.ready().then((channel) => {
             this.connected = true;
         });
     };
@@ -51,17 +57,17 @@ export class AppComponent implements OnInit {
         return 'chat.codes/' + this.channelName;
     };
     sendTextMessage(message: string): void {
-        this.commLayer.sendTextMessage(message);
+        this.channelCommLayer.sendTextMessage(message);
     };
     updateTypingStatus(status: string): void {
-        this.commLayer.sendTypingStatus(status);
+        this.channelCommLayer.sendTypingStatus(status);
     };
     getActiveEditors() {
-        return this.commLayer.getActiveEditors();
+        return this.channelCommLayer.getActiveEditors();
     };
     public createNewFile():Promise<EditorState> {
-        return this.commLayer.ready().then(() => {
-            return this.commLayer.channelService.getShareDBEditors();
+        return this.channelCommLayer.ready().then(() => {
+            return this.channelCommLayer.getShareDBEditors();
         }).then((editorsDoc) => {
             const id:string = guid();
             const title:string = 'file-'+(editorsDoc.data.length+1);

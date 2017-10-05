@@ -32,7 +32,7 @@
         <div class="col-4">
             Here now:
             <ul class='members'>
-                <li class='member' *ngFor="let user of commLayer.userList.getActiveUsers()">
+                <li class='member' *ngFor="let user of channelCommLayer.getUserList().getActiveUsers()">
                     <user-display [user]='user'></user-display>
                 </li>
             </ul>
@@ -40,19 +40,19 @@
     </div>
     <div class="row" id="content_row">
         <div class="col-8">
-            <code-editor [commLayer]='commLayer' (cursorSelectionChanged)='editorCursorSelectionChanged($event)' #codeEditor></code-editor>
+            <code-editor [commLayer]='channelCommLayer' (cursorSelectionChanged)='editorCursorSelectionChanged($event)' #codeEditor></code-editor>
         </div>
         <!-- <div class="col-1">
             <timeline-display></timeline-display>
         </div> -->
         <div class="col-4">
-            <chat-messages [editorStateTracker]='editorStateTracker' [commLayer]='commLayer' [editor]='codeEditor'></chat-messages>
+            <chat-messages [editorStateTracker]='editorStateTracker' [commLayer]='channelCommLayer' [editor]='codeEditor'></chat-messages>
         </div>
     </div>
     <div class="row" id="input_row">
         <div class="col-8">
-            <!-- <terminal [commLayer]='commLayer'></terminal> -->
-            <python-output [commLayer]='commLayer' [editor]='codeEditor'></python-output>
+            <!-- <terminal [commLayer]='channelCommLayer'></terminal> -->
+            <python-output [commLayer]='channelCommLayer' [editor]='codeEditor'></python-output>
         </div>
         <!-- <div class="col-1"></div> -->
         <div class="col-4">

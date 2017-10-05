@@ -1,6 +1,6 @@
 import {ViewChild, Component, EventEmitter, Output, Input} from '@angular/core';
-import {WebCommunicationService} from '../web-communication.service';
 import * as Terminal from 'xterm';
+import { CommunicationService, ChannelCommunicationService } from 'chat-codes-services/src/communication-service';
 
 @Component({
     selector: 'terminal',
@@ -22,10 +22,10 @@ export class TerminalDisplay {
         term.on('data', (key) => {
             this.commLayer.writeToTerminal(key);
         });
-        this.commLayer.terminalData.subscribe((event) => {
+        (this.commLayer as any).on('terminal-data', (event) => {
             term.write(event.data);
         });
     }
-    @Input() commLayer: WebCommunicationService;
+    @Input() commLayer: ChannelCommunicationService;
     @ViewChild('terminal') terminalElement;
 }

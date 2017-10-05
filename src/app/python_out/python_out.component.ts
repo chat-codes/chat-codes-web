@@ -1,8 +1,8 @@
 import {ViewChild, Component, EventEmitter, Output, Input} from '@angular/core';
-import {WebCommunicationService} from '../web-communication.service';
 import * as Terminal from 'xterm';
 import * as skulpt from 'skulpt';
 import {EditorDisplay} from '../editor/editor.component';
+import { CommunicationService, ChannelCommunicationService } from 'chat-codes-services/src/communication-service';
 
 @Component({
     selector: 'python-output',
@@ -49,7 +49,7 @@ export class PythonOutputDisplay {
     }
 
     private term:Terminal;
-    @Input() commLayer: WebCommunicationService;
+    @Input() commLayer: ChannelCommunicationService;
     @Input() editor:EditorDisplay;
     @ViewChild('terminal') terminalElement;
 }

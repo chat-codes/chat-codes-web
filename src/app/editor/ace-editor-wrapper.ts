@@ -1,6 +1,6 @@
 import {EditorStateTracker,EditorState,RemoteCursorMarker} from 'chat-codes-services/src/editor-state-tracker';
 import {ChannelCommunicationService} from 'chat-codes-services/src/communication-service';
-import {SharedbAceBinding} from '../sharedb-ace-binding';
+import {SharedbAceBinding} from './sharedb-ace-binding';
 
 declare let ace: any;
 import * as _ from 'underscore';
