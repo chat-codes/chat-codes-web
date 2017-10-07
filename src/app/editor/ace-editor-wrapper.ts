@@ -1,20 +1,35 @@
-import {EditorStateTracker,EditorState} from 'chat-codes-services/src/editor-state-tracker';
+import {EditorStateTracker,EditorState,RemoteCursorMarker} from 'chat-codes-services/src/editor-state-tracker';
 import {ChannelCommunicationService} from 'chat-codes-services/src/communication-service';
+import {SharedbAceBinding} from './sharedb-ace-binding';
 
 declare let ace: any;
 import * as _ from 'underscore';
 
 export class AceEditorWrapper {
+	private showingRemoteCursors:boolean = true;
+	private sdbBinding:SharedbAceBinding;
 	constructor(state, private channelCommunicationService:ChannelCommunicationService) {
-		this.session.forEditorID = state.id;
+		const {id} = state;
+		this.channelCommunicationService.getShareDBEditors().then((doc) => {
+			let i = 0;
+			for(; i<doc.data.length; i++) {
+				if(doc.data[i].id === id){
+					break;
+				}
+			}
+			const path = [i, 'contents'];
+			this.sdbBinding = new SharedbAceBinding({
+				doc, path, session:this.session
+			})
+		});
+		this.session.forEditorID = id;
 		this.session.addDynamicMarker(this);
 
 		const selection = this.session.getSelection();
 		selection.on('changeCursor', (event) => {
 			const cursor = selection.getCursor();
 
-			channelCommunicationService.emitCursorPositionChanged({
-				id: 0,
+			channelCommunicationService.onCursorPositionChanged({
 				editorID: state.id,
 				type: 'change-position',
 				newBufferPosition: [cursor.row, cursor.column]
@@ -27,13 +42,19 @@ export class AceEditorWrapper {
 					end: [range.end.row, range.end.column]
 				};
 			});
-			channelCommunicationService.emitCursorSelectionChanged({
-				id: 0,
+			channelCommunicationService.onCursorSelectionChanged({
 				editorID: state.id,
 				newRange: serializedRanges[0],
 				type: 'change-selection'
 			});
 		});
+	}
+	public suspendEditorBinding() {
+		this.sdbBinding.unlisten();
+	}
+	public resumeEditorBinding() {
+		this.sdbBinding.setInitialValue();
+		this.sdbBinding.listen();
 	}
 	public setEditorState(editorState) {
 		this.editorState = editorState;
@@ -118,14 +139,14 @@ export class AceEditorWrapper {
 	private cursorMarkers:{[cursorID:number]:number} = {};
 	public getSession() { return this.session; }
 	public addRemoteCursor(cursor, remoteCursorMarker) {}
-	public addRemoteCursorSelection(cursor, remoteCursorMarker) { }
-	public addRemoteCursorPosition(cursor, remoteCursorMarker) {
+	public addRemoteCursorSelection(cursor, remoteCursorMarker:RemoteCursorMarker) {}
+	public addRemoteCursorPosition(cursor, remoteCursorMarker:RemoteCursorMarker) {
 		this.session._signal("changeBackMarker");
 	}
-	public updateRemoteCursorPosition(cursor, remoteCursorMarker) {
+	public updateRemoteCursorPosition(cursor, remoteCursorMarker:RemoteCursorMarker) {
 		this.session._signal("changeBackMarker");
 	}
-	public removeRemoteCursor(cursor, remoteCursorMarker) {
+	public removeRemoteCursor(cursor, remoteCursorMarker:RemoteCursorMarker) {
 		const {id,range,user} = cursor;
 		const oldMarkerID = this.cursorMarkers[id];
 		if(oldMarkerID) {
@@ -134,16 +155,19 @@ export class AceEditorWrapper {
 		}
 	}
 	private clazz:string = 'remoteCursor';
-	public updateRemoteCursorSelection(cursor, remoteCursorMarker) {
-		const {id,range,user} = cursor;
-		const oldMarkerID = this.cursorMarkers[id];
-		if(oldMarkerID) {
-			this.session.removeMarker(oldMarkerID);
-			delete this.cursorMarkers[id];
+	public updateRemoteCursorSelection(cursor, remoteCursorMarker:RemoteCursorMarker) {
+		if(this.showingRemoteCursors) {
+			const {id,range,user} = cursor;
+			const oldMarkerID = this.cursorMarkers[id];
+			if(oldMarkerID) {
+				this.session.removeMarker(oldMarkerID);
+				delete this.cursorMarkers[id];
+			}
+
+			const aceRange = this.getRangeFromSerializedRange(range);
+			const markerID = this.session.addMarker(aceRange, this.clazz + (user ? ' user-'+user.colorIndex : ''), false);
+			this.cursorMarkers[id] = markerID;
 		}
-		const aceRange = this.getRangeFromSerializedRange(range);
-		const markerID = this.session.addMarker(aceRange, this.clazz + (user ? ' user-'+user.colorIndex : ''), false);
-		this.cursorMarkers[id] = markerID;
 	}
 	public saveFile() {};
 	public setReadOnly(isReadOnly:boolean, extraInfo){
@@ -172,33 +196,55 @@ export class AceEditorWrapper {
 			this.session.removeMarker(markerID);
 		}, 2000);
 	}
+	public hideRemoteCursors() {
+		this.showingRemoteCursors = false;
+		this.session._signal("changeBackMarker");
+		_.each(this.cursorMarkers, (markerID, id) => {
+			this.session.removeMarker(markerID);
+			delete this.cursorMarkers[id];
+		});
+	}
+	public showRemoteCursors(cursorTracker?:RemoteCursorMarker) {
+		this.showingRemoteCursors = true;
+		this.session._signal("changeBackMarker");
+		if(cursorTracker) {
+			const serializedCursors = cursorTracker.getCursors();
+			_.each(serializedCursors, (serializedCursor:any) => {
+				const {range} = serializedCursor;
+				this.addRemoteCursorSelection(serializedCursor, cursorTracker);
+				this.updateRemoteCursorSelection(serializedCursor, cursorTracker);
+			});
+		}
+	}
 
     public update(html, markerLayer, session, config)  {
-	    var start = config.firstRow, end = config.lastRow;
-		const remoteCursors = this.editorState.getRemoteCursors();
-		const cursors = remoteCursors.getCursors();
-		Object.keys(cursors).forEach((cursorID) => {
-			const cursorInfo = cursors[cursorID];
-			const {pos} = cursorInfo;
-	        if (!pos || pos.row < start || pos.row > end) {
-	            return;
-	        } else {
-	            // compute cursor position on screen
-	            // this code is based on ace/layer/marker.js
-	            var screenPos = session.documentToScreenPosition(pos)
+		if(this.showingRemoteCursors) {
+		    var start = config.firstRow, end = config.lastRow;
+			const remoteCursors = this.editorState.getRemoteCursors();
+			const cursors = remoteCursors.getCursors();
+			cursors.forEach((cursorInfo) => {
+				const {pos} = cursorInfo;
+		        if (!pos || pos.row < start || pos.row > end) {
+		            return;
+		        } else {
+		            // compute cursor position on screen
+		            // this code is based on ace/layer/marker.js
+		            var screenPos = session.documentToScreenPosition(...pos)
 
-	            var height = config.lineHeight;
-	            var width = config.characterWidth;
-	            var top = markerLayer.$getTop(screenPos.row, config);
-	            var left = markerLayer.$padding + screenPos.column * width;
-	            // can add any html here
-	            html.push(
-	                "<div class='carret "+this.clazz+(cursorInfo.user ? ' user-'+cursorInfo.user.colorIndex:'')+"' style='",
-	                "height:", height, "px;",
-	                "top:", top, "px;",
-	                "left:", left, "px;", width, "px'></div>"
-	            );
-	        }
-		});
+		            var height = config.lineHeight;
+		            var width = config.characterWidth;
+		            var top = markerLayer.$getTop(screenPos.row, config);
+		            var left = markerLayer.$padding + screenPos.column * width;
+		            // can add any html here
+					const user = cursorInfo.user;
+		            html.push(
+		                "<div class='carret "+this.clazz+(user ? ' user-'+user.getColorIndex():'')+"' style='",
+		                "height:", height, "px;",
+		                "top:", top, "px;",
+		                "left:", left, "px;", width, "px'></div>"
+		            );
+		        }
+			});
+		}
     }
 }

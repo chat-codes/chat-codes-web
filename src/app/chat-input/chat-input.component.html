@@ -1,8 +1,7 @@
 <ace-editor [theme]="'chrome'"
 				id='chat-input-editor'
 				class='form-control'
-				[(ngModel)]='message'
 				(keydown)='onTextareaKeydown($event)'
-	            (ngModelChange)="onTextareaChange($event)"
+	            (textChanged)="onTextareaChange($event)"
 	            placeholder="Say something"
 				#editor></ace-editor>

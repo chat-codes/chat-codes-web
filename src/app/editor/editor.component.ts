@@ -1,6 +1,6 @@
 import {Component, ViewChild, EventEmitter, Output, Input} from '@angular/core';
-import { WebCommunicationService } from '../web-communication.service';
 import { ChatUserList, ChatUser } from 'chat-codes-services/src/chat-user';
+import { CommunicationService, ChannelCommunicationService } from 'chat-codes-services/src/communication-service';
 import {ChatInput} from '../chat-input/chat-input.component'
 import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
 
@@ -15,9 +15,6 @@ declare let ace: any;
 })
 export class EditorDisplay {
     constructor() { }
-    ngOnInit() {
-		this.editorStateTracker = this.commLayer.getEditorStateTracker();
-	}
 	atomIDToEditSessionMap = {}
 	files: Array<any> = []
 	selectedEditor:any=false;
@@ -66,7 +63,8 @@ export class EditorDisplay {
 			newText: newText,
 		};
 	}
-    ngAfterViewInit() {
+    ngOnInit() {
+		this.editorStateTracker = this.commLayer.getEditorStateTracker();
 		const editor = this.editor.getEditor();
 	    editor.$blockScrolling = Infinity;
 
@@ -80,10 +78,10 @@ export class EditorDisplay {
 				const session = editor.getSession();
 				const editorID = session.forEditorID;
 
-				this.pusher.emitSave({
-					id: session.forEditorID,
-					type: 'save',
-				});
+				// this.pusher.emitSave({
+				// 	id: session.forEditorID,
+				// 	type: 'save',
+				// });
 			}
 		});
 
@@ -100,20 +98,6 @@ export class EditorDisplay {
 			}
 		});
 
-		this.commLayer.history.subscribe((event) => {
-			const {editorState} = event;
-			const editors = editorState.getAllEditors();
-			if(editors.length > 0) {
-				this.selectFile(editors[0]);
-			}
-		})
-
-		this.commLayer.editorOpened.subscribe((event) => {
-			const editorStateTracker = this.commLayer.channelService.editorStateTracker;
-			const editorState = editorStateTracker.getEditorState(event.id);
-			this.selectFile(editorState);
-			// this.onEditorOpened(editorState);
-		});
 		const activeEditors = this.editorStateTracker.getActiveEditors();
 		if(activeEditors.length > 0) {
 			this.selectFile(activeEditors[0]);
@@ -162,13 +146,13 @@ export class EditorDisplay {
 	}
 
 	public toLatest() {
-		this.editorStateTracker.toLatestTimestamp({editor: this.editor.getEditor() });
+		this.editorStateTracker.toLatestVersion({editor: this.editor.getEditor() });
 	}
 
 	public editorStateTracker:EditorStateTracker;
 
     @ViewChild('editor') editor;
-    @Input() commLayer: WebCommunicationService;
+    @Input() commLayer: ChannelCommunicationService;
 		//@Input() chatInput: ChatInput;
 	@Output() public editorChanged:EventEmitter<any> = new EventEmitter();
 	@Output() public cursorPositionChanged:EventEmitter<any> = new EventEmitter();

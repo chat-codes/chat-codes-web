@@ -18,6 +18,8 @@ export class EditMessageDisplay {
     @Input() messageGroup:EditGroup;
     @Input() editor;
     @ViewChild('elem') elem;
+    @Output() willExpand:EventEmitter<boolean> = new EventEmitter();
+    @Output() expanded:EventEmitter<boolean> = new EventEmitter();
     public showingDetails:boolean = false;
     public authors:Array<ChatUser> = [];
     public numAuthors:number = 0;
@@ -29,21 +31,23 @@ export class EditMessageDisplay {
     private diffSummaries:Array<any> = [];
     private diffHTMLs:Array<string> = [];
 
-    ngAfterViewInit() {
+    ngOnInit() {
         setTimeout(() => { this.updateVariables(); }, 0);
 
-        const deboucnedUpdateVariables = _.debounce(_.bind(this.updateVariables, this), 1000);
+        const throttledUpdateVariables = _.throttle(_.bind(this.updateVariables, this), 1000, {leading: false});
 		(this.messageGroup as any).on('item-added', () => {
-            deboucnedUpdateVariables();
+            throttledUpdateVariables();
         });
     }
     public toggleDetails() {
         this.showingDetails = !this.showingDetails;
+        this.willExpand.emit(this.showingDetails);
         if(this.showingDetails) {
             this.updateDiffHTMLs();
         } else {
             this.showLatestCode();
         }
+        this.expanded.emit(this.showingDetails);
     }
     private updateVariables():void {
         this.authors = this.messageGroup.getAuthors();
@@ -74,18 +78,20 @@ export class EditMessageDisplay {
         });
     }
     public showCodeBefore() {
-  		return this.editorStateTracker.goBeforeDelta(this.messageGroup.getEarliestItem(), {editor: this.editor.getEditorInstance()});
+  // 		return this.editorStateTracker.goBeforeDelta(this.messageGroup.getEarliestItem(), {editor: this.editor.getEditorInstance()});
     }
     public showCodeAfter() {
-  		return this.editorStateTracker.goAfterDelta(this.messageGroup.getLatestItem(), {editor: this.editor.getEditorInstance()});
+  // 		return this.editorStateTracker.goAfterDelta(this.messageGroup.getLatestItem(), {editor: this.editor.getEditorInstance()});
     }
     public isShowingCodeBefore():boolean {
-  		return this.editorStateTracker.isShowingCodeBefore(this.messageGroup.getEarliestItem());
+        return false;
+  // 		return this.editorStateTracker.isShowingCodeBefore(this.messageGroup.getEarliestItem());
     }
     public isShowingCodeAfter():boolean {
-  		return this.editorStateTracker.isShowingCodeAfter(this.messageGroup.getLatestItem());
+        return false;
+  // 		return this.editorStateTracker.isShowingCodeAfter(this.messageGroup.getLatestItem());
     }
     public showLatestCode() {
-        this.editorStateTracker.toLatestTimestamp({editor: this.editor.getEditorInstance() });
+        // this.editorStateTracker.toLatestTimestamp({editor: this.editor.getEditorInstance() });
     }
 }

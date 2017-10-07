@@ -3,8 +3,8 @@
         (no messages)
     </div>
     <ul class='messageGroups'>
-        <li class='messageGroup' *ngFor="let messageGroup of commLayer.messageGroups.getMessageGroups()" [ngClass]='{cameAfterTimestamp: (!editorStateTracker.isAtLatest() && messageGroup.getEarliestTimestamp() > editorStateTracker.getCurrentTimestamp())}'>
-            <ul *ngIf="isChatMessage(messageGroup)" class='text-messages list-group'  [ngClass]='"user-"+messageGroup.getSender().getColorIndex() + ((editorStateTracker.getCurrentTimestamp() === messageGroup.getLatestTimestamp()) ? " isCurrentTimestamp":"")' (click)="revert(messageGroup)">
+        <li class='messageGroup' *ngFor="let messageGroup of commLayer.messageGroups.getMessageGroups()" [ngClass]='{cameAfterTimestamp: (!editorStateTracker.isAtLatest() && isChatMessage(messageGroup) && messageGroup.getEditorVersion() > editorStateTracker.getCurrentVersion())}'>
+            <ul *ngIf="isChatMessage(messageGroup)" class='text-messages list-group'  [ngClass]='"user-"+messageGroup.getSender().getColorIndex() + ((editorStateTracker.getCurrentVersion() === messageGroup.getEditorVersion()) ? " isCurrentTimestamp":"")' (click)="revert(messageGroup)">
                 <li class='header list-group-item'>
                     <span class="sender">{{messageGroup.getSender().getName()}}</span>&nbsp;<timestamp [t]='messageGroup.getLatestTimestamp()' [parens]='true'></timestamp>
                     <!-- <button *ngIf='this.currentTimestamp!==messageGroup.getTimestamp()' class="btn btn-default btn-sm revert" (click)="revert(messageGroup)">Look</button> -->
@@ -15,7 +15,7 @@
                 </li>
             </ul>
             <ul *ngIf="isEditMessage(messageGroup)" class='edit-messages list-group'>
-                <edit-message-group [messageGroup]='messageGroup' [editor]='editor' [editorStateTracker]='commLayer.getEditorStateTracker()'></edit-message-group>
+                <edit-message-group (willExpand)='this.willChangeSize.emit($event)' (expanded)='this.changedSize.emit($event)' [messageGroup]='messageGroup' [editor]='editor' [editorStateTracker]='commLayer.getEditorStateTracker()'></edit-message-group>
             </ul>
             <ul *ngIf="isConnectMessage(messageGroup)" class='connect-messages list-group'>
                 <connection-message-group [messageGroup]='messageGroup'></connection-message-group>

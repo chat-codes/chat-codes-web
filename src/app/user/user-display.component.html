@@ -1,3 +1,3 @@
-<span class='user badge badge-default' [class.typing]="user.getTypingStatus()=='ACTIVE_TYPING'" [class.typed]="user.getTypingStatus()=='IDLE_TYPED'" [class.isme]="user.getIsMe()" [ngClass]="'user-'+user.getColorIndex()">
+<span class='user badge badge-default' [class.typing]="typingStatus=='ACTIVE_TYPING'" [class.typed]="typingStatus=='IDLE_TYPED'" [class.isme]="user.getIsMe()" [ngClass]="'user-'+user.getColorIndex()">
     {{user.getName()}}
 </span>
