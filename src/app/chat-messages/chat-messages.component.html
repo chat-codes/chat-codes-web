@@ -1,9 +1,9 @@
 <div #messageDisplay class="message-display">
-    <div class="no-messages" *ngIf='commLayer.messageGroups.isEmpty()'>
+    <div class="no-messages" *ngIf='commLayer.getMessageGroups().isEmpty()'>
         (no messages)
     </div>
     <ul class='messageGroups'>
-        <li class='messageGroup' *ngFor="let messageGroup of commLayer.messageGroups.getMessageGroups()" [ngClass]='{cameAfterTimestamp: (!editorStateTracker.isAtLatest() && isChatMessage(messageGroup) && messageGroup.getEditorVersion() > editorStateTracker.getCurrentVersion())}'>
+        <li class='messageGroup' *ngFor="let messageGroup of commLayer.getMessageGroups().getMessageGroups()" [ngClass]='{cameAfterTimestamp: (!editorStateTracker.isAtLatest() && isChatMessage(messageGroup) && messageGroup.getEditorVersion() > editorStateTracker.getCurrentVersion())}'>
             <ul *ngIf="isChatMessage(messageGroup)" class='text-messages list-group'  [ngClass]='"user-"+messageGroup.getSender().getColorIndex() + ((editorStateTracker.getCurrentVersion() === messageGroup.getEditorVersion()) ? " isCurrentTimestamp":"")' (click)="revert(messageGroup)">
                 <li class='header list-group-item'>
                     <span class="sender">{{messageGroup.getSender().getName()}}</span>&nbsp;<timestamp [t]='messageGroup.getLatestTimestamp()' [parens]='true'></timestamp>
@@ -26,8 +26,8 @@
         </li> -->
     </ul>
     <div class='typing'>
-        <div *ngFor='let user of commLayer.userList.activeUsers'>
-            <div *ngIf='user.typingStatus=="ACTIVE_TYPING" && !user.isMe'>
+        <div *ngFor='let user of commLayer.getUserList().getActiveUsers()'>
+            <div *ngIf='user.typingStatus=="ACTIVE_TYPING" && !user.getIsMe()'>
                 {{user.name}} is typing...
             </div>
         </div>

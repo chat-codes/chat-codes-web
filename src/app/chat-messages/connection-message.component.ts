@@ -1,4 +1,4 @@
-import {Component,Injectable,EventEmitter,Output,Input,ViewChild} from '@angular/core';
+import {Component,Injectable,Output,Input,ViewChild} from '@angular/core';
 import * as _ from 'underscore';
 import * as $ from 'jquery';
 import {MessageGroups, EditGroup, ConnectionMessageGroup} from 'chat-codes-services/src/chat-messages';

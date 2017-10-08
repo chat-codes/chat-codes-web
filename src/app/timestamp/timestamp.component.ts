@@ -1,4 +1,4 @@
-import {ViewChild, Component, EventEmitter, Output, Input} from '@angular/core';
+import {ViewChild, Component, Output, Input} from '@angular/core';
 @Component({
     selector: 'timestamp',
     templateUrl: './timestamp.component.html',
