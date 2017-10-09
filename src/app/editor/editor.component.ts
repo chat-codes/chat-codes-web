@@ -30,39 +30,6 @@ export class EditorDisplay {
 		delta.newRange.end = [newRangeEnd.row, newRangeEnd.column];
 		return delta;
 	}
-	getChange(changeEvent) {
-		const {action, lines, start, end} = changeEvent;
-		let oldRange, newRange, oldText, newText;
-		if(action === 'insert') {
-			oldRange = {
-				start: [start.row, start.column],
-				end: [start.row, start.column]
-			};
-			newRange = {
-				start: [start.row, start.column],
-				end: [end.row, end.column]
-			};
-			oldText = '';
-			newText = lines.join('\n');
-		} else { //if(action === 'remove')
-			newRange = {
-				start: [start.row, start.column],
-				end: [start.row, start.column]
-			};
-			oldRange = {
-				start: [start.row, start.column],
-				end: [end.row, end.column]
-			};
-			newText = '';
-			oldText = lines.join('\n');
-		}
-		return {
-			oldRange: oldRange,
-			newRange: newRange,
-			oldText: oldText,
-			newText: newText,
-		};
-	}
     ngOnInit() {
 		this.editorStateTracker = this.commLayer.getEditorStateTracker();
 		const editor = this.editor.getEditor();
@@ -85,18 +52,20 @@ export class EditorDisplay {
 			}
 		});
 
-		editor.on('change', (event) => {
-			const curOpp = editor.curOp;
-			if(curOpp && curOpp.command && curOpp.command.name) { // change was made locally
-				const session = editor.getSession();
-				const change = this.getChange(event);
-				this.commLayer.emitEditorChanged({
-					id: session.forEditorID,
-					type: 'edit',
-					changes: [change]
-				});
-			}
-		});
+		if(this.isObserver) {
+			editor.setReadOnly(true);
+		} else {
+			editor.on('change', (event) => {
+				const curOpp = editor.curOp;
+				if(curOpp && curOpp.command && curOpp.command.name) { // change was made locally
+					const session = editor.getSession();
+					this.commLayer.emitEditorChanged({
+						id: session.forEditorID,
+						type: 'edit'
+					});
+				}
+			});
+		}
 
 		const activeEditors = this.editorStateTracker.getActiveEditors();
 		if(activeEditors.length > 0) {
@@ -120,23 +89,26 @@ export class EditorDisplay {
 	    const editor = this.getEditorInstance();
 		editor.setSession(session);
 		this.selectedEditor = editorState;
-
-		const selection = session.getSelection();
-		selection.on('changeSelection', (event) => {
-			const serializedRanges = _.map(selection.getAllRanges(), (range:any) => {
-				return {
-					start: [range.start.row, range.start.column],
-					end: [range.end.row, range.end.column]
-				};
+		if(this.isObserver) {
+			editor.setReadOnly(true);
+		} else {
+			const selection = session.getSelection();
+			selection.on('changeSelection', (event) => {
+				const serializedRanges = _.map(selection.getAllRanges(), (range:any) => {
+					return {
+						start: [range.start.row, range.start.column],
+						end: [range.end.row, range.end.column]
+					};
+				});
+				this.cursorSelectionChanged.emit({
+					editor: editor,
+					session: session,
+					fileName: editorState.title,
+					newRange: serializedRanges[0],
+					type: 'change-selection'
+				});
 			});
-			this.cursorSelectionChanged.emit({
-				editor: editor,
-				session: session,
-				fileName: editorState.title,
-				newRange: serializedRanges[0],
-				type: 'change-selection'
-			});
-		});
+		}
 	}
 
 
@@ -152,7 +124,8 @@ export class EditorDisplay {
 	public editorStateTracker:EditorStateTracker;
 
     @ViewChild('editor') editor;
-    @Input() commLayer: ChannelCommunicationService;
+    @Input() commLayer:ChannelCommunicationService;
+    @Input() isObserver:boolean;
 		//@Input() chatInput: ChatInput;
 	@Output() public editorChanged:EventEmitter<any> = new EventEmitter();
 	@Output() public cursorPositionChanged:EventEmitter<any> = new EventEmitter();

@@ -20,7 +20,11 @@ export class AceEditorWrapper {
 			const path = [i, 'contents'];
 			this.sdbBinding = new SharedbAceBinding({
 				doc, path, session:this.session
-			})
+			});
+			if(this.channelCommunicationService.getIsObserver()) {
+				this.sdbBinding.setInitialValue();
+				this.sdbBinding.unlisten();
+			}
 		});
 		this.session.forEditorID = id;
 		this.session.addDynamicMarker(this);

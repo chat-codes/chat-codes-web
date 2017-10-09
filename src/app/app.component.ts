@@ -20,16 +20,20 @@ export class AppComponent implements OnInit {
     @ViewChild('chatinput') private chatinput;
 
     editorCursorSelectionChanged(data) {
-        this.chatinput.onEditorCursorSelectionChanged(data);
+        if(this.chatinput) {
+            this.chatinput.onEditorCursorSelectionChanged(data);
+        }
     }
 
     constructor() {
-        const paths:Array<string> = location.pathname.substring(1).split('/');
+        const paths:Array<string> = _.compact(location.pathname.substring(1).split('/'));
         if(paths.length > 0) {
             this.channelName = Location.stripTrailingSlash(paths[0]);
         }
         if(paths.length > 1) {
             this.channelID = Location.stripTrailingSlash(paths[1]);
+            this.isObserver = true;
+            this.setName(null);
         }
         // this.setName('remote');
     };
@@ -43,6 +47,7 @@ export class AppComponent implements OnInit {
     public connected: boolean = false;
     private channelName:string;
     private channelID:string;
+    public isObserver:boolean = false;
 
     public setName(name:string): void {
         this.name = name;
@@ -51,9 +56,9 @@ export class AppComponent implements OnInit {
         this.commLayer = new CommunicationService({
             username: this.name,
             host: window.location.host
-            // host: 'localhost:8080',
+            // host: 'localhost:8000',
         }, AceEditorWrapper);
-        this.channelCommLayer = this.commLayer.createChannelWithName(this.channelName, this.channelID);
+        this.channelCommLayer = this.commLayer.createChannelWithName(this.channelName, this.channelID, this.isObserver);
         this.editorStateTracker = this.channelCommLayer.getEditorStateTracker();
 
         this.channelCommLayer.ready().then((channel) => {

@@ -21,7 +21,7 @@
                         <span class='modifiedFlag' [ngClass]="{'modified':editorState.getIsModified()}"></span>
                     </a>
                 </li>
-                <li class='nav-item'>
+                <li *ngIf="!isObserver" class='nav-item'>
                     <a class='nav-link' href='javascript:void(0);' (click)="createNewFile()">
                         +
                     </a>
@@ -40,7 +40,7 @@
     </div>
     <div class="row" id="content_row">
         <div class="col-8">
-            <code-editor [commLayer]='channelCommLayer' (cursorSelectionChanged)='editorCursorSelectionChanged($event)' #codeEditor></code-editor>
+            <code-editor [isObserver]="isObserver" [commLayer]='channelCommLayer' (cursorSelectionChanged)='editorCursorSelectionChanged($event)' #codeEditor></code-editor>
         </div>
         <!-- <div class="col-1">
             <timeline-display></timeline-display>
@@ -49,7 +49,7 @@
             <chat-messages [editorStateTracker]='editorStateTracker' [commLayer]='channelCommLayer' [editor]='codeEditor'></chat-messages>
         </div>
     </div>
-    <div class="row" id="input_row">
+    <div *ngIf="!isObserver" class="row" id="input_row">
         <div class="col-8">
             <!-- <terminal [commLayer]='channelCommLayer'></terminal> -->
             <python-output [commLayer]='channelCommLayer' [editor]='codeEditor'></python-output>
