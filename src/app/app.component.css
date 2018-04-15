@@ -9,7 +9,8 @@ img.logo {
 }
 
 #content_row {
-    flex-grow: 1;
+    flex: 0 1 auto;
+    height: 80%;
 }
 #input_row,#list_row,.navbar {
     flex-grow: 0;
