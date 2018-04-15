@@ -40,22 +40,22 @@
     </div>
     <div class="row" id="content_row">
         <div class="col-8">
-            <code-editor [isObserver]="isObserver" [commLayer]='channelCommLayer' (cursorSelectionChanged)='editorCursorSelectionChanged($event)' #codeEditor></code-editor>
+            <code-editor (onGoLatest)='onGoLatest($event)' [isObserver]="isObserver" [commLayer]='channelCommLayer' (cursorSelectionChanged)='editorCursorSelectionChanged($event)' #codeEditor></code-editor>
         </div>
         <!-- <div class="col-1">
             <timeline-display></timeline-display>
         </div> -->
         <div class="col-4">
-            <chat-messages [editorStateTracker]='editorStateTracker' [commLayer]='channelCommLayer' [editor]='codeEditor'></chat-messages>
+            <chat-messages (onAddHighlight)='onAddHighlight($event)' (onSetVersion)='onSetVersion($event)'  [isObserver]="isObserver" [editorStateTracker]='editorStateTracker' [commLayer]='channelCommLayer' [editor]='codeEditor'></chat-messages>
         </div>
     </div>
-    <div *ngIf="!isObserver" class="row" id="input_row">
+    <div class="row" id="input_row">
         <div class="col-8">
             <!-- <terminal [commLayer]='channelCommLayer'></terminal> -->
-            <python-output [commLayer]='channelCommLayer' [editor]='codeEditor'></python-output>
+            <python-output (onRun)='onRun($event)' [commLayer]='channelCommLayer' [editor]='codeEditor'></python-output>
         </div>
         <!-- <div class="col-1"></div> -->
-        <div class="col-4">
+        <div *ngIf="!isObserver" class="col-4">
             <chat-input (send)='sendTextMessage($event)'
             (typing)='updateTypingStatus($event)' #chatinput></chat-input>
         </div>

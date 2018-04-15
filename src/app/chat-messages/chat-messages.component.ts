@@ -1,6 +1,6 @@
 import {Component,Injectable,EventEmitter,Output,Input,ViewChild,AfterViewInit} from '@angular/core';
 import * as _ from 'underscore';
-import {MessageGroups, TextMessageGroup, EditGroup, ConnectionMessageGroup} from 'chat-codes-services/src/chat-messages';
+import {MessageGroups, TextMessage, TextMessageGroup, EditGroup, ConnectionMessageGroup} from 'chat-codes-services/src/chat-messages';
 import {EditorStateTracker} from 'chat-codes-services/src/editor-state-tracker';
 import { CommunicationService, ChannelCommunicationService } from 'chat-codes-services/src/communication-service';
 import {EditorDisplay} from '../editor/editor.component';
@@ -15,14 +15,22 @@ export class ChatMessagesDisplay {
     @Input() commLayer: ChannelCommunicationService;
     @Input() editorStateTracker: EditorStateTracker;
     @Input() editor:EditorDisplay;
+    @Input() isObserver:boolean;
+    @Output() public onAddHighlight:EventEmitter<{message:TextMessage, range:any, file:string, version:number}> = new EventEmitter();
+    @Output() public onSetVersion:EventEmitter<{message:TextMessage, version:number}> = new EventEmitter();
     public willChangeSize:EventEmitter<any> = new EventEmitter();
     public changedSize:EventEmitter<any> = new EventEmitter();
     // private currentTimestamp:number=-1;
     constructor() {
         // this.editorStateTracker = this.commLayer.getEditorStateTracker();
     }
+    public onMessageSetVersion(e) { this.onSetVersion.emit(e);};
+    public onMessageAddHighlight(e) {this.onAddHighlight.emit(e);};
     ngOnInit() {
-        setTimeout(() => { this.scrollToBottom(); }, 0);
+        if(!this.isObserver) {
+            setTimeout(() => { this.scrollToBottom(); }, 0);
+        }
+
         let at_bottom = false;
         const messageGroups = this.commLayer.getMessageGroups() as any;
         messageGroups.on('group-will-be-added', (event) => {
@@ -58,6 +66,7 @@ export class ChatMessagesDisplay {
         return Math.abs(element.scrollTop + element.clientHeight - element.scrollHeight) < 100;
     }
     public revert(messageGroup:TextMessageGroup) {
+        this.onSetVersion.emit({message: messageGroup.getEarliestItem(), version: messageGroup.getEditorVersion()})
 		return this.editorStateTracker.setVersion(messageGroup.getEditorVersion(), messageGroup.getLatestTimestamp(), {editor: this.editor.getEditorInstance()});
     }
     private isChatMessage(message):boolean {

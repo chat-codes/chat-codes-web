@@ -18,6 +18,11 @@ export class EditorDisplay {
 	atomIDToEditSessionMap = {}
 	files: Array<any> = []
 	selectedEditor:any=false;
+    @Output() public onGoLatest:EventEmitter<{}> = new EventEmitter();
+    @Output() public goNext:EventEmitter<any> = new EventEmitter();
+	@Output() public goPrevious:EventEmitter<any> = new EventEmitter();
+	public canGoBack:boolean = false;
+	public canGoForward:boolean = false;
 	updatePositionsFromAnchor(delta) {
 		const oldRangeStart = delta.oldRangeStartAnchor.getPosition();
 		const oldRangeEnd = delta.oldRangeEndAnchor.getPosition();
@@ -25,10 +30,16 @@ export class EditorDisplay {
 		const newRangeEnd = delta.newRangeEndAnchor.getPosition();
 
 		delta.oldRange.start = [oldRangeStart.row, oldRangeStart.column];
-		delta.oldRange.end = [oldRangeEnd.row, oldRangeEnd.column];
+		delta.oldRange.end =   [oldRangeEnd.row, oldRangeEnd.column];
 		delta.newRange.start = [newRangeStart.row, newRangeStart.column];
-		delta.newRange.end = [newRangeEnd.row, newRangeEnd.column];
+		delta.newRange.end =   [newRangeEnd.row, newRangeEnd.column];
 		return delta;
+	}
+	public toEarlier():void {
+		console.log('earlier');
+	}
+	public toLater():void {
+		console.log('later');
 	}
     ngOnInit() {
 		this.editorStateTracker = this.commLayer.getEditorStateTracker();
@@ -119,6 +130,7 @@ export class EditorDisplay {
 
 	public toLatest() {
 		this.editorStateTracker.toLatestVersion({editor: this.editor.getEditor() });
+		this.onGoLatest.emit({});
 	}
 
 	public editorStateTracker:EditorStateTracker;

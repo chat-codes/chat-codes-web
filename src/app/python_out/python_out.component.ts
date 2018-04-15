@@ -36,6 +36,8 @@ export class PythonOutputDisplay {
         const editorInstance = this.editor.getEditorInstance();
         const editorValue:string = editorInstance.getValue();
 
+        this.onRun.emit({ editorValue });
+
         this.term.clear();
         this.term.reset();
         const myPromise = skulpt.misceval.asyncToPromise(function() {
@@ -49,6 +51,7 @@ export class PythonOutputDisplay {
     }
 
     private term:Terminal;
+    @Output() public onRun:EventEmitter<{editorValue:string}> = new EventEmitter();
     @Input() commLayer: ChannelCommunicationService;
     @Input() editor:EditorDisplay;
     @ViewChild('terminal') terminalElement;

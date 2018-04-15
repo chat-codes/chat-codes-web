@@ -11,13 +11,13 @@
                     <!-- <button *ngIf='this.currentTimestamp===messageGroup.getTimestamp()' class="btn btn-primary btn-sm revert" (click)="toLatest($event)">Latest</button> -->
                 </li>
                 <li *ngFor="let message of messageGroup.getItems()" class='message list-group-item'>
-                    <chat-message [message]='message' [editorStateTracker]='commLayer.getEditorStateTracker()' [editor]='editor' ></chat-message>
+                    <chat-message (onSetVersion)='onMessageSetVersion($event)' (onAddHighlight)='onMessageAddHighlight($event)' [message]='message' [editorStateTracker]='commLayer.getEditorStateTracker()' [editor]='editor' ></chat-message>
                 </li>
             </ul>
             <ul *ngIf="isEditMessage(messageGroup)" class='edit-messages list-group'>
                 <edit-message-group (willExpand)='this.willChangeSize.emit($event)' (expanded)='this.changedSize.emit($event)' [messageGroup]='messageGroup' [editor]='editor' [editorStateTracker]='commLayer.getEditorStateTracker()'></edit-message-group>
             </ul>
-            <ul *ngIf="isConnectMessage(messageGroup)" class='connect-messages list-group'>
+            <ul *ngIf="isConnectMessage(messageGroup) && !isObserver" class='connect-messages list-group'>
                 <connection-message-group [messageGroup]='messageGroup'></connection-message-group>
             </ul>
         </li>

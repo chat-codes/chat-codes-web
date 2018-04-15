@@ -1,4 +1,10 @@
-<div *ngIf='!editorStateTracker.isAtLatest()' class="message">Showing code from <timestamp [t]='editorStateTracker.getCurrentTimestamp()'></timestamp><button class='btn btn-sm btn-primary' (click)='toLatest()'>Show current code</button></div>
+<div *ngIf='!editorStateTracker.isAtLatest()' class="message">Showing code from <timestamp [t]='editorStateTracker.getCurrentTimestamp()'></timestamp>
+    <div class="btn-group">
+        <button *ngIf='canGoBack' class='btn btn-sm btn-secondary' (click)='toEarlier()'>&lt;</button>
+        <button class='btn btn-sm btn-primary' (click)='toLatest()'>Show current code</button>
+        <button *ngIf='canGoForward' class='btn btn-sm btn-secondary' (click)='toLater()'>&gt;</button>
+    </div>
+</div>
 <ace-editor [hidden]='selectedEditor==false' [ngClass]='{locked: !this.editorStateTracker.isAtLatest() }' [theme]="'chrome'" #editor></ace-editor>
 <div class='no-editor-open' *ngIf='selectedEditor===false'>
     (no file is open)

@@ -6,7 +6,7 @@
  */
 
 /* global process.env */
-import Logdown from 'logdown';
+import * as Logdown from 'logdown';
 
 export class SharedbAceBinding {
 	private editor;

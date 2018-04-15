@@ -49,17 +49,50 @@ export class AppComponent implements OnInit {
     private channelID:string;
     public isObserver:boolean = false;
 
+    public onGoLatest(e) {
+        this.channelCommLayer.addAction({
+            type: 'latest'
+        });
+    };
+
+    public onSetVersion(e) {
+        this.channelCommLayer.addAction({
+            type: 'setVersion',
+            range: e.range,
+            file: e.file,
+            version:e.version
+        });
+    };
+    public onAddHighlight(e) {
+        this.channelCommLayer.addAction({
+            type: 'highlight',
+            range: e.range,
+            file: e.file,
+            version:e.version
+        });
+    };
+    public onRun(e) {
+        this.channelCommLayer.addAction({
+            type: 'run',
+            editorValue: e.editorValue
+        });
+    };
+
     public setName(name:string): void {
         this.name = name;
         this.hasName = true;
 
         this.commLayer = new CommunicationService({
             username: this.name,
-            host: window.location.host
-            // host: 'localhost:8000',
+            // host: window.location.host
+            host: 'localhost:8080',
         }, AceEditorWrapper);
         this.channelCommLayer = this.commLayer.createChannelWithName(this.channelName, this.channelID, this.isObserver);
         this.editorStateTracker = this.channelCommLayer.getEditorStateTracker();
+
+        window['getChatDoc'] = () => {
+            return this.channelCommLayer.getChatDoc();
+        }
 
         this.channelCommLayer.ready().then((channel) => {
             this.connected = true;

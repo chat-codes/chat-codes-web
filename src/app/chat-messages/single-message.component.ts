@@ -15,6 +15,8 @@ export class ChatMessageDisplay {
 	@Input() message: TextMessage;
 	@Input() editor;
 	@ViewChild('elem') elem;
+    @Output() public onAddHighlight:EventEmitter<{message:TextMessage, range:any, file:string, version:number}> = new EventEmitter();
+    @Output() public onSetVersion:EventEmitter<{message:TextMessage, version:number}> = new EventEmitter();
 	ngOnInit() {
 		const $elem = $(this.elem.nativeElement);
 		$elem.html(this.message.getHTML());
@@ -32,9 +34,11 @@ export class ChatMessageDisplay {
 				this.removeHighlight(file, highlightID);
 				$(me_event.target).off('mouseleave.removeHighlight');
 			});
+			this.onAddHighlight.emit({message: this.message, version:this.message.getEditorVersion(), range, file});
 		}).on('click', (c_event) => {
 			const { file, range } = this.getHighlightInfo(c_event.currentTarget);
 			this.focusRange(file, range, this.message.getEditorVersion(), this.message.getTimestamp());
+			this.onSetVersion.emit({message: this.message, version: this.message.getEditorVersion()});
 
 			startingVersion = -10;
 			startingTimestamp = -10;
