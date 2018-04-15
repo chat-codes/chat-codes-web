@@ -84,8 +84,8 @@ export class AppComponent implements OnInit {
 
         this.commLayer = new CommunicationService({
             username: this.name,
-            // host: window.location.host
-            host: 'localhost:8080',
+            host: window.location.host
+            // host: 'localhost:8080',
         }, AceEditorWrapper);
         this.channelCommLayer = this.commLayer.createChannelWithName(this.channelName, this.channelID, this.isObserver);
         this.editorStateTracker = this.channelCommLayer.getEditorStateTracker();
