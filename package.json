@@ -12,27 +12,28 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^4.0.0",
-    "@angular/compiler": "^4.4.4",
-    "@angular/core": "^4.4.4",
-    "@angular/forms": "^4.4.4",
-    "@angular/platform-browser": "^4.4.4",
-    "@angular/platform-browser-dynamic": "^4.4.4",
+    "@angular/common": "^4.4.6",
+    "@angular/compiler": "^4.4.6",
+    "@angular/core": "^4.4.6",
+    "@angular/forms": "^4.4.6",
+    "@angular/platform-browser": "^4.4.6",
+    "@angular/platform-browser-dynamic": "^4.4.6",
     "@types/underscore": "^1.8.2",
     "angular2-moment": "^1.4.0",
     "bootstrap": "^4.0.0-alpha.6",
-    "chat-codes-services": "https://github.com/soney/chat-codes-services.git",
+    "chat-codes-services": "git+https://github.com/chat-codes/chat-codes-services.git",
     "diff2html": "^2.3.0",
     "jquery": "^3.2.1",
     "logdown": "^3.1.0",
     "ng2-ace-editor": "^0.2.5",
     "skulpt": "^0.11.1",
     "underscore": "^1.8.3",
-    "xterm": "^2.9.2"
+    "xterm": "^2.9.2",
+    "zone.js": "^0.8.26"
   },
   "devDependencies": {
-    "@angular/cli": "^1.4.5",
-    "@angular/compiler-cli": "^4.4.4",
+    "@angular/cli": "^1.7.4",
+    "@angular/compiler-cli": "^4.4.6",
     "typescript": "^2.3.4"
   }
 }
