@@ -1,5 +1,7 @@
 # Chat Codes Web
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/chat-codes/chat-codes-web.svg)](https://greenkeeper.io/)
+
 The web server for chat.codes
 
 ![chat.codes screenshot](https://github.com/soney/chat-codes-web/blob/master/screenshot.gif?raw=true)
